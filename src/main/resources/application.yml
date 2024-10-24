@@ -1,0 +1,68 @@
+spring:
+  jpa:
+    database: mysql
+    database-platform: org.hibernate.dialect.MySQLDialect
+    show-sql: true
+
+    hibernate:
+      ddl-auto: update
+
+    properties:
+      hibernate:
+        format_sql: true
+
+
+  config:
+    import: optional:file:.env[.properties]
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+    defer-datasource-initialization: true
+
+  datasource:
+    url: ${DATABASE_URL}
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+
+
+management:
+  endpoints:
+    web:
+      base-path: /
+  endpoint:
+    health:
+      show-details: always
+  health:
+    diskspace:
+      enabled: false
+
+#cloud:
+#  aws:
+#    s3:
+#      bucket: ${S3_NAME}
+#    stack.auto: false
+#    region.static: ${S3_REGION}
+#    credentials:
+#      accessKey: ${S3_ACCESSKEY}
+#      secretKey: ${S3_SECRETKEY}
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    groups-order: DESC
+    tags-sorter: alpha
+    operations-sorter: method
+  api-docs:
+    path: /api-docs
+    # endpoint
+    show-actuator: true
+    default-consumes-media-type: application/json
+    default-produces-media-type: application/json
+
+    paths-to-match:
+      - /api/**
