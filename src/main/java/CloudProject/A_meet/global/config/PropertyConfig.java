@@ -1,4 +1,4 @@
-package CloudProject.A_meet.config;
+package CloudProject.A_meet.global.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;

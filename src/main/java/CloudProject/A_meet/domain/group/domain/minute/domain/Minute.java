@@ -1,6 +1,7 @@
 package CloudProject.A_meet.domain.group.domain.minute.domain;
 
 import CloudProject.A_meet.domain.group.domain.meeting.domain.Meeting;
+import CloudProject.A_meet.global.common.model.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -15,7 +16,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @ToString
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-public class Minute {
+public class Minute extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)
@@ -32,8 +33,4 @@ public class Minute {
     private String content;
 
     private String fileUrl;
-
-    @CreatedDate
-    @Column(nullable = false)
-    private String createdAt;
 }

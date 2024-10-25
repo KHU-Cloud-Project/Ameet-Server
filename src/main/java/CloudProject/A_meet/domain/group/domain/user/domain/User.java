@@ -1,5 +1,6 @@
 package CloudProject.A_meet.domain.group.domain.user.domain;
 
+import CloudProject.A_meet.global.common.model.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -16,7 +17,7 @@ import java.time.LocalDateTime;
 @ToString
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-public class User {
+public class User extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)
@@ -30,5 +31,4 @@ public class User {
 
     @Column(nullable = false)
     private String nickname;
-
 }
