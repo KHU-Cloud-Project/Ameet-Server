@@ -6,35 +6,27 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.time.LocalDateTime;
-
-@Table(name="user_group")
+@Table(name="user_team")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @ToString
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-public class UserGroup {
+public class UserTeam {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="user_group_id", updatable = false)
-    private Long userGroupId;
+    @Column(nullable = false)
+    private Long userTeamId;
 
     @ManyToOne
     @JoinColumn(name="userId")
+    @Column(nullable = false)
     private User userId;
 
     @ManyToOne
-    @JoinColumn(name="group_id")
-    private Group groupId;
-
-    @CreatedDate
-    @Column(name="created_at")
-    private LocalDateTime createdAt;
-
-    @Column(name="deleted_at")
-    private LocalDateTime deletedAt;
+    @JoinColumn(name="team_id")
+    @Column(nullable = false)
+    private Team teamId;
 }

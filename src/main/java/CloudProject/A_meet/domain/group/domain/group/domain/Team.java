@@ -10,31 +10,23 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
-@Table(name="groups")
+@Table(name="teams")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @ToString
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-public class Group {
+public class Team {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="group_id", updatable = false)
-    private Long groupId;
+    @Column(nullable = false)
+    private Long teamId;
 
-    @Column(name="name")
+    @Column(nullable = false)
     private String name;
 
-    @Column(name="description")
     private String description;
 
-    @CreatedDate
-    @Column(name="created_at")
-    private LocalDateTime createdAt;
-
-    @Column(name="deleted_at")
-    private LocalDateTime  deletedAt;
-
-    @Column(name="max_people")
+    @Column(nullable = false)
     private long maxPeople;
 }

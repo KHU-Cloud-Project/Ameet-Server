@@ -19,22 +19,16 @@ import java.time.LocalDateTime;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="user_id", updatable = false)
+    @Column(nullable = false)
     private Long userId;
 
-    @Column(name="email")
+    @Column(nullable = false)
     private String email;
 
-    @Column(name="password")
+    @Column(nullable = false)
     private String password;
 
-    @Column(name="nickname")
+    @Column(nullable = false)
     private String nickname;
 
-    @CreatedDate
-    @Column(name="created_at")
-    private LocalDateTime createdAt;
-
-    @Column(name="deleted_at")
-    private LocalDateTime  deletedAt;
 }

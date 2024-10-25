@@ -6,6 +6,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Table(name="minutes")
@@ -17,22 +18,22 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 public class Minute {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="minute_id", updatable = false)
+    @Column(nullable = false)
     private Long minuteId;
 
     @ManyToOne
     @JoinColumn(name="meeting_id")
     private Meeting meetingId;
 
-    @Column(name="title")
+    @Column(nullable = false)
     private String title;
 
-    @Column(name="content")
+    @Column(nullable = false)
     private String content;
 
-    @Column(name="file_url")
     private String fileUrl;
 
-    @Column(name="created_at")
-    private String createAt;
+    @CreatedDate
+    @Column(nullable = false)
+    private String createdAt;
 }

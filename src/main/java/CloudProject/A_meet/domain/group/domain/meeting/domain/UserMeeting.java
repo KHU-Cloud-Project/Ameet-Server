@@ -1,6 +1,6 @@
 package CloudProject.A_meet.domain.group.domain.meeting.domain;
 
-import CloudProject.A_meet.domain.group.domain.group.domain.UserGroup;
+import CloudProject.A_meet.domain.group.domain.group.domain.UserTeam;
 import CloudProject.A_meet.domain.group.domain.user.domain.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -21,26 +21,27 @@ import java.time.LocalDateTime;
 public class UserMeeting {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="user_meeting_id", updatable = false)
+    @Column(nullable = false)
     private Long userMeetingId;
 
     @ManyToOne
     @JoinColumn(name="userId")
+    @Column(nullable = false)
     private User userId;
 
     @ManyToOne
     @JoinColumn(name="meeting_id")
+    @Column(nullable = false)
     private Meeting meetingId;
 
     @ManyToOne
-    @JoinColumn(name="user_group_id")
-    private UserGroup user_group_id;
+    @JoinColumn(name="user_team_id")
+    @Column(nullable = false)
+    private UserTeam userTeamId;
 
     @CreatedDate
-    @Column(name="entry_time")
     private LocalDateTime entryTime;
 
-    @Column(name="exit_time")
     private LocalDateTime exitTime;
 
 }

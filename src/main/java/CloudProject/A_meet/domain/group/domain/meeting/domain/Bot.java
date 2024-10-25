@@ -17,27 +17,27 @@ import java.time.LocalDateTime;
 @ToString
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-public class bot {
+public class Bot {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="bot_id", updatable = false)
+    @Column(nullable = false)
     private Long botId;
 
     @ManyToOne
     @JoinColumn(name="meeting_id")
+    @Column(nullable = false)
     private Meeting meetingId;
 
     @ManyToOne
     @JoinColumn(name="minute_id")
     private Minute minuteId;
 
-    @Column(name="type")
+    @Column(nullable = false)
     private String type;
 
-    @Column(name="content")
     private String content;
 
     @CreatedDate
-    @Column(name="created_at")
+    @Column(nullable = false)
     private LocalDateTime createdAt;
 }
