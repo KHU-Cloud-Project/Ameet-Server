@@ -26,17 +26,14 @@ public class UserMeeting {
 
     @ManyToOne
     @JoinColumn(name="userId")
-    @Column(nullable = false)
     private User userId;
 
     @ManyToOne
     @JoinColumn(name="meeting_id")
-    @Column(nullable = false)
     private Meeting meetingId;
 
     @ManyToOne
     @JoinColumn(name="user_team_id")
-    @Column(nullable = false)
     private UserTeam userTeamId;
 
     @CreatedDate

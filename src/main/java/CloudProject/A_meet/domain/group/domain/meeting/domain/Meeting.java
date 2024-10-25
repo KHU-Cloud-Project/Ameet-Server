@@ -10,7 +10,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
-@Table(name="mettings")
+@Table(name="meetings")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @ToString
@@ -24,7 +24,6 @@ public class Meeting {
 
     @ManyToOne
     @JoinColumn(name="team_id")
-    @Column(nullable = false)
     private Team teamId;
 
     @Column(nullable = false)

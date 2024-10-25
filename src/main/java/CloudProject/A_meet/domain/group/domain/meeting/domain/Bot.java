@@ -25,7 +25,6 @@ public class Bot {
 
     @ManyToOne
     @JoinColumn(name="meeting_id")
-    @Column(nullable = false)
     private Meeting meetingId;
 
     @ManyToOne

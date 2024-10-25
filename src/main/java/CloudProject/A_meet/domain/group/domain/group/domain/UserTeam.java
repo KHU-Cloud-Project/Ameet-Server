@@ -23,11 +23,9 @@ public class UserTeam extends BaseTimeEntity {
 
     @ManyToOne
     @JoinColumn(name="userId")
-    @Column(nullable = false)
     private User userId;
 
     @ManyToOne
     @JoinColumn(name="team_id")
-    @Column(nullable = false)
     private Team teamId;
 }
