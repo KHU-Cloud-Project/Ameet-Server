@@ -11,6 +11,11 @@ spring:
       hibernate:
         format_sql: true
 
+  security:
+    user:
+      name: user
+      password: password
+    permit-all: true
 
   config:
     import: optional:file:.env[.properties]
@@ -66,3 +71,12 @@ springdoc:
 
     paths-to-match:
       - /api/**
+
+server:
+  port: 8443
+  ssl:
+    enabled: true
+    key-store: ${SSL_KEY}
+    key-store-password: ${SSL_PASSWORD}
+    key-store-type: PKCS12            # 인증서 타입 (PKCS12 또는 JKS)
+    key-alias: spring             # 인증서 별칭

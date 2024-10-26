@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
                 description = "2024-2 클라우드 컴퓨팅 프로젝트",
                 version = "v1"),
         servers = {
-                @Server(url = "https://localhost:8080", description = "local URL"),
+                @Server(url = "https://localhost:8443", description = "local URL"),
                 @Server(url = "https://server-url", description = "Server URL") //추후 설정
         }
 )

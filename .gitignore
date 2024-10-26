@@ -8,6 +8,11 @@ build/
 ### env
 env.properties
 
+# Keystore files
+*.p12
+*.jks
+keystore.p12
+
 ### STS ###
 .apt_generated
 .classpath
