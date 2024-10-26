@@ -1,6 +1,7 @@
 package CloudProject.A_meet.domain.group.domain.user.service;
 
 import CloudProject.A_meet.domain.group.domain.user.domain.User;
+import CloudProject.A_meet.domain.group.domain.user.dto.UserLoginRequest;
 import CloudProject.A_meet.domain.group.domain.user.dto.UserResponse;
 import CloudProject.A_meet.domain.group.domain.user.dto.UserSignupRequest;
 import CloudProject.A_meet.domain.group.domain.user.repository.UserRepository;
@@ -30,7 +31,7 @@ public class UserService {
             throw new IllegalArgumentException("Nickname already exists"); // 닉네임 중복 시 예외 처리
         }
 
-        // 빌더 패턴을 사용하여 새로운 사용자 생성 및 저장
+        // 새로운 사용자 생성 및 저장
         User newUser = User.builder()
                 .email(userSignupRequest.getEmail())
                 .password(passwordEncoder.encode(userSignupRequest.getPassword()))  // 비밀번호 암호화
@@ -40,8 +41,21 @@ public class UserService {
         userRepository.save(newUser);
 
         // UserResponse.UserData 반환
-        return new UserResponse.UserData(newUser.getUserId(), newUser.getNickname());
+        return new UserResponse.UserData(newUser.getUserId(), newUser.getEmail(), newUser.getNickname());
     }
 
 
+    public UserResponse.UserData authenticateUser(UserLoginRequest userLoginRequest) {
+        // 사용자 존재 여부 확인
+        User user = userRepository.findByEmail(userLoginRequest.getEmail())
+                .orElseThrow(() -> new RuntimeException("Invalid email or password"));
+
+        // 비밀번호 확인
+        if (!passwordEncoder.matches(userLoginRequest.getPassword(), user.getPassword())) {
+            throw new RuntimeException("Invalid username or password");
+        }
+
+        // 인증이 성공 시 사용자 정보를 UserData에 담아 반환
+        return new UserResponse.UserData(user.getUserId(), user.getEmail(), user.getNickname());
+    }
 }

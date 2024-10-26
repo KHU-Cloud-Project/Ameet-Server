@@ -25,10 +25,12 @@ public class UserResponse {
     @Setter
     public static class UserData {
         private Long id;
+        private String email;
         private String nickname;
 
-        public UserData(Long id, String nickname) {
+        public UserData(Long id, String email, String nickname) {
             this.id = id;
+            this.email = email;
             this.nickname = nickname;
         }
     }
