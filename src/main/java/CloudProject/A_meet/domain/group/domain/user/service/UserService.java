@@ -58,4 +58,11 @@ public class UserService {
         // 인증이 성공 시 사용자 정보를 UserData에 담아 반환
         return new UserResponse.UserData(user.getUserId(), user.getEmail(), user.getNickname());
     }
+
+    public UserResponse.UserData getUserById(Long userId) {
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        return new UserResponse.UserData(user.getUserId(), user.getNickname(), user.getEmail());
+    }
 }
