@@ -37,12 +37,5 @@ public class MeetingService {
         return new MeetingResponse.MeetingData(newMeeting.getMeetingId(), newMeeting.getTitle(), newMeeting.getStartedAt(), newMeeting.getEndedAt(), newMeeting.getDuration());
     }
 
-    public MeetingResponse.MeetingData getMeetingInfo(Long meetingId) {
-        Meeting meeting = meetingRepository.findById(meetingId)
-                .orElseThrow(() -> new RuntimeException("Meeting not found"));
-
-        return new MeetingResponse.MeetingData(meeting.getMeetingId(), meeting.getTitle(), meeting.getStartedAt(), meeting.getEndedAt(), meeting.getDuration());
-    }
-
 
 }
