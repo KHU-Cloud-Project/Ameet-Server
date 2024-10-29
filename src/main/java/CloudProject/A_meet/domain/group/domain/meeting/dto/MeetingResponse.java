@@ -13,36 +13,20 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MeetingResponse {
-    private boolean success;
-    private int status;
-    private LocalDateTime timestamp;
+    private Long meetingId;
+    private String title;
+    private LocalDateTime startedAt;
+    private LocalDateTime endedAt;
+    private Long duration;
 
-        this.success = success;
-        this.status = status;
-        this.timestamp = LocalDateTime.now();
-        this.data = data;
-    }
-
-    @Getter
-    @Setter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class MeetingData {
-        private Long meetingId;
-        private String title;
-        private LocalDateTime startedAt;
-        private LocalDateTime endedAt;
-        private Long duration;
-
-        public Long getDuration() {
-            if (startedAt != null && endedAt != null) {
-                this.duration = Duration.between(startedAt, endedAt).toMinutes();
-            } else {
-                this.duration = 0L;
-            }
-            return duration;
+    public Long getDuration() {
+        if (startedAt != null && endedAt != null) {
+            this.duration = Duration.between(startedAt, endedAt).toMinutes();
+        } else {
+            this.duration = 0L;
         }
+        return duration;
     }
-
-
 }
+
+    

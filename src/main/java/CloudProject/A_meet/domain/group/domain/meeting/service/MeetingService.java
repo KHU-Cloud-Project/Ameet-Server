@@ -11,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -20,7 +22,7 @@ public class MeetingService {
     private final TeamRepository teamRepository;
 
     @Transactional
-    public MeetingResponse.MeetingData createMeeting(MeetingRequest meetingRequest) {
+    public MeetingResponse createMeeting(MeetingRequest meetingRequest) {
         Team team = teamRepository.findByTeamId(meetingRequest.getTeamId())
                 .orElseThrow(() -> new RuntimeException("Team not found"));
 
@@ -34,8 +36,30 @@ public class MeetingService {
 
         // meeting join 구현 예정
 
-        return new MeetingResponse.MeetingData(newMeeting.getMeetingId(), newMeeting.getTitle(), newMeeting.getStartedAt(), newMeeting.getEndedAt(), newMeeting.getDuration());
+        return new MeetingResponse(newMeeting.getMeetingId(), newMeeting.getTitle(), newMeeting.getStartedAt(), newMeeting.getEndedAt(), newMeeting.getDuration());
+    }
+
+    public MeetingResponse getMeetingDetail(Long meetingId) {
+        Meeting meeting = meetingRepository.findById(meetingId)
+                .orElseThrow(() -> new RuntimeException("Meeting not found"));
+
+        return new MeetingResponse(meeting.getMeetingId(), meeting.getTitle(), meeting.getStartedAt(), meeting.getEndedAt(), meeting.getDuration());
     }
 
 
+    public List<MeetingResponse> getMeetingsByTeamId(Long teamId) {
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(() -> new RuntimeException("Team not found"));
+        List<Meeting> meetings = meetingRepository.findByTeamId(team);
+
+        return meetings.stream()
+                .map(meeting -> new MeetingResponse(
+                        meeting.getMeetingId(),
+                        meeting.getTitle(),
+                        meeting.getStartedAt(),
+                        meeting.getEndedAt(),
+                        meeting.getDuration()
+                ))
+                .collect(Collectors.toList());
+    }
 }
