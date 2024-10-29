@@ -2,19 +2,15 @@ package CloudProject.A_meet.domain.group.domain.user.domain;
 
 import CloudProject.A_meet.global.common.model.BaseTimeEntity;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
-import org.springframework.data.annotation.CreatedDate;
+import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-
-import java.time.LocalDateTime;
 
 @Table(name="users")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @Getter
 @ToString
+@Builder
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 public class User extends BaseTimeEntity {
