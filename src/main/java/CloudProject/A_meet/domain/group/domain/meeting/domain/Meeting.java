@@ -1,8 +1,9 @@
 package CloudProject.A_meet.domain.group.domain.meeting.domain;
 
-import CloudProject.A_meet.domain.group.domain.group.domain.Team;
+import CloudProject.A_meet.domain.group.domain.team.domain.Team;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
@@ -32,4 +33,6 @@ public class Meeting {
 
     @Column(nullable = false)
     private String title;
+
+    private Long duration;
 }
