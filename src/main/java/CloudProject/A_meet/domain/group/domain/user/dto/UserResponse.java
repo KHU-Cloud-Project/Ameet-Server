@@ -1,18 +1,21 @@
 package CloudProject.A_meet.domain.group.domain.user.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
 
-
 @Getter
 @Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserResponse {
     private boolean success;
     private int status;
     private LocalDateTime timestamp;
-    private UserData data;  // 사용자 데이터를 담을 내부 클래스
+    private UserData data;
 
     public UserResponse(boolean success, int status, UserData data) {
         this.success = success;
@@ -23,15 +26,11 @@ public class UserResponse {
 
     @Getter
     @Setter
+    @NoArgsConstructor
+    @AllArgsConstructor
     public static class UserData {
         private Long id;
         private String email;
         private String nickname;
-
-        public UserData(Long id, String email, String nickname) {
-            this.id = id;
-            this.email = email;
-            this.nickname = nickname;
-        }
     }
 }
