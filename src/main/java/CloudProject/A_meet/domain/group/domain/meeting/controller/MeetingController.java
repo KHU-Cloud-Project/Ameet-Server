@@ -27,4 +27,12 @@ public class MeetingController {
         MeetingResponse response = new MeetingResponse(true, 201, meetingData);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
+
+    @Operation(summary = "Get Meeting Info", description = "Fetch information about a specific meeting.")
+    @GetMapping
+    public ResponseEntity<MeetingResponse> getMeetingInfo(@RequestParam Long meetingId) {
+        MeetingResponse.MeetingData meetingData = meetingService.getMeetingInfo(meetingId);
+        MeetingResponse response = new MeetingResponse(true, 200, meetingData);
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
 }
