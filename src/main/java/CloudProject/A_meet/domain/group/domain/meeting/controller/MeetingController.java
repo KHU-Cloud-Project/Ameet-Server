@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/meeting")
@@ -28,11 +30,19 @@ public class MeetingController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
-    @Operation(summary = "Get Meeting Info", description = "Fetch information about a specific meeting.")
+    @Operation(summary = "Get Meeting Detail", description = "Fetch detailed information for a specific meeting.")
     @GetMapping
-    public ResponseEntity<MeetingResponse> getMeetingInfo(@RequestParam Long meetingId) {
-        MeetingResponse.MeetingData meetingData = meetingService.getMeetingInfo(meetingId);
+    public ResponseEntity<MeetingResponse> getMeetingDetail(@RequestParam Long meetingId) {
+        MeetingResponse.MeetingData meetingData = meetingService.getMeetingDetail(meetingId);
         MeetingResponse response = new MeetingResponse(true, 200, meetingData);
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
+    @Operation(summary = "Get Meeting by Team ID", description = "Fetch all meetings for a specific team.")
+    @GetMapping("/team")
+    public ResponseEntity<MeetingResponse> getMeetingByTeamId(@RequestParam Long teamId) {
+        List<MeetingResponse.MeetingData> meetingDataList = meetingService.getMeetingsByTeamId(teamId);
+        MeetingResponse response = new MeetingResponse(true, 200, meetingDataList);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 }

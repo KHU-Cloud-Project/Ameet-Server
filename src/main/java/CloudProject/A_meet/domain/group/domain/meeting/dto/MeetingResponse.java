@@ -16,9 +16,9 @@ public class MeetingResponse {
     private boolean success;
     private int status;
     private LocalDateTime timestamp;
-    private MeetingData data;
+    private Object data;
 
-    public MeetingResponse(boolean success, int status, MeetingData data) {
+    public MeetingResponse(boolean success, int status, Object data) {
         this.success = success;
         this.status = status;
         this.timestamp = LocalDateTime.now();

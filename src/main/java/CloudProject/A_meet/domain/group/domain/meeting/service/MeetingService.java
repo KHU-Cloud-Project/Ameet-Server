@@ -11,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -37,7 +39,7 @@ public class MeetingService {
         return new MeetingResponse.MeetingData(newMeeting.getMeetingId(), newMeeting.getTitle(), newMeeting.getStartedAt(), newMeeting.getEndedAt(), newMeeting.getDuration());
     }
 
-    public MeetingResponse.MeetingData getMeetingInfo(Long meetingId) {
+    public MeetingResponse.MeetingData getMeetingDetail(Long meetingId) {
         Meeting meeting = meetingRepository.findById(meetingId)
                 .orElseThrow(() -> new RuntimeException("Meeting not found"));
 
@@ -45,4 +47,19 @@ public class MeetingService {
     }
 
 
+    public List<MeetingResponse.MeetingData> getMeetingsByTeamId(Long teamId) {
+        Team team = teamRepository.findById(teamId)
+                .orElseThrow(() -> new RuntimeException("Team not found"));
+        List<Meeting> meetings = meetingRepository.findByTeamId(team);
+
+        return meetings.stream()
+                .map(meeting -> new MeetingResponse.MeetingData(
+                        meeting.getMeetingId(),
+                        meeting.getTitle(),
+                        meeting.getStartedAt(),
+                        meeting.getEndedAt(),
+                        meeting.getDuration()
+                ))
+                .collect(Collectors.toList());
+    }
 }
