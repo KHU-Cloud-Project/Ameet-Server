@@ -1,4 +1,4 @@
-package CloudProject.A_meet.domain.group.domain.group.domain;
+package CloudProject.A_meet.domain.group.domain.team.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
