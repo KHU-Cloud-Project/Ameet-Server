@@ -18,7 +18,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public UserResponse.UserData registerUser(UserSignupRequest userSignupRequest) {
+    public UserResponse registerUser(UserSignupRequest userSignupRequest) {
         // 이메일 중복 체크
         Optional<User> existingUserByEmail = userRepository.findByEmail(userSignupRequest.getEmail());
         if (existingUserByEmail.isPresent()) {
@@ -41,11 +41,11 @@ public class UserService {
         userRepository.save(newUser);
 
         // UserResponse.UserData 반환
-        return new UserResponse.UserData(newUser.getUserId(), newUser.getEmail(), newUser.getNickname());
+        return new UserResponse(newUser.getUserId(), newUser.getEmail(), newUser.getNickname());
     }
 
 
-    public UserResponse.UserData authenticateUser(UserLoginRequest userLoginRequest) {
+    public UserResponse authenticateUser(UserLoginRequest userLoginRequest) {
         // 사용자 존재 여부 확인
         User user = userRepository.findByEmail(userLoginRequest.getEmail())
                 .orElseThrow(() -> new RuntimeException("Invalid email or password"));
@@ -56,13 +56,13 @@ public class UserService {
         }
 
         // 인증이 성공 시 사용자 정보를 UserData에 담아 반환
-        return new UserResponse.UserData(user.getUserId(), user.getEmail(), user.getNickname());
+        return new UserResponse(user.getUserId(), user.getEmail(), user.getNickname());
     }
 
-    public UserResponse.UserData getUserById(Long userId) {
+    public UserResponse getUserById(Long userId) {
         User user = userRepository.findByUserId(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        return new UserResponse.UserData(user.getUserId(), user.getNickname(), user.getEmail());
+        return new UserResponse(user.getUserId(), user.getNickname(), user.getEmail());
     }
 }
