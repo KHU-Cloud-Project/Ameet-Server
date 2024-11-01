@@ -11,7 +11,7 @@ env.properties
 # Keystore files
 *.p12
 *.jks
-keystore.p12
+src/main/resources/properties/keystore.p12
 
 ### STS ###
 .apt_generated

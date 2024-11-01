@@ -28,4 +28,9 @@ public class UserTeam extends BaseTimeEntity {
     @ManyToOne
     @JoinColumn(name="team_id")
     private Team teamId;
+
+    @Enumerated(EnumType.STRING)
+    private Role role;
+
+    private String introduction;
 }

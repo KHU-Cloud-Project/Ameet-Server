@@ -1,19 +1,19 @@
 package CloudProject.A_meet.domain.group.domain.meeting.domain;
 
-import CloudProject.A_meet.domain.group.domain.team.domain.Team;
+import CloudProject.A_meet.domain.group.domain.group.domain.Team;
 import jakarta.persistence.*;
-import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
 @Table(name="meetings")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
 @Getter
 @ToString
-@Builder
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 public class Meeting {
@@ -33,6 +33,4 @@ public class Meeting {
 
     @Column(nullable = false)
     private String title;
-
-    private Long duration;
 }

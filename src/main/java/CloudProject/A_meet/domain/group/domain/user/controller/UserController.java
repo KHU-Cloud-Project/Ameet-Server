@@ -23,25 +23,22 @@ public class UserController {
     @Operation(summary = "User Signup", description = "Use this to register a new user account in the system.")
     @PostMapping("/signup")
     public ResponseEntity<UserResponse> registerUser(@Valid @RequestBody UserSignupRequest userSignupRequest) {
-        UserResponse.UserData userData = userService.registerUser(userSignupRequest);
-        UserResponse response = new UserResponse(true, 201, userData);
-        return ResponseEntity.status(response.getStatus()).body(response);
+        UserResponse userData = userService.registerUser(userSignupRequest);
+        return ResponseEntity.status(201).body(userData);
     }
 
     @Operation(summary = "User Login", description = "Use this to authenticate and log in an existing user.")
     @PostMapping("/login")
     public ResponseEntity<UserResponse> loginUser(@Valid @RequestBody UserLoginRequest userLoginRequest) {
-        UserResponse.UserData userData = userService.authenticateUser(userLoginRequest);
-        UserResponse response = new UserResponse(true, 200, userData);
-        return ResponseEntity.status(response.getStatus()).body(response);
+        UserResponse userData = userService.authenticateUser(userLoginRequest);
+        return ResponseEntity.status(200).body(userData);
     }
 
     @Operation(summary = "Get User Info", description = "Fetch the current logged-in user's information.")
     @GetMapping("/user/")
     public ResponseEntity<UserResponse> getUserById(@RequestParam Long userId) {
-        UserResponse.UserData userData = userService.getUserById(userId);
-        UserResponse response = new UserResponse(true, 200, userData);
-        return ResponseEntity.ok(response);
+        UserResponse userData = userService.getUserById(userId);
+        return ResponseEntity.ok(userData);
     }
 
 }

@@ -12,25 +12,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserResponse {
-    private boolean success;
-    private int status;
-    private LocalDateTime timestamp;
-    private UserData data;
-
-    public UserResponse(boolean success, int status, UserData data) {
-        this.success = success;
-        this.status = status;
-        this.timestamp = LocalDateTime.now();
-        this.data = data;
-    }
-
-    @Getter
-    @Setter
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class UserData {
         private Long id;
         private String email;
         private String nickname;
     }
-}
