@@ -1,6 +1,7 @@
 package CloudProject.A_meet.domain.group.domain.meeting.domain;
 
-import CloudProject.A_meet.domain.group.domain.group.domain.UserTeam;
+
+import CloudProject.A_meet.domain.group.domain.team.domain.UserTeam;
 import CloudProject.A_meet.domain.group.domain.user.domain.User;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
