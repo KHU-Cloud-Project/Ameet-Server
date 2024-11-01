@@ -27,7 +27,8 @@ public class Team extends BaseTimeEntity {
     @Column(nullable = false)
     private String name;
 
-    private String description;
+    @Column(nullable = false)
+    private String teamPassword;
 
     @Column(nullable = false)
     private long maxPeople;
