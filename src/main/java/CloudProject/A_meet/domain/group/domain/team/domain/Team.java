@@ -1,6 +1,5 @@
-package CloudProject.A_meet.domain.group.domain.group.domain;
+package CloudProject.A_meet.domain.group.domain.team.domain;
 
-import CloudProject.A_meet.domain.group.domain.user.domain.User;
 import CloudProject.A_meet.global.common.model.BaseTimeEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -9,23 +8,23 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-@Table(name="user_team")
+@Table(name="teams")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @ToString
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-public class UserTeam extends BaseTimeEntity {
+public class Team extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)
-    private Long userTeamId;
+    private Long teamId;
 
-    @ManyToOne
-    @JoinColumn(name="userId")
-    private User userId;
+    @Column(nullable = false)
+    private String name;
 
-    @ManyToOne
-    @JoinColumn(name="team_id")
-    private Team teamId;
+    private String description;
+
+    @Column(nullable = false)
+    private long maxPeople;
 }
