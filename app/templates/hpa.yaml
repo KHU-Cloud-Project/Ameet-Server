@@ -3,6 +3,7 @@ apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: {{ include "app.fullname" . }}
+  namespace: default-app  # 네임스페이스 추가 위치
   labels:
     {{- include "app.labels" . | nindent 4 }}
 spec:
