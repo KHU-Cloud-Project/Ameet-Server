@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "app.fullname" . }}
-  namespace: default-app  # 네임스페이스 추가
+  namespace: default  # 네임스페이스 추가
   labels:
     {{- include "app.labels" . | nindent 4 }}
 spec:

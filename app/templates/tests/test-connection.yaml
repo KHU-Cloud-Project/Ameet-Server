@@ -2,7 +2,7 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: "{{ include "app.fullname" . }}-test-connection"
-  namespace: default-app  # 네임스페이스 추가 위치
+  namespace: default  # 네임스페이스 추가 위치
   labels:
     {{- include "app.labels" . | nindent 4 }}
   annotations:
