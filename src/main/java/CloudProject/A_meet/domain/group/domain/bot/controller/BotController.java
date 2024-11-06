@@ -1,6 +1,6 @@
 package CloudProject.A_meet.domain.group.domain.bot.controller;
 
-import CloudProject.A_meet.domain.group.domain.bot.dto.response.SummaryBotResponse;
+import CloudProject.A_meet.domain.group.domain.bot.dto.response.BotResponse;
 import CloudProject.A_meet.domain.group.domain.bot.service.BotService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -21,8 +21,20 @@ public class BotController {
 
     @Operation(summary = "요약봇 호출", description = "회원 정보를 조회하는 API")
     @GetMapping("/summary")
-    public SummaryBotResponse summarize(@RequestParam Long meetingId) {
+    public BotResponse summarize(@RequestParam Long meetingId) {
         return botService.summaryBot(meetingId);
+    }
+
+    @Operation(summary = "긍정 리액션봇 호출", description = "긍정 리액션봇을 조회하는 API")
+    @GetMapping("/positive")
+    public BotResponse positive(@RequestParam Long meetingId) {
+        return botService.positiveBot(meetingId);
+    }
+
+    @Operation(summary = "부정 리액션봇 호출", description = "부정 리액션봇을 조회하는 API")
+    @GetMapping("/negative")
+    public BotResponse negative(@RequestParam Long meetingId) {
+        return botService.negativeBot(meetingId);
     }
 
 }

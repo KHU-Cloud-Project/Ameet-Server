@@ -7,8 +7,8 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class SummaryBotResponse {
+public class BotResponse {
     private Long meetingId;
     private Long botId;
-    private String summary;
+    private String text;
 }
