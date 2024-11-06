@@ -1,0 +1,66 @@
+package CloudProject.A_meet.domain.group.domain.team.controller;
+
+import CloudProject.A_meet.domain.group.domain.team.dto.TeamEnterRequest;
+import CloudProject.A_meet.domain.group.domain.team.dto.TeamLeaveRequest;
+import CloudProject.A_meet.domain.group.domain.team.dto.TeamRequest;
+import CloudProject.A_meet.domain.group.domain.team.dto.TeamResponse;
+import CloudProject.A_meet.domain.group.domain.team.service.TeamService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+/**
+ * 팀 관련 Controller
+ * 팀 생성, 조회, 참여/탈퇴/재참여 요청
+ *
+ * @author sungah
+ * */
+
+@RestController
+@RequestMapping("/api/v1/team")
+@Tag(name = "Team", description = "Team API")
+@RequiredArgsConstructor
+@Validated
+public class TeamController {
+
+    private final TeamService teamService;
+
+    @Operation(summary = "Create Team", description = "Use this to create a team")
+    @PostMapping
+    public ResponseEntity<TeamResponse> createMeeting(@RequestBody TeamRequest teamRequest) {
+        TeamResponse teamResponse = teamService.createTeam(teamRequest);
+        return ResponseEntity.status(201).body(teamResponse);
+    }
+
+    @Operation(summary = "Get Team Detail Information", description = "Use this when you enter the team space")
+    @GetMapping
+    public ResponseEntity<TeamResponse> getTeamInfo(@RequestParam("teamId") Long teamId) {
+        TeamResponse teamResponse = teamService.getTeamInfo(teamId);
+        return ResponseEntity.status(200).body(teamResponse);
+    }
+
+    @Operation(summary = "join Team", description = "Use this when you enter the team space")
+    @PostMapping("/join")
+    public ResponseEntity<TeamResponse> joinTeam(@RequestBody TeamEnterRequest teamEnterRequest) {
+        TeamResponse teamResponse = teamService.joinTeam(teamEnterRequest);
+        return ResponseEntity.status(201).body(teamResponse);
+    }
+
+    @Operation(summary = "leave Team", description = "Use this when you leave the team space")
+    @PutMapping("/leave")
+    public ResponseEntity<TeamResponse> leaveTeam(@RequestBody TeamLeaveRequest teamLeaveRequest) {
+        TeamResponse teamResponse = teamService.leaveTeam(teamLeaveRequest);
+        return ResponseEntity.status(200).body(teamResponse);
+    }
+
+    @Operation(summary = "rejoin Team", description = "Use this when you rejoin the team space")
+    @PutMapping("/rejoin")
+    public ResponseEntity<TeamResponse> rejoinTeam(@RequestBody TeamEnterRequest teamEnterRequest) {
+        TeamResponse teamResponse = teamService.rejoinTeam(teamEnterRequest);
+        return ResponseEntity.status(200).body(teamResponse);
+    }
+
+}
