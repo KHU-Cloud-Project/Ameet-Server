@@ -1,5 +1,6 @@
-package CloudProject.A_meet.domain.group.domain.meeting.domain;
+package CloudProject.A_meet.domain.group.domain.bot.domain;
 
+import CloudProject.A_meet.domain.group.domain.meeting.domain.Meeting;
 import CloudProject.A_meet.domain.group.domain.minute.domain.Minute;
 import jakarta.persistence.*;
 import lombok.*;
@@ -30,8 +31,9 @@ public class Bot {
     @JoinColumn(name="minute_id")
     private Minute minuteId;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String type;
+    private BotType type;
 
     private String content;
 
