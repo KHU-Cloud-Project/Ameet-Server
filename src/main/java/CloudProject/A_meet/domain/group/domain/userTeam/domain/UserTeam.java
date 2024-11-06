@@ -1,21 +1,22 @@
-package CloudProject.A_meet.domain.group.domain.team.domain;
+package CloudProject.A_meet.domain.group.domain.userTeam.domain;
 
+import CloudProject.A_meet.domain.group.domain.team.domain.Team;
 import CloudProject.A_meet.domain.group.domain.user.domain.User;
 import CloudProject.A_meet.global.common.model.BaseTimeEntity;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Table(name="user_team")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @Getter
+@Builder
 @ToString
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 public class UserTeam extends BaseTimeEntity {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)
