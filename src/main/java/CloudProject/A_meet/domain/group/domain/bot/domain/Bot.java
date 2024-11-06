@@ -1,7 +1,7 @@
 package CloudProject.A_meet.domain.group.domain.bot.domain;
 
 import CloudProject.A_meet.domain.group.domain.meeting.domain.Meeting;
-import CloudProject.A_meet.domain.group.domain.minute.domain.Minute;
+import CloudProject.A_meet.domain.group.domain.note.domain.Note;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -28,8 +28,8 @@ public class Bot {
     private Meeting meetingId;
 
     @ManyToOne
-    @JoinColumn(name="minute_id")
-    private Minute minuteId;
+    @JoinColumn(name="note_id")
+    private Note noteId;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
