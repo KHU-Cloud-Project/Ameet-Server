@@ -27,10 +27,6 @@ public class Bot {
     @JoinColumn(name="meeting_id")
     private Meeting meetingId;
 
-    @ManyToOne
-    @JoinColumn(name="note_id")
-    private Note noteId;
-
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private BotType type;
