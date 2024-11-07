@@ -1,4 +1,4 @@
-package CloudProject.A_meet.domain.group.domain.minute.domain;
+package CloudProject.A_meet.domain.group.domain.note.domain;
 
 import CloudProject.A_meet.domain.group.domain.meeting.domain.Meeting;
 import CloudProject.A_meet.global.common.model.BaseTimeEntity;
@@ -7,20 +7,19 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-@Table(name="minutes")
+@Table(name="note")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @ToString
 @Entity
 @EntityListeners(AuditingEntityListener.class)
-public class Minute extends BaseTimeEntity {
+public class Note extends BaseTimeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(nullable = false)
-    private Long minuteId;
+    private Long noteId;
 
     @ManyToOne
     @JoinColumn(name="meeting_id")
