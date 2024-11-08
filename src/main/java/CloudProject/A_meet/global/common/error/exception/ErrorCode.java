@@ -17,9 +17,17 @@ public enum ErrorCode {
 
     // Member
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 회원을 찾을 수 없습니다."),
-    MEMBER_INVALID_NORMAL(HttpStatus.FORBIDDEN, "일반 회원이 아닙니다.");
+    MEMBER_INVALID_NORMAL(HttpStatus.FORBIDDEN, "일반 회원이 아닙니다."),
 
-    // 추가
+    // Bot
+    BOT_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 봇을 찾을 수 없습니다."),
+    CANNOT_FIND_FILE(HttpStatus.NOT_FOUND, "파일을 찾을 수 없습니다."),
+
+    // Meeting
+    MEETING_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 회의를 찾을 수 없습니다."),
+
+    //Note
+    NOTE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 회의록을 찾을 수 없습니다.");
 
 
     private final HttpStatus status;
