@@ -92,8 +92,20 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
-    public TeamResponse leaveTeam(TeamLeaveRequest teamLeaveRequest) {
-        return null;
+    @Transactional
+    public void leaveTeam(TeamLeaveRequest teamLeaveRequest) {
+
+        // 1. UserTeam 객체 조회
+        User user = userRepository.findByUserId(teamLeaveRequest.getUserId())
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+        Team team = teamRepository.findByTeamId(teamLeaveRequest.getTeamId())
+                .orElseThrow(() -> new CustomException(ErrorCode.TEAM_NOT_FOUND));
+
+        UserTeam userTeam = userTeamRepository.findByTeamIdAndUserId(team, user)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_TEAM_NOT_FOUND));
+
+        // 2. team 나가기
+        userTeam.updateIsMember(false);
     }
 
     @Override

@@ -13,7 +13,7 @@ public interface TeamService {
 
     Long joinTeam(TeamEnterRequest teamEnterRequest);
 
-    TeamResponse leaveTeam(TeamLeaveRequest teamLeaveRequest);
+    void leaveTeam(TeamLeaveRequest teamLeaveRequest);
 
     TeamResponse rejoinTeam(TeamEnterRequest teamEnterRequest);
 }

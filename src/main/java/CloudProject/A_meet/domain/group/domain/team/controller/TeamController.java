@@ -51,9 +51,9 @@ public class TeamController {
 
     @Operation(summary = "leave Team", description = "Use this when you leave the team space")
     @PutMapping("/leave")
-    public ResponseEntity<TeamResponse> leaveTeam(@RequestBody TeamLeaveRequest teamLeaveRequest) {
-        TeamResponse teamResponse = teamService.leaveTeam(teamLeaveRequest);
-        return ResponseEntity.status(200).body(teamResponse);
+    public ResponseEntity<?> leaveTeam(@RequestBody TeamLeaveRequest teamLeaveRequest) {
+        teamService.leaveTeam(teamLeaveRequest);
+        return ResponseEntity.status(200).body(null);
     }
 
     @Operation(summary = "rejoin Team", description = "Use this when you rejoin the team space")
