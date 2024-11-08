@@ -69,17 +69,16 @@ public class TeamServiceImpl implements TeamService {
 
     @Override
     public TeamResponse getTeamInfo(Long teamId) {
-
-        // 3. Team Member 모두 조회 후, UserTeamResponse 생성
-        List<UserTeam> userTeams = userTeamRepository.findAllByTeamId(team);
-
-        List<UserTeamResponse> userTeamResponses = userTeams.stream()
-                .map(UserTeamResponse::of)
-                .collect(Collectors.toList());
-
-        return TeamResponse.of(team, userTeamResponses);
+        return null;
     }
 
+    /**
+     * 팀 스페이스 입장
+     *
+     * @param teamEnterRequest 팀 입장에 필요한 정보 포함한 요청 객체
+     * @return userTeamId 팀 유저 (멤버) ID
+     * @throws CustomException TEAM_CREDENTIALS_INVALID 팀 자격 증명 잘못됐을 경우
+     * */
     @Override
     @Transactional
     public Long joinTeam(TeamEnterRequest teamEnterRequest) {
