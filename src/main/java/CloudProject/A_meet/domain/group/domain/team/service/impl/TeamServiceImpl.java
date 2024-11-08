@@ -91,6 +91,15 @@ public class TeamServiceImpl implements TeamService {
         return userTeam.getUserTeamId();
     }
 
+    /**
+     * 팀 스페이스 탈퇴
+     *
+     * @param teamLeaveRequest 팀 탈퇴에 필요한 정보 포함한 요청 객체
+     * @return void
+     * @throws CustomException MEMBER_NOT_FOUND 사용자가 존재하지 않을 경우
+     *                         TEAM_NOT_FOUND   팀이 존재하지 않을 경우
+     *                         USER_TEAM_NOT_FOUND 팀 유저(멤버)가 존재하지 않을 경우
+     * */
     @Override
     @Transactional
     public void leaveTeam(TeamLeaveRequest teamLeaveRequest) {
