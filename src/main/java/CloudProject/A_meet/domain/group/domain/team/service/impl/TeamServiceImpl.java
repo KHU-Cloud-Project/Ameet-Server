@@ -15,7 +15,6 @@ import CloudProject.A_meet.domain.group.domain.user.domain.User;
 import CloudProject.A_meet.domain.group.domain.user.repository.UserRepository;
 import CloudProject.A_meet.global.common.error.exception.CustomException;
 import CloudProject.A_meet.global.common.error.exception.ErrorCode;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,12 +36,13 @@ public class TeamServiceImpl implements TeamService {
      * @param teamRequest 팀 생성에 필요한 정보 포함한 요청 객체
      * @return TeamResponse 생성된 팀의 세부 정보를 포함한 응답 객체
      * @throws CustomException MEMBER_NOT_FOUND 사용자가 존재하지 않을 경우
+     * @// TODO: 2024-11-08 반환 값 UserTeamId로 변경해도 될지?
      * */
     @Override
     @Transactional
     public TeamResponse createTeam(TeamRequest teamRequest) {
 
-        // 1. User 정보 확인
+        // 1. User 객체 조회
         User user = userRepository.findByUserId(teamRequest.getUserId())
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
@@ -61,7 +61,7 @@ public class TeamServiceImpl implements TeamService {
         // todo: List<UserTeamResponse> 반환 메서드 뽑아낼 수 있음 뽑기
         // 4. TeamResponse 반환
         List<UserTeamResponse> userTeamResponses = new ArrayList<>();
-        userTeamResponses.add(UserTeamResponse.of(userTeam, user));
+        userTeamResponses.add(UserTeamResponse.of(userTeam));
 
         return TeamResponse.of(team, userTeamResponses);
     }

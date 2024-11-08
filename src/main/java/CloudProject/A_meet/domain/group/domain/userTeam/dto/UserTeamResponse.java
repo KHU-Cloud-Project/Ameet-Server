@@ -16,11 +16,11 @@ public class UserTeamResponse {
     private String nickname;
     private String introduction;
 
-    public static UserTeamResponse of(UserTeam userTeam, User user) {
+    public static UserTeamResponse of(UserTeam userTeam) {
         return UserTeamResponse.builder()
                 .userTeamId(userTeam.getUserTeamId())
                 .userId(userTeam.getUserId().getUserId())
-                .nickname(user.getNickname())
+                .nickname(userTeam.getUserId().getNickname())
                 .introduction(userTeam.getIntroduction())
                 .build();
     }
