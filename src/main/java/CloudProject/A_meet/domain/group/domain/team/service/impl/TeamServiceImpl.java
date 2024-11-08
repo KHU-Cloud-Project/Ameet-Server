@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -72,8 +73,32 @@ public class TeamServiceImpl implements TeamService {
     }
 
     @Override
+    @Transactional
     public TeamResponse joinTeam(TeamEnterRequest teamEnterRequest) {
-        return null;
+
+        // 1. Team 객체 조회
+        Team team = teamRepository.findByNameAndTeamPassword(teamEnterRequest.getTeamName(), teamEnterRequest.getTeamPassword())
+                .orElseThrow(() -> new CustomException(ErrorCode.TEAM_NOT_FOUND));
+
+        // 2. User 객체 조회 후, UserTeam 객체 생성
+        User user = userRepository.findByUserId(teamEnterRequest.getUserId())
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+        UserTeam userTeam = UserTeam.builder()
+                .teamId(team)
+                .userId(user)
+                .role(Role.MEMBER)
+                .build();
+        userTeamRepository.save(userTeam);
+
+        // 3. Team Member 모두 조회 후, UserTeamResponse 생성
+        List<UserTeam> userTeams = userTeamRepository.findAllByTeamId(team);
+
+        List<UserTeamResponse> userTeamResponses = userTeams.stream()
+                        .map(UserTeamResponse::of)
+                                .collect(Collectors.toList());
+
+        return TeamResponse.of(team, userTeamResponses);
+
     }
 
     @Override
