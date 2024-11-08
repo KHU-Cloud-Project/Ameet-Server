@@ -23,7 +23,7 @@ public class UserTeam extends BaseTimeEntity {
     private Long userTeamId;
 
     @ManyToOne
-    @JoinColumn(name="userId")
+    @JoinColumn(name="user_id")
     private User userId;
 
     @ManyToOne
@@ -34,4 +34,8 @@ public class UserTeam extends BaseTimeEntity {
     private Role role;
 
     private String introduction;
+
+    public void updateIntro(String introduction) {
+        this.introduction = introduction;
+    }
 }
