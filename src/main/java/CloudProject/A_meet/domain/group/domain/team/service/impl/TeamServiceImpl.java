@@ -69,12 +69,20 @@ public class TeamServiceImpl implements TeamService {
 
     @Override
     public TeamResponse getTeamInfo(Long teamId) {
-        return null;
+
+        // 3. Team Member 모두 조회 후, UserTeamResponse 생성
+        List<UserTeam> userTeams = userTeamRepository.findAllByTeamId(team);
+
+        List<UserTeamResponse> userTeamResponses = userTeams.stream()
+                .map(UserTeamResponse::of)
+                .collect(Collectors.toList());
+
+        return TeamResponse.of(team, userTeamResponses);
     }
 
     @Override
     @Transactional
-    public TeamResponse joinTeam(TeamEnterRequest teamEnterRequest) {
+    public Long joinTeam(TeamEnterRequest teamEnterRequest) {
 
         // 1. Team 객체 조회
         Team team = teamRepository.findByNameAndTeamPassword(teamEnterRequest.getTeamName(), teamEnterRequest.getTeamPassword())
@@ -90,15 +98,8 @@ public class TeamServiceImpl implements TeamService {
                 .build();
         userTeamRepository.save(userTeam);
 
-        // 3. Team Member 모두 조회 후, UserTeamResponse 생성
-        List<UserTeam> userTeams = userTeamRepository.findAllByTeamId(team);
-
-        List<UserTeamResponse> userTeamResponses = userTeams.stream()
-                        .map(UserTeamResponse::of)
-                                .collect(Collectors.toList());
-
-        return TeamResponse.of(team, userTeamResponses);
-
+        // 3. userTeamId 반환
+        return userTeam.getUserTeamId();
     }
 
     @Override

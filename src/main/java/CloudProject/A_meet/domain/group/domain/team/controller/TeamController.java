@@ -44,9 +44,9 @@ public class TeamController {
 
     @Operation(summary = "join Team", description = "Use this when you enter the team space")
     @PostMapping("/join")
-    public ResponseEntity<TeamResponse> joinTeam(@RequestBody TeamEnterRequest teamEnterRequest) {
-        TeamResponse teamResponse = teamService.joinTeam(teamEnterRequest);
-        return ResponseEntity.status(201).body(teamResponse);
+    public ResponseEntity<Long> joinTeam(@RequestBody TeamEnterRequest teamEnterRequest) {
+        Long userTeamId = teamService.joinTeam(teamEnterRequest);
+        return ResponseEntity.status(201).body(userTeamId);
     }
 
     @Operation(summary = "leave Team", description = "Use this when you leave the team space")

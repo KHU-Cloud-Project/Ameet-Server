@@ -11,7 +11,7 @@ public interface TeamService {
 
     TeamResponse getTeamInfo(Long teamId);
 
-    TeamResponse joinTeam(TeamEnterRequest teamEnterRequest);
+    Long joinTeam(TeamEnterRequest teamEnterRequest);
 
     TeamResponse leaveTeam(TeamLeaveRequest teamLeaveRequest);
 
