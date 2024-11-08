@@ -33,9 +33,17 @@ public class UserTeam extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @Column(length = 500)
     private String introduction;
+
+    @Column
+    private boolean isMember = true;
 
     public void updateIntro(String introduction) {
         this.introduction = introduction;
+    }
+
+    public void updateIsMember(boolean isMember) {
+        this.isMember = isMember;
     }
 }
