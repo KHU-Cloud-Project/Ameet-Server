@@ -27,7 +27,10 @@ public enum ErrorCode {
     MEETING_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 회의를 찾을 수 없습니다."),
 
     //Note
-    NOTE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 회의록을 찾을 수 없습니다.");
+    NOTE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 회의록을 찾을 수 없습니다."),
+
+    // UserTeam
+    USER_TEAM_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 팀 유저(멤버)를 찾을 수 없습니다.");
 
 
     private final HttpStatus status;
