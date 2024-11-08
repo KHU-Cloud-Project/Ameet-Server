@@ -7,7 +7,7 @@ import CloudProject.A_meet.domain.group.domain.team.dto.TeamResponse;
 
 public interface TeamService {
 
-    TeamResponse createTeam(TeamRequest teamRequest);
+    Long createTeam(TeamRequest teamRequest);
 
     TeamResponse getTeamInfo(Long teamId);
 

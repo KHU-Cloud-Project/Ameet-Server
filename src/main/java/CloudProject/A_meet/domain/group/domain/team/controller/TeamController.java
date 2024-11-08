@@ -30,9 +30,9 @@ public class TeamController {
 
     @Operation(summary = "Create Team", description = "Use this to create a team")
     @PostMapping
-    public ResponseEntity<TeamResponse> createMeeting(@RequestBody TeamRequest teamRequest) {
-        TeamResponse teamResponse = teamService.createTeam(teamRequest);
-        return ResponseEntity.status(201).body(teamResponse);
+    public ResponseEntity<Long> createTeam(@RequestBody TeamRequest teamRequest) {
+        Long teamId = teamService.createTeam(teamRequest);
+        return ResponseEntity.status(201).body(teamId);
     }
 
     @Operation(summary = "Get Team Detail Information", description = "Use this when you enter the team space")
