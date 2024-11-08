@@ -33,7 +33,9 @@ public enum ErrorCode {
     USER_TEAM_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 팀 유저(멤버)를 찾을 수 없습니다."),
 
     // Team
-    TEAM_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 팀을 찾을 수 없습니다.");
+    TEAM_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 팀을 찾을 수 없습니다."),
+    TEAM_CREDENTIALS_INVALID(HttpStatus.BAD_REQUEST, "팀 이름 또는 비밀번호가 일치하지 않습니다.");;
+
 
 
     private final HttpStatus status;

@@ -78,7 +78,7 @@ public class TeamServiceImpl implements TeamService {
 
         // 1. Team 객체 조회
         Team team = teamRepository.findByNameAndTeamPassword(teamEnterRequest.getTeamName(), teamEnterRequest.getTeamPassword())
-                .orElseThrow(() -> new CustomException(ErrorCode.TEAM_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ErrorCode.TEAM_CREDENTIALS_INVALID));
 
         // 2. User 객체 조회 후, UserTeam 객체 생성
         User user = userRepository.findByUserId(teamEnterRequest.getUserId())
