@@ -73,18 +73,31 @@ public class TeamServiceImpl implements TeamService {
     @Transactional
     public Long joinTeam(TeamEnterRequest teamEnterRequest) {
 
-        // 1. Team 객체 조회
+        // 1. Team 객체 조회 (team 입장 가능 여부 판단)
         Team team = teamRepository.findByNameAndTeamPassword(teamEnterRequest.getTeamName(), teamEnterRequest.getTeamPassword())
                 .orElseThrow(() -> new CustomException(ErrorCode.TEAM_CREDENTIALS_INVALID));
 
-        // 2. User 객체 조회 후, UserTeam 객체 생성
+
+        // 2. User 객체 조회 후,
+        //    1) 탈퇴한 참가자의 경우, rejoin
+        //    2) 첫 참가자의 경우, UserTeam 객체 생성
         User user = userRepository.findByUserId(teamEnterRequest.getUserId())
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
-        UserTeam userTeam = UserTeam.builder()
-                .teamId(team)
-                .userId(user)
-                .role(Role.MEMBER)
-                .build();
+
+        boolean wasMember = userTeamRepository.existsByTeamIdAndUserId(team, user);
+        UserTeam userTeam;
+        if(wasMember) {
+            userTeam = userTeamRepository.findByTeamIdAndUserId(team, user)
+                    .orElseThrow(() -> new CustomException(ErrorCode.USER_TEAM_NOT_FOUND));
+
+            userTeam.updateIsMember(true);
+        } else {
+            userTeam = UserTeam.builder()
+                    .teamId(team)
+                    .userId(user)
+                    .role(Role.MEMBER)
+                    .build();
+        }
         userTeamRepository.save(userTeam);
 
         // 3. userTeamId 반환
