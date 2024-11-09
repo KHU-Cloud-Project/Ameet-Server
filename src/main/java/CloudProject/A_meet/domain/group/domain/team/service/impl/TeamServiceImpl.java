@@ -9,6 +9,7 @@ import CloudProject.A_meet.domain.group.domain.team.dto.TeamRequest;
 import CloudProject.A_meet.domain.group.domain.team.dto.TeamResponse;
 import CloudProject.A_meet.domain.group.domain.team.repository.TeamRepository;
 import CloudProject.A_meet.domain.group.domain.userTeam.dto.JoinResult;
+import CloudProject.A_meet.domain.group.domain.userTeam.dto.UserTeamResponse;
 import CloudProject.A_meet.domain.group.domain.userTeam.repository.UserTeamRepository;
 import CloudProject.A_meet.domain.group.domain.team.service.TeamService;
 import CloudProject.A_meet.domain.group.domain.user.domain.User;
@@ -18,6 +19,9 @@ import CloudProject.A_meet.global.common.error.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -58,9 +62,28 @@ public class TeamServiceImpl implements TeamService {
         return userTeam.getUserTeamId();
     }
 
+    /**
+     * 팀 스페이스 조회
+     *
+     * @param teamId 입장하고자 하는 팀 스페이스 ID
+     * @return TeamResponse 팀 스페이스 정보 및 멤버 정보를 보함한 응답 객체
+     * @throws CustomException TEAM_CREDENTIALS_INVALID 팀 자격 증명 잘못됐을 경우
+     * */
     @Override
     public TeamResponse getTeamInfo(Long teamId) {
-        return null;
+
+        // 1. Team 객체 조회
+        Team team = teamRepository.findByTeamId(teamId)
+                .orElseThrow(() -> new CustomException(ErrorCode.TEAM_NOT_FOUND));
+
+        // 2. UserTeam 객체 리스트 UserTeamResponse 로 변환
+        List<UserTeam> userTeams = userTeamRepository.findAllByTeamId(team);
+        List<UserTeamResponse> userTeamResponses = userTeams.stream()
+                .map(UserTeamResponse::of)
+                .collect(Collectors.toList());
+
+        // 3. Team 정보와 UserTeam(팀 멤버) 정보 담은 Response 객체 반환
+        return TeamResponse.of(team, userTeamResponses);
     }
 
     /**
@@ -71,6 +94,8 @@ public class TeamServiceImpl implements TeamService {
      *         1) userTeamId 팀 참가자의 팀 유저 (멤버) ID
      *         2) wasMember  탈퇴한 참가자인지 새로운 참가자인지 구분하는 boolean 값
      * @throws CustomException TEAM_CREDENTIALS_INVALID 팀 자격 증명 잘못됐을 경우
+     *                         MEMBER_NOT_FOUND 사용자가 존재하지 않을 경우
+     *                         USER_TEAM_NOT_FOUND 팀 유저(멤버)가 존재하지 않을 경우
      * */
     @Override
     @Transactional
