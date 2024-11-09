@@ -156,5 +156,23 @@ public class TeamServiceImpl implements TeamService {
 
         // 2. team 나가기
         userTeam.updateIsMember(false);
+        userTeamRepository.save(userTeam);
+
+        // 3. 예외처리 1) 팀에 남은 인원이 0명일 경우, 탈퇴한 멤버들과 팀 삭제
+        if(!userTeamRepository.existsByTeamIdAndIsMember(team, true)) {
+            deleteTeam(team);
+        }
+
+        // todo: 4. 예외처리 2) 팀의 OWNER가 탈퇴한 경우, 권한 재할당
+    }
+
+    void deleteTeam(Team team) {
+
+        // 1. 탈퇴한 팀 유저(멤버) 모두 삭제
+        List<UserTeam> userTeamsToDelete = userTeamRepository.findAllByTeamId(team);
+        userTeamsToDelete.forEach(userTeamRepository::delete);
+
+        // 2. 팀 삭제
+        teamRepository.delete(team);
     }
 }
