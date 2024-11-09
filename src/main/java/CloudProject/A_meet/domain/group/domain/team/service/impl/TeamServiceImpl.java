@@ -55,6 +55,7 @@ public class TeamServiceImpl implements TeamService {
                 .teamId(team)
                 .userId(user)
                 .role(Role.OWNER)
+                .isMember(true)
                 .build();
         userTeamRepository.save(userTeam);
 
@@ -124,6 +125,7 @@ public class TeamServiceImpl implements TeamService {
                     .teamId(team)
                     .userId(user)
                     .role(Role.MEMBER)
+                    .isMember(true)
                     .build();
         }
         userTeamRepository.save(userTeam);

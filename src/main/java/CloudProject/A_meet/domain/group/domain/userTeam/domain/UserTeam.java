@@ -37,7 +37,7 @@ public class UserTeam extends BaseTimeEntity {
     private String introduction;
 
     @Column
-    private boolean isMember = true;
+    private boolean isMember;
 
     public void updateIntro(String introduction) {
         this.introduction = introduction;
