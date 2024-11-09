@@ -4,6 +4,7 @@ import CloudProject.A_meet.domain.group.domain.team.dto.TeamEnterRequest;
 import CloudProject.A_meet.domain.group.domain.team.dto.TeamLeaveRequest;
 import CloudProject.A_meet.domain.group.domain.team.dto.TeamRequest;
 import CloudProject.A_meet.domain.group.domain.team.dto.TeamResponse;
+import CloudProject.A_meet.domain.group.domain.userTeam.dto.JoinResult;
 
 public interface TeamService {
 
@@ -11,7 +12,7 @@ public interface TeamService {
 
     TeamResponse getTeamInfo(Long teamId);
 
-    Long joinTeam(TeamEnterRequest teamEnterRequest);
+    JoinResult joinTeam(TeamEnterRequest teamEnterRequest);
 
     void leaveTeam(TeamLeaveRequest teamLeaveRequest);
 }

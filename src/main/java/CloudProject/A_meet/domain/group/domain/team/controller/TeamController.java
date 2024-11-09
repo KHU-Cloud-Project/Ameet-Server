@@ -5,9 +5,11 @@ import CloudProject.A_meet.domain.group.domain.team.dto.TeamLeaveRequest;
 import CloudProject.A_meet.domain.group.domain.team.dto.TeamRequest;
 import CloudProject.A_meet.domain.group.domain.team.dto.TeamResponse;
 import CloudProject.A_meet.domain.group.domain.team.service.TeamService;
+import CloudProject.A_meet.domain.group.domain.userTeam.dto.JoinResult;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -45,8 +47,9 @@ public class TeamController {
     @Operation(summary = "join Team", description = "Use this when you enter the team space")
     @PostMapping("/join")
     public ResponseEntity<Long> joinTeam(@RequestBody TeamEnterRequest teamEnterRequest) {
-        Long userTeamId = teamService.joinTeam(teamEnterRequest);
-        return ResponseEntity.status(201).body(userTeamId);
+        JoinResult joinResult = teamService.joinTeam(teamEnterRequest);
+        HttpStatus status = joinResult.wasMember() ? HttpStatus.OK : HttpStatus.CREATED;
+        return ResponseEntity.status(status).body(joinResult.userTeamId());
     }
 
     @Operation(summary = "leave Team", description = "Use this when you leave the team space")

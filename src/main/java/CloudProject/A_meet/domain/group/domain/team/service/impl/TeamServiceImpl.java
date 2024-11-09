@@ -8,6 +8,7 @@ import CloudProject.A_meet.domain.group.domain.team.dto.TeamLeaveRequest;
 import CloudProject.A_meet.domain.group.domain.team.dto.TeamRequest;
 import CloudProject.A_meet.domain.group.domain.team.dto.TeamResponse;
 import CloudProject.A_meet.domain.group.domain.team.repository.TeamRepository;
+import CloudProject.A_meet.domain.group.domain.userTeam.dto.JoinResult;
 import CloudProject.A_meet.domain.group.domain.userTeam.repository.UserTeamRepository;
 import CloudProject.A_meet.domain.group.domain.team.service.TeamService;
 import CloudProject.A_meet.domain.group.domain.user.domain.User;
@@ -71,7 +72,7 @@ public class TeamServiceImpl implements TeamService {
      * */
     @Override
     @Transactional
-    public Long joinTeam(TeamEnterRequest teamEnterRequest) {
+    public JoinResult joinTeam(TeamEnterRequest teamEnterRequest) {
 
         // 1. Team 객체 조회 (team 입장 가능 여부 판단)
         Team team = teamRepository.findByNameAndTeamPassword(teamEnterRequest.getTeamName(), teamEnterRequest.getTeamPassword())
@@ -101,7 +102,7 @@ public class TeamServiceImpl implements TeamService {
         userTeamRepository.save(userTeam);
 
         // 3. userTeamId 반환
-        return userTeam.getUserTeamId();
+        return new JoinResult(userTeam.getUserTeamId(), wasMember);
     }
 
     /**
