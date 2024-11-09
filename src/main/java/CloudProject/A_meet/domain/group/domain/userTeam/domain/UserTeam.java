@@ -46,4 +46,8 @@ public class UserTeam extends BaseTimeEntity {
     public void updateIsMember(boolean isMember) {
         this.isMember = isMember;
     }
+
+    public void updateRole(Role role) {
+        this.role = role;
+    }
 }

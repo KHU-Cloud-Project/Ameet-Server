@@ -31,10 +31,11 @@ public enum ErrorCode {
 
     // UserTeam
     USER_TEAM_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 팀 유저(멤버)를 찾을 수 없습니다."),
+    NO_MEMBERS_AVAILABLE(HttpStatus.BAD_REQUEST, "해당 조건을 만족하는 팀 유저(멤버)가 존재하지 않습니다."),
 
     // Team
     TEAM_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 팀을 찾을 수 없습니다."),
-    TEAM_CREDENTIALS_INVALID(HttpStatus.BAD_REQUEST, "팀 이름 또는 비밀번호가 일치하지 않습니다.");;
+    TEAM_CREDENTIALS_INVALID(HttpStatus.BAD_REQUEST, "팀 이름 또는 비밀번호가 일치하지 않습니다.");
 
 
 

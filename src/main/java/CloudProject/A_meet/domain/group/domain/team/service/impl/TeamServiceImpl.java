@@ -20,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -158,6 +159,7 @@ public class TeamServiceImpl implements TeamService {
 
         // 2. team 나가기
         userTeam.updateIsMember(false);
+        userTeam.setUpdatedAt(LocalDateTime.now());
         userTeamRepository.save(userTeam);
 
         // 3. 예외처리 1) 팀에 남은 인원이 0명일 경우, 탈퇴한 멤버들과 팀 삭제
@@ -165,7 +167,10 @@ public class TeamServiceImpl implements TeamService {
             deleteTeam(team);
         }
 
-        // todo: 4. 예외처리 2) 팀의 OWNER가 탈퇴한 경우, 권한 재할당
+        // 4. 예외처리 2) 팀의 OWNER가 탈퇴한 경우, 권한 재할당
+        if(userTeam.getRole() == Role.OWNER) {
+            reassignOwnerRole(team, userTeam);
+        }
     }
 
     void deleteTeam(Team team) {
@@ -176,5 +181,19 @@ public class TeamServiceImpl implements TeamService {
 
         // 2. 팀 삭제
         teamRepository.delete(team);
+    }
+
+    void reassignOwnerRole(Team team, UserTeam userTeam) {
+        // 탈퇴하는 userTeam의 권한을 MEMBER로 변경
+        userTeam.updateRole(Role.MEMBER);
+        userTeamRepository.save(userTeam);
+
+        // 팀 멤버 중 가장 오래된 멤버를 OWNER로 설정
+        UserTeam oldestMember = userTeamRepository
+                .findFirstByTeamIdAndIsMemberOrderByUpdatedAtAsc(team, true)
+                .orElseThrow(() -> new CustomException(ErrorCode.NO_MEMBERS_AVAILABLE));
+
+        oldestMember.updateRole(Role.OWNER);
+        userTeamRepository.save(oldestMember);
     }
 }
