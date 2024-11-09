@@ -56,11 +56,4 @@ public class TeamController {
         return ResponseEntity.status(200).body(null);
     }
 
-    @Operation(summary = "rejoin Team", description = "Use this when you rejoin the team space")
-    @PutMapping("/rejoin")
-    public ResponseEntity<TeamResponse> rejoinTeam(@RequestBody TeamEnterRequest teamEnterRequest) {
-        TeamResponse teamResponse = teamService.rejoinTeam(teamEnterRequest);
-        return ResponseEntity.status(200).body(teamResponse);
-    }
-
 }

@@ -14,6 +14,4 @@ public interface TeamService {
     Long joinTeam(TeamEnterRequest teamEnterRequest);
 
     void leaveTeam(TeamLeaveRequest teamLeaveRequest);
-
-    TeamResponse rejoinTeam(TeamEnterRequest teamEnterRequest);
 }

@@ -129,9 +129,4 @@ public class TeamServiceImpl implements TeamService {
         // 2. team 나가기
         userTeam.updateIsMember(false);
     }
-
-    @Override
-    public TeamResponse rejoinTeam(TeamEnterRequest teamEnterRequest) {
-        return null;
-    }
 }
