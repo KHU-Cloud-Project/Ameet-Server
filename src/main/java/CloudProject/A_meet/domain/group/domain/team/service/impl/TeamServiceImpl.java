@@ -67,7 +67,9 @@ public class TeamServiceImpl implements TeamService {
      * 팀 스페이스 입장
      *
      * @param teamEnterRequest 팀 입장에 필요한 정보 포함한 요청 객체
-     * @return userTeamId 팀 참가자의 팀 유저 (멤버) ID
+     * @return JoinResult
+     *         1) userTeamId 팀 참가자의 팀 유저 (멤버) ID
+     *         2) wasMember  탈퇴한 참가자인지 새로운 참가자인지 구분하는 boolean 값
      * @throws CustomException TEAM_CREDENTIALS_INVALID 팀 자격 증명 잘못됐을 경우
      * */
     @Override
