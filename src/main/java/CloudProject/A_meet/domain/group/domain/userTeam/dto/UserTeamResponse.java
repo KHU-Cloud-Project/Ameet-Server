@@ -10,6 +10,7 @@ import lombok.Getter;
  * UserTeam (member) 상세 정보 반환 객체
  * - userTeamId: 팀 유저(멤버) ID
  * - userId: 사용자 ID
+ * - role: 팀 유저 권한 (OWNER, MEMBER)
  * - nickname: 사용자 닉네임
  * - introduction: 팀 유저(멤버) 한 줄 소개
  */
