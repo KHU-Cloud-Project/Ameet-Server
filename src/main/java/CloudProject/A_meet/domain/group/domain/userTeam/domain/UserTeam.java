@@ -23,7 +23,7 @@ public class UserTeam extends BaseTimeEntity {
     private Long userTeamId;
 
     @ManyToOne
-    @JoinColumn(name="userId")
+    @JoinColumn(name="user_id")
     private User userId;
 
     @ManyToOne
@@ -33,5 +33,21 @@ public class UserTeam extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @Column(length = 500)
     private String introduction;
+
+    @Column
+    private boolean isMember;
+
+    public void updateIntro(String introduction) {
+        this.introduction = introduction;
+    }
+
+    public void updateIsMember(boolean isMember) {
+        this.isMember = isMember;
+    }
+
+    public void updateRole(Role role) {
+        this.role = role;
+    }
 }
