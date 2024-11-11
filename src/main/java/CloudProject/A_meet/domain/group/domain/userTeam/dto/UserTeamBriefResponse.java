@@ -19,8 +19,8 @@ public class UserTeamBriefResponse {
     private Long userId;
     private String nickname;
 
-    public static UserTeamResponse of(UserTeam userTeam) {
-        return UserTeamResponse.builder()
+    public static UserTeamBriefResponse of(UserTeam userTeam) {
+        return UserTeamBriefResponse.builder()
                 .userTeamId(userTeam.getUserTeamId())
                 .userId(userTeam.getUserId().getUserId())
                 .nickname(userTeam.getUserId().getNickname())
