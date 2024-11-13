@@ -1,12 +1,9 @@
 package CloudProject.A_meet.domain.group.domain.team.service.impl;
 
+import CloudProject.A_meet.domain.group.domain.team.dto.*;
 import CloudProject.A_meet.domain.group.domain.userTeam.domain.Role;
 import CloudProject.A_meet.domain.group.domain.team.domain.Team;
 import CloudProject.A_meet.domain.group.domain.userTeam.domain.UserTeam;
-import CloudProject.A_meet.domain.group.domain.team.dto.TeamEnterRequest;
-import CloudProject.A_meet.domain.group.domain.team.dto.TeamLeaveRequest;
-import CloudProject.A_meet.domain.group.domain.team.dto.TeamRequest;
-import CloudProject.A_meet.domain.group.domain.team.dto.TeamResponse;
 import CloudProject.A_meet.domain.group.domain.team.repository.TeamRepository;
 import CloudProject.A_meet.domain.group.domain.userTeam.dto.JoinResult;
 import CloudProject.A_meet.domain.group.domain.userTeam.dto.UserTeamResponse;
@@ -21,6 +18,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -170,6 +169,31 @@ public class TeamServiceImpl implements TeamService {
         // 4. 예외처리 2) 팀의 OWNER가 탈퇴한 경우, 권한 재할당
         if(userTeam.getRole() == Role.OWNER) {
             reassignOwnerRole(team, userTeam);
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<MyTeamResponse> getMyTeamList(Long userId) {
+
+        // 1. User 객체 조회
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
+        // 2. 특정 사용자가 속한 Team 객체 조회 > MyTeamResponse 변환 > 리스트로 반환
+        List<UserTeam> userTeamList = userTeamRepository.findByUserIdAndIsMember(user, true);
+        if (!userTeamList.isEmpty()) {
+            return userTeamList.stream()
+                    .map(userTeam -> {
+                        Team team = teamRepository.findByTeamId(userTeam.getTeamId().getTeamId())
+                                .orElseThrow(() -> new CustomException(ErrorCode.TEAM_NOT_FOUND));
+
+                        return MyTeamResponse.of(team, userTeam.getRole());
+                    })
+                    .sorted(Comparator.comparing(MyTeamResponse::getCreatedAt).reversed())
+                    .collect(Collectors.toList());
+        } else {
+            return Collections.emptyList();
         }
     }
 

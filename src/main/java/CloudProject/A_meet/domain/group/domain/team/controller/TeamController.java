@@ -1,9 +1,6 @@
 package CloudProject.A_meet.domain.group.domain.team.controller;
 
-import CloudProject.A_meet.domain.group.domain.team.dto.TeamEnterRequest;
-import CloudProject.A_meet.domain.group.domain.team.dto.TeamLeaveRequest;
-import CloudProject.A_meet.domain.group.domain.team.dto.TeamRequest;
-import CloudProject.A_meet.domain.group.domain.team.dto.TeamResponse;
+import CloudProject.A_meet.domain.group.domain.team.dto.*;
 import CloudProject.A_meet.domain.group.domain.team.service.TeamService;
 import CloudProject.A_meet.domain.group.domain.userTeam.dto.JoinResult;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,9 +11,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /**
  * 팀 관련 Controller
- * 팀 생성, 조회, 참여/탈퇴/재참여 요청
+ * - 팀 생성, 조회, 참여/탈퇴/재참여 요청
+ * - 팀 목록 조회 요청
  *
  * @author sungah
  * */
@@ -57,6 +57,13 @@ public class TeamController {
     public ResponseEntity<?> leaveTeam(@RequestBody TeamLeaveRequest teamLeaveRequest) {
         teamService.leaveTeam(teamLeaveRequest);
         return ResponseEntity.status(200).body(null);
+    }
+
+    @Operation(summary = "Get All My TeamList", description = "Use this when you login (Sidebar)")
+    @PutMapping("/myTeamList")
+    public ResponseEntity<List<MyTeamResponse>> getMyTeamList(@RequestParam Long userId) {
+        List<MyTeamResponse> myTeamResponses = teamService.getMyTeamList(userId);
+        return ResponseEntity.status(200).body(myTeamResponses);
     }
 
 }
