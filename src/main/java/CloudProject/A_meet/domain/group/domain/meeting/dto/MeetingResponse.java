@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
 
 @Getter
@@ -19,13 +18,12 @@ public class MeetingResponse {
     private LocalDateTime endedAt;
     private Long duration;
 
-    public Long getDuration() {
+    public void setDuration() {
         if (startedAt != null && endedAt != null) {
-            this.duration = Duration.between(startedAt, endedAt).toMinutes();
+            this.duration = java.time.Duration.between(startedAt, endedAt).getSeconds();
         } else {
             this.duration = 0L;
         }
-        return duration;
     }
 }
 
