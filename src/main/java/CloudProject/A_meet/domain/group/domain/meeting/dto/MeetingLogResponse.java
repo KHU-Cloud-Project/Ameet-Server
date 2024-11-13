@@ -26,7 +26,7 @@ public class MeetingLogResponse {
     private Long meetingId;
     private String title;
     private LocalDateTime startedAt;
-    private Long duration;  // pull 땡기고 Duration 타입으로 변경
+    private Duration duration;
     private List<UserTeamBriefResponse> participantList;
 
     public static MeetingLogResponse of(Meeting meeting, List<UserTeamBriefResponse> participantList) {
