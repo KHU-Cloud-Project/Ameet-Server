@@ -6,6 +6,8 @@ import CloudProject.A_meet.domain.group.domain.user.dto.UserResponse;
 import CloudProject.A_meet.domain.group.domain.user.dto.UserSignupRequest;
 import CloudProject.A_meet.domain.group.domain.user.repository.UserRepository;
 import CloudProject.A_meet.domain.group.domain.user.service.UserService;
+import CloudProject.A_meet.global.common.error.exception.CustomException;
+import CloudProject.A_meet.global.common.error.exception.ErrorCode;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
@@ -16,7 +18,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -37,16 +38,12 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserResponse registerUser(UserSignupRequest userSignupRequest) throws IOException {
         // 이메일 중복 체크
-        Optional<User> existingUserByEmail = userRepository.findByEmail(userSignupRequest.getEmail());
-        if (existingUserByEmail.isPresent()) {
-            throw new IllegalArgumentException("Email already exists"); // 이메일 중복 시 예외 처리
-        }
+        User existingUserByEmail = userRepository.findByEmail(userSignupRequest.getEmail())
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_DUPLICATE));
 
         // 닉네임 중복 체크
-        Optional<User> existingUserByNickname = userRepository.findByNickname(userSignupRequest.getNickname());
-        if (existingUserByNickname.isPresent()) {
-            throw new IllegalArgumentException("Nickname already exists"); // 닉네임 중복 시 예외 처리
-        }
+        User existingUserByNickname = userRepository.findByNickname(userSignupRequest.getNickname())
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_DUPLICATE));
 
         String originalFileName = userSignupRequest.getProfile().getOriginalFilename();
         String fileExtension = "";
@@ -76,6 +73,7 @@ public class UserServiceImpl implements UserService {
 
         // UserResponse.UserData 반환
         return new UserResponse(newUser.getUserId(), newUser.getEmail(), newUser.getNickname(), newUser.getProfile());
+
     }
 
 
@@ -83,21 +81,20 @@ public class UserServiceImpl implements UserService {
     public UserResponse authenticateUser(UserLoginRequest userLoginRequest) {
         // 사용자 존재 여부 확인
         User user = userRepository.findByEmail(userLoginRequest.getEmail())
-                .orElseThrow(() -> new RuntimeException("Invalid email or password"));
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_PASSWORD_MISMATCH));
 
         // 비밀번호 확인
         if (!passwordEncoder.matches(userLoginRequest.getPassword(), user.getPassword())) {
-            throw new RuntimeException("Invalid username or password");
+            throw new CustomException(ErrorCode.MEMBER_NOT_FOUND);
         }
 
-        // 인증이 성공 시 사용자 정보를 UserData에 담아 반환
         return new UserResponse(user.getUserId(), user.getEmail(), user.getNickname(), user.getProfile());
     }
 
     // 3. 회원 정보 조회
     public UserResponse getUserById(Long userId) {
         User user = userRepository.findByUserId(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
         return new UserResponse(user.getUserId(), user.getNickname(), user.getEmail(), user.getProfile());
     }

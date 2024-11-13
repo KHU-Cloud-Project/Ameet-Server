@@ -7,6 +7,8 @@ import CloudProject.A_meet.domain.group.domain.meeting.repository.MeetingReposit
 import CloudProject.A_meet.domain.group.domain.meeting.service.MeetingService;
 import CloudProject.A_meet.domain.group.domain.team.domain.Team;
 import CloudProject.A_meet.domain.group.domain.team.repository.TeamRepository;
+import CloudProject.A_meet.global.common.error.exception.CustomException;
+import CloudProject.A_meet.global.common.error.exception.ErrorCode;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -25,7 +27,7 @@ public class MeetingServiceImpl implements MeetingService {
     @Transactional
     public MeetingResponse createMeeting(MeetingRequest meetingRequest) {
         Team team = teamRepository.findByTeamId(meetingRequest.getTeamId())
-                .orElseThrow(() -> new RuntimeException("Team not found"));
+                .orElseThrow(() -> new CustomException(ErrorCode.TEAM_NOT_FOUND));
 
         // 새로운 회의 생성 및 저장
         Meeting newMeeting = Meeting.builder()
@@ -44,7 +46,7 @@ public class MeetingServiceImpl implements MeetingService {
     // 2. 회의 상세 정보 조회
     public MeetingResponse getMeetingDetail(Long meetingId) {
         Meeting meeting = meetingRepository.findById(meetingId)
-                .orElseThrow(() -> new RuntimeException("Meeting not found"));
+                .orElseThrow(() -> new CustomException(ErrorCode.MEETING_NOT_FOUND));
 
         return new MeetingResponse(meeting.getMeetingId(), meeting.getTitle(), meeting.getStartedAt(), meeting.getEndedAt(), meeting.getDuration());
     }
@@ -53,7 +55,7 @@ public class MeetingServiceImpl implements MeetingService {
     // 3. 회의 목록 조회
     public List<MeetingResponse> getMeetingsByTeamId(Long teamId) {
         Team team = teamRepository.findById(teamId)
-                .orElseThrow(() -> new RuntimeException("Team not found"));
+                .orElseThrow(() -> new CustomException(ErrorCode.TEAM_NOT_FOUND));
 
         // 해당 팀의 모든 회의 조회
         List<Meeting> meetings = meetingRepository.findByTeamId(team);

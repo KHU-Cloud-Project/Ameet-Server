@@ -17,7 +17,8 @@ public enum ErrorCode {
 
     // Member
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 회원을 찾을 수 없습니다."),
-    MEMBER_INVALID_NORMAL(HttpStatus.FORBIDDEN, "일반 회원이 아닙니다."),
+    MEMBER_DUPLICATE(HttpStatus.BAD_REQUEST, "이미 사용 중입니다."),
+    MEMBER_PASSWORD_MISMATCH(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다."),
 
     // Bot
     BOT_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 봇을 찾을 수 없습니다."),
