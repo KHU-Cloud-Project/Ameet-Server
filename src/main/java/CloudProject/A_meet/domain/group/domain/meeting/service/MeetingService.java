@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -144,6 +145,8 @@ public class MeetingService {
                         // 3) MeetingLogResponse 객체 생성
                         return MeetingLogResponse.of(meeting, participantList);
                     })
+                    // 회의 시작시간인 startedAt을 기준으로 내림차순 정렬해 반환
+                    .sorted(Comparator.comparing(MeetingLogResponse::getStartedAt).reversed())
                     .collect(Collectors.toList());
         } else {
             return Collections.emptyList();
