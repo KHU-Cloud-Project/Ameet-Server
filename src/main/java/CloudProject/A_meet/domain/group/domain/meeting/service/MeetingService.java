@@ -9,6 +9,8 @@ import CloudProject.A_meet.domain.group.domain.meeting.repository.MeetingReposit
 import CloudProject.A_meet.domain.group.domain.meeting.repository.UserMeetingRepository;
 import CloudProject.A_meet.domain.group.domain.team.domain.Team;
 import CloudProject.A_meet.domain.group.domain.team.repository.TeamRepository;
+import CloudProject.A_meet.domain.group.domain.user.domain.User;
+import CloudProject.A_meet.domain.group.domain.user.repository.UserRepository;
 import CloudProject.A_meet.domain.group.domain.userTeam.domain.UserTeam;
 import CloudProject.A_meet.domain.group.domain.userTeam.dto.UserTeamBriefResponse;
 import CloudProject.A_meet.domain.group.domain.userTeam.repository.UserTeamRepository;
@@ -31,6 +33,7 @@ public class MeetingService {
     private final TeamRepository teamRepository;
     private final UserMeetingRepository userMeetingRepository;
     private final UserTeamRepository userTeamRepository;
+    private final UserRepository userRepository;
 
     @Transactional
     public MeetingResponse createMeeting(MeetingRequest meetingRequest) {
@@ -99,6 +102,46 @@ public class MeetingService {
                                 .collect(Collectors.toList());
 
                         // 3) MeetingLogResponse 객체 생성 및 반환
+                        return MeetingLogResponse.of(meeting, participantList);
+                    })
+                    .collect(Collectors.toList());
+        } else {
+            return Collections.emptyList();
+        }
+    }
+    // 1. User 가 참여한 Meeting 객체 리스트 조회
+    // 1) User 객체 조회
+    // 2) UserMeeting 객체 조회 <- User 의 회의 참석 정보
+    // 3) Meeting 리스트 조회 <- UserMeeting
+    public List<MeetingLogResponse> getMyMeetingLog(Long userId) {
+
+        // 1. User 객체 조회
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
+        // 2. User의 UserMeeting 리스트 조회 (회의 참석 정보)
+        List<UserMeeting> userMeetingList = userMeetingRepository.findAllByUserId(user);
+
+        // 3. MeetingLogResponse 리스트 생성 및 반환
+        if (!userMeetingList.isEmpty()) {
+            return userMeetingList.stream()
+                    .map(userMeeting -> {
+                        // 1) Meeting ID를 통해 Meeting 객체 조회
+                        Meeting meeting = meetingRepository.findById(userMeeting.getUserMeetingId())
+                                .orElseThrow(() -> new CustomException(ErrorCode.MEETING_NOT_FOUND));
+
+                        // 2) UserMeeting 목록을 통해 참석자 리스트 생성
+                        // todo: 중복 메서드 뽑아내기
+                        List<UserMeeting> userMeetings = userMeetingRepository.findAllByMeetingId(meeting);
+                        List<UserTeamBriefResponse> participantList = userMeetings.stream()
+                                .map(um -> {
+                                    UserTeam userTeam = userTeamRepository.findByUserTeamId(um.getUserTeamId().getUserTeamId())
+                                            .orElseThrow(() -> new CustomException(ErrorCode.USER_TEAM_NOT_FOUND));
+                                    return UserTeamBriefResponse.of(userTeam);
+                                })
+                                .collect(Collectors.toList());
+
+                        // 3) MeetingLogResponse 객체 생성
                         return MeetingLogResponse.of(meeting, participantList);
                     })
                     .collect(Collectors.toList());
