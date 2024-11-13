@@ -46,15 +46,15 @@ management:
     diskspace:
       enabled: false
 
-#cloud:
-#  aws:
-#    s3:
-#      bucket: ${S3_NAME}
-#    stack.auto: false
-#    region.static: ${S3_REGION}
-#    credentials:
-#      accessKey: ${S3_ACCESSKEY}
-#      secretKey: ${S3_SECRETKEY}
+cloud:
+  aws:
+    s3:
+      bucket: ${S3_NAME}
+    stack.auto: false
+    region.static: ${S3_REGION}
+    credentials:
+      accessKey: ${S3_ACCESSKEY}
+      secretKey: ${S3_SECRETKEY}
 
 springdoc:
   swagger-ui:

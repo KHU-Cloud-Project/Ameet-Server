@@ -12,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1")
@@ -22,7 +24,7 @@ public class UserController {
 
     @Operation(summary = "User Signup", description = "Use this to register a new user account in the system.")
     @PostMapping("/signup")
-    public ResponseEntity<UserResponse> registerUser(@Valid @RequestBody UserSignupRequest userSignupRequest) {
+    public ResponseEntity<UserResponse> registerUser(@Valid @ModelAttribute UserSignupRequest userSignupRequest) throws IOException {
         UserResponse userData = userService.registerUser(userSignupRequest);
         return ResponseEntity.status(201).body(userData);
     }
