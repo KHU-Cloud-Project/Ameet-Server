@@ -19,4 +19,7 @@ public interface MeetingService {
 
     // 4. 팀 스페이스의 회의 로그 목록 조회
     List<MeetingLogResponse> getMeetingLog(Long teamId);
+
+    // 5. 나의 회의 로그 목록 조회
+    List<MeetingLogResponse> getMyMeetingLog(Long userId);
 }

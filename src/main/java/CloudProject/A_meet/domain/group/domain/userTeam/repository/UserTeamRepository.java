@@ -22,5 +22,7 @@ public interface UserTeamRepository extends JpaRepository<UserTeam, Long> {
 
     boolean existsByTeamIdAndIsMember(Team team, boolean isMember);
 
-    Optional<UserTeam> findFirstByTeamIdAndIsMemberOrderByUpdatedAtAsc(Team team, boolean b);
+    Optional<UserTeam> findFirstByTeamIdAndIsMemberOrderByUpdatedAtAsc(Team team, boolean isMember);
+
+    List<UserTeam> findByUserIdAndIsMember(User user, boolean isMember);
 }
