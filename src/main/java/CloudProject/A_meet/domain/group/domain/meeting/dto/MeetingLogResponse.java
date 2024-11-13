@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -25,7 +26,7 @@ public class MeetingLogResponse {
     private Long meetingId;
     private String title;
     private LocalDateTime startedAt;
-    private Long duration;
+    private Long duration;  // pull 땡기고 Duration 타입으로 변경
     private List<UserTeamBriefResponse> participantList;
 
     public static MeetingLogResponse of(Meeting meeting, List<UserTeamBriefResponse> participantList) {
