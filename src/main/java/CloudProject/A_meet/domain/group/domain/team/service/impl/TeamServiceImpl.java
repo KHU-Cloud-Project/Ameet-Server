@@ -172,6 +172,14 @@ public class TeamServiceImpl implements TeamService {
         }
     }
 
+    /**
+     * 나의 팀 스페이스 목록 조회
+     *
+     * @param userId 로그인 한 사용자 ID
+     * @return MyTeamResponse 팀 스페이스 관련 정보를 포함한 응답 객체
+     * @throws CustomException MEMBER_NOT_FOUND 사용자가 존재하지 않을 경우
+     *                         TEAM_NOT_FOUND   팀이 존재하지 않을 경우
+     * */
     @Override
     @Transactional(readOnly = true)
     public List<MyTeamResponse> getMyTeamList(Long userId) {

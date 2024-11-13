@@ -8,6 +8,13 @@ import lombok.Getter;
 
 import java.time.LocalDateTime;
 
+/**
+ * 특정 사용자가 속한 모든 Team 관련 간략한 정보를 담는 DTO 클래스
+ * - teamId: 팀 ID
+ * - name: 팀 이름
+ * - createdAt: 팀 생성일시
+ * - role: 해당 팀에서의 사용자 권한 (OWNER, MEMBER)
+ */
 @Builder
 @AllArgsConstructor
 @Getter
