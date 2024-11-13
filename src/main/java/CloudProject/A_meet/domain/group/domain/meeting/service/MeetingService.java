@@ -1,5 +1,6 @@
 package CloudProject.A_meet.domain.group.domain.meeting.service;
 
+import CloudProject.A_meet.domain.group.domain.meeting.dto.MeetingLogResponse;
 import CloudProject.A_meet.domain.group.domain.meeting.dto.MeetingRequest;
 import CloudProject.A_meet.domain.group.domain.meeting.dto.MeetingResponse;
 
@@ -15,4 +16,7 @@ public interface MeetingService {
 
     // 3. 회의 목록 조회
     List<MeetingResponse> getMeetingsByTeamId(Long teamId);
+
+    // 4. 팀 스페이스의 회의 로그 목록 조회
+    List<MeetingLogResponse> getMeetingLog(Long teamId);
 }

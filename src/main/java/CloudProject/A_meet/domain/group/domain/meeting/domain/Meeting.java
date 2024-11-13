@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 
 @Table(name="meetings")
@@ -33,5 +34,5 @@ public class Meeting {
     @Column(nullable = false)
     private String title;
 
-    private Long duration;
+    private Duration duration;
 }

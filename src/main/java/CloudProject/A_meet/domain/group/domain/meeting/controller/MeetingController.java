@@ -1,6 +1,7 @@
 package CloudProject.A_meet.domain.group.domain.meeting.controller;
 
 import CloudProject.A_meet.domain.group.domain.meeting.dto.MeetingListResponse;
+import CloudProject.A_meet.domain.group.domain.meeting.dto.MeetingLogResponse;
 import CloudProject.A_meet.domain.group.domain.meeting.dto.MeetingRequest;
 import CloudProject.A_meet.domain.group.domain.meeting.dto.MeetingResponse;
 import CloudProject.A_meet.domain.group.domain.meeting.service.MeetingService;
@@ -43,6 +44,13 @@ public class MeetingController {
         List<MeetingResponse> meetingDataList = meetingService.getMeetingsByTeamId(teamId);
         MeetingListResponse meetingListResponse = new MeetingListResponse(meetingDataList);
         return ResponseEntity.status(200).body(meetingListResponse);
+    }
+
+    @Operation(summary = "Get Meeting Log by Team ID", description = "Fetch all meeting Logs for a specific team.")
+    @GetMapping("/log")
+    public ResponseEntity<List<MeetingLogResponse>> getMeetingLog(@RequestParam Long teamId) {
+        List<MeetingLogResponse> meetingLogResponses = meetingService.getMeetingLog(teamId);
+        return ResponseEntity.status(200).body(meetingLogResponses);
     }
 
 }
