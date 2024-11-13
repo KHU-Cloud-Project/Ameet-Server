@@ -79,7 +79,7 @@ public class MeetingService {
         // 1. Meeting 객체 리스트 조회
         Team team = teamRepository.findByTeamId(teamId)
                 .orElseThrow(() -> new CustomException(ErrorCode.TEAM_NOT_FOUND));
-        List<Meeting> meetingList = meetingRepository.findByTeamId(team);
+        List<Meeting> meetingList = meetingRepository.findByTeamIdOrderByStartedAtDesc(team);
 
         // 2. MeetingLogResponse 반환
         if (!meetingList.isEmpty()) {
