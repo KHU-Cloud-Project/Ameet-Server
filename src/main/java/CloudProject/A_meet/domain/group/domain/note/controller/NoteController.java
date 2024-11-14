@@ -1,9 +1,14 @@
 package CloudProject.A_meet.domain.group.domain.note.controller;
 
+import CloudProject.A_meet.domain.group.domain.note.dto.NoteResponse;
+import CloudProject.A_meet.domain.group.domain.note.service.NoteService;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.validation.annotation.Validated;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -18,4 +23,13 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Note", description = "Note API")
 @RequiredArgsConstructor
 public class NoteController {
+
+    private final NoteService noteService;
+
+    @Operation(summary = "Get Note Detail", description = "Fetch detailed information for a specific note.")
+    @GetMapping
+    public ResponseEntity<NoteResponse> getNoteDetail(@RequestParam Long meetingId) {
+        NoteResponse noteResponse = noteService.getNoteDetail(meetingId);
+        return ResponseEntity.status(200).body(noteResponse);
+    }
 }
