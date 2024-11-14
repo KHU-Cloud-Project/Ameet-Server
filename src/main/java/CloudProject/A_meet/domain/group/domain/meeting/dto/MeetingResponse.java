@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 
 @Getter
@@ -16,15 +17,16 @@ public class MeetingResponse {
     private String title;
     private LocalDateTime startedAt;
     private LocalDateTime endedAt;
-    private Long duration;
+    private Duration duration;
 
-    public void setDuration() {
-        if (startedAt != null && endedAt != null) {
-            this.duration = java.time.Duration.between(startedAt, endedAt).getSeconds();
-        } else {
-            this.duration = 0L;
-        }
-    }
+    // todo: Duration 자료형으로 메서드 알맞게 변경 부탁~
+//    public void setDuration() {
+//        if (startedAt != null && endedAt != null) {
+//            this.duration = java.time.Duration.between(startedAt, endedAt).getSeconds();
+//        } else {
+//            this.duration = 0L;
+//        }
+//    }
 }
 
     
