@@ -1,6 +1,6 @@
 package CloudProject.A_meet.domain.group.domain.bot.controller;
 
-import CloudProject.A_meet.domain.group.domain.bot.dto.response.BotResponse;
+import CloudProject.A_meet.domain.group.domain.bot.dto.BotResponse;
 import CloudProject.A_meet.domain.group.domain.bot.service.BotService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

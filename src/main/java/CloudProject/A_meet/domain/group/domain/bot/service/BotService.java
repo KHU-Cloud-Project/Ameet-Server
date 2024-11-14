@@ -2,7 +2,7 @@ package CloudProject.A_meet.domain.group.domain.bot.service;
 
 import CloudProject.A_meet.domain.group.domain.bot.domain.Bot;
 import CloudProject.A_meet.domain.group.domain.bot.domain.BotType;
-import CloudProject.A_meet.domain.group.domain.bot.dto.response.BotResponse;
+import CloudProject.A_meet.domain.group.domain.bot.dto.BotResponse;
 import CloudProject.A_meet.domain.group.domain.bot.repository.BotRepository;
 import CloudProject.A_meet.domain.group.domain.meeting.domain.Meeting;
 import CloudProject.A_meet.domain.group.domain.meeting.repository.MeetingRepository;

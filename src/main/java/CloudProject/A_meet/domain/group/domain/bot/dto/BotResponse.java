@@ -1,4 +1,4 @@
-package CloudProject.A_meet.domain.group.domain.bot.dto.response;
+package CloudProject.A_meet.domain.group.domain.bot.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
