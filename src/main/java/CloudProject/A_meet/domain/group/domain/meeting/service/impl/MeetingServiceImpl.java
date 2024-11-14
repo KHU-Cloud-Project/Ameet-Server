@@ -2,9 +2,7 @@ package CloudProject.A_meet.domain.group.domain.meeting.service.impl;
 
 import CloudProject.A_meet.domain.group.domain.meeting.domain.Meeting;
 import CloudProject.A_meet.domain.group.domain.meeting.domain.UserMeeting;
-import CloudProject.A_meet.domain.group.domain.meeting.dto.MeetingLogResponse;
-import CloudProject.A_meet.domain.group.domain.meeting.dto.MeetingRequest;
-import CloudProject.A_meet.domain.group.domain.meeting.dto.MeetingResponse;
+import CloudProject.A_meet.domain.group.domain.meeting.dto.*;
 import CloudProject.A_meet.domain.group.domain.meeting.repository.MeetingRepository;
 import CloudProject.A_meet.domain.group.domain.meeting.repository.UserMeetingRepository;
 import CloudProject.A_meet.domain.group.domain.meeting.service.MeetingService;
@@ -157,5 +155,21 @@ public class MeetingServiceImpl implements MeetingService {
         } else {
             return Collections.emptyList();
         }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<MeetingInfoResponse> searchMeeting(MeetingSearchRequest meetingSearchRequest) {
+
+        // 1. Team 객체 조회
+        Team team = teamRepository.findByTeamId(meetingSearchRequest.getTeamId())
+                .orElseThrow(() -> new CustomException(ErrorCode.TEAM_NOT_FOUND));
+
+        // 2. 제목에 해당 keyword 포함한 Meeting 객체 리스트 조회
+        List<Meeting> meetings = meetingRepository.findByTeamIdAndTitleContaining(team, meetingSearchRequest.getKeyword());
+
+        return meetings.stream()
+                .map(MeetingInfoResponse::of)
+                .collect(Collectors.toList());
     }
 }
