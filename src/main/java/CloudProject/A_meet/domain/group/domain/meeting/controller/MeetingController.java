@@ -1,9 +1,6 @@
 package CloudProject.A_meet.domain.group.domain.meeting.controller;
 
-import CloudProject.A_meet.domain.group.domain.meeting.dto.MeetingListResponse;
-import CloudProject.A_meet.domain.group.domain.meeting.dto.MeetingLogResponse;
-import CloudProject.A_meet.domain.group.domain.meeting.dto.MeetingRequest;
-import CloudProject.A_meet.domain.group.domain.meeting.dto.MeetingResponse;
+import CloudProject.A_meet.domain.group.domain.meeting.dto.*;
 import CloudProject.A_meet.domain.group.domain.meeting.service.MeetingService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -57,6 +54,13 @@ public class MeetingController {
     @GetMapping("/myLog")
     public ResponseEntity<List<MeetingLogResponse>> getMyMeetingLog(@RequestParam Long userId) {
         List<MeetingLogResponse> meetingLogResponses = meetingService.getMyMeetingLog(userId);
+        return ResponseEntity.status(200).body(meetingLogResponses);
+    }
+
+    @Operation(summary = "Search Meetings by Keyword", description = "Fetch all meeting logs that contain the specified keyword in the title for a specific team.")
+    @PostMapping("/search")
+    public ResponseEntity<List<MeetingLogResponse>> searchMeeting(@RequestBody MeetingSearchRequest meetingSearchRequest) {
+        List<MeetingLogResponse> meetingLogResponses = meetingService.searchMeeting(meetingSearchRequest);
         return ResponseEntity.status(200).body(meetingLogResponses);
     }
 

@@ -1,8 +1,6 @@
 package CloudProject.A_meet.domain.group.domain.meeting.service;
 
-import CloudProject.A_meet.domain.group.domain.meeting.dto.MeetingLogResponse;
-import CloudProject.A_meet.domain.group.domain.meeting.dto.MeetingRequest;
-import CloudProject.A_meet.domain.group.domain.meeting.dto.MeetingResponse;
+import CloudProject.A_meet.domain.group.domain.meeting.dto.*;
 
 import java.util.List;
 
@@ -22,4 +20,7 @@ public interface MeetingService {
 
     // 5. 나의 회의 로그 목록 조회
     List<MeetingLogResponse> getMyMeetingLog(Long userId);
+
+    // 6. 키워드를 포함한 회의 검색
+    List<MeetingLogResponse> searchMeeting(MeetingSearchRequest meetingSearchRequest);
 }
