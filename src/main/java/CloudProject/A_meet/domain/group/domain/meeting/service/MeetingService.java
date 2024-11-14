@@ -22,5 +22,5 @@ public interface MeetingService {
     List<MeetingLogResponse> getMyMeetingLog(Long userId);
 
     // 6. 키워드를 포함한 회의 검색
-    List<MeetingInfoResponse> searchMeeting(MeetingSearchRequest meetingSearchRequest);
+    List<MeetingLogResponse> searchMeeting(MeetingSearchRequest meetingSearchRequest);
 }

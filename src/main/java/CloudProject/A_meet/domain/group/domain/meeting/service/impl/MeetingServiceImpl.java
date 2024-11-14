@@ -159,7 +159,7 @@ public class MeetingServiceImpl implements MeetingService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<MeetingInfoResponse> searchMeeting(MeetingSearchRequest meetingSearchRequest) {
+    public List<MeetingLogResponse> searchMeeting(MeetingSearchRequest meetingSearchRequest) {
 
         // 1. Team 객체 조회
         Team team = teamRepository.findByTeamId(meetingSearchRequest.getTeamId())
@@ -169,7 +169,19 @@ public class MeetingServiceImpl implements MeetingService {
         List<Meeting> meetings = meetingRepository.findByTeamIdAndTitleContaining(team, meetingSearchRequest.getKeyword());
 
         return meetings.stream()
-                .map(MeetingInfoResponse::of)
+                .map(meeting -> {
+                    List<UserMeeting> userMeetings = userMeetingRepository.findAllByMeetingId(meeting);
+                    List<UserTeamBriefResponse> participantList = userMeetings.stream()
+                            .map(um -> {
+                                UserTeam userTeam = userTeamRepository.findByUserTeamId(um.getUserTeamId().getUserTeamId())
+                                        .orElseThrow(() -> new CustomException(ErrorCode.USER_TEAM_NOT_FOUND));
+                                return UserTeamBriefResponse.of(userTeam);
+                            })
+                            .collect(Collectors.toList());
+
+                    // 3) MeetingLogResponse 객체 생성
+                    return MeetingLogResponse.of(meeting, participantList);
+                })
                 .collect(Collectors.toList());
     }
 }

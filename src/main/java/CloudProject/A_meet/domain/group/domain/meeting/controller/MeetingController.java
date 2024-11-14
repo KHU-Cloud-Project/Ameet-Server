@@ -59,8 +59,8 @@ public class MeetingController {
 
     @Operation(summary = "Search Meetings by Keyword", description = "Fetch all meeting logs that contain the specified keyword in the title for a specific team.")
     @PostMapping("/search")
-    public ResponseEntity<List<MeetingInfoResponse>> searchMeeting(@RequestBody MeetingSearchRequest meetingSearchRequest) {
-        List<MeetingInfoResponse> meetingLogResponses = meetingService.searchMeeting(meetingSearchRequest);
+    public ResponseEntity<List<MeetingLogResponse>> searchMeeting(@RequestBody MeetingSearchRequest meetingSearchRequest) {
+        List<MeetingLogResponse> meetingLogResponses = meetingService.searchMeeting(meetingSearchRequest);
         return ResponseEntity.status(200).body(meetingLogResponses);
     }
 
