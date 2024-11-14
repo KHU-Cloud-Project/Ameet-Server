@@ -19,14 +19,13 @@ public class MeetingResponse {
     private LocalDateTime endedAt;
     private Duration duration;
 
-    // todo: Duration 자료형으로 메서드 알맞게 변경 부탁~
-//    public void setDuration() {
-//        if (startedAt != null && endedAt != null) {
-//            this.duration = java.time.Duration.between(startedAt, endedAt).getSeconds();
-//        } else {
-//            this.duration = 0L;
-//        }
-//    }
+    public void setDuration() {
+        if (startedAt != null && endedAt != null) {
+            this.duration = Duration.between(startedAt, endedAt);
+        } else {
+            this.duration = Duration.ZERO;
+        }
+    }
 }
 
     
