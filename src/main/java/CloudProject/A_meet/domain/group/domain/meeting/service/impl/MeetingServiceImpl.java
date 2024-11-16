@@ -82,6 +82,13 @@ public class MeetingServiceImpl implements MeetingService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * 특정 팀 스페이스 내, 회의 로그 목록 조회
+     *
+     * @param teamId 팀 스페이스 ID
+     * @return List<MeetingLogResponse> 회의 로그 목록 반환
+     * @throws CustomException TEAM_NOT_FOUND   팀이 존재하지 않을 경우
+     * */
     @Override
     @Transactional(readOnly = true)
     public List<MeetingLogResponse> getMeetingLog(Long teamId) {
@@ -100,6 +107,14 @@ public class MeetingServiceImpl implements MeetingService {
         }
     }
 
+    /**
+     * 특정 사용자의 모든 회의 로그 목록 조회
+     *
+     * @param userId 사용자 ID
+     * @return List<MeetingLogResponse> 회의 로그 목록 반환
+     * @throws CustomException MEMBER_NOT_FOUND 사용자가 존재하지 않을 경우
+     *                         MEETING_NOT_FOUND 회의가 존재하지 않을 경우
+     * */
     @Override
     @Transactional(readOnly = true)
     public List<MeetingLogResponse> getMyMeetingLog(Long userId) {
@@ -130,6 +145,14 @@ public class MeetingServiceImpl implements MeetingService {
         }
     }
 
+    /**
+     * 키워드를 통한 특정 회의 로그 목록 검색
+     *
+     * @param meetingSearchRequest 회의 Log 검색 시 필요한 정보를 담은 요청 객체
+     * @return List<MeetingLogResponse> 회의 제목에 해당 키워드를 포함하고 있는 회의 로그 목록 반환
+     * @throws CustomException TEAM_NOT_FOUND 팀이 존재하지 않을 경우
+     *                         USER_TEAM_NOT_FOUND 팀 유저(멤버)가 존재하지 않을 경우
+     * */
     @Override
     @Transactional(readOnly = true)
     public List<MeetingLogResponse> searchMeeting(MeetingSearchRequest meetingSearchRequest) {
