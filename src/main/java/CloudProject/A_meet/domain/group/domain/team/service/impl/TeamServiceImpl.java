@@ -212,7 +212,7 @@ public class TeamServiceImpl implements TeamService {
 
         // 1. 탈퇴한 팀 유저(멤버) 모두 삭제
         List<UserTeam> userTeamsToDelete = userTeamRepository.findAllByTeamId(team);
-        userTeamsToDelete.forEach(userTeamRepository::delete);
+        userTeamRepository.deleteAll(userTeamsToDelete);
 
         // 2. 팀 삭제
         teamRepository.delete(team);
