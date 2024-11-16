@@ -81,7 +81,7 @@ public class TeamServiceImpl implements TeamService {
         List<UserTeam> userTeams = userTeamRepository.findAllByTeamId(team);
         List<UserTeamResponse> userTeamResponses = userTeams.stream()
                 .map(UserTeamResponse::of)
-                .collect(Collectors.toList());
+                .toList();
 
         // 3. Team 정보와 UserTeam(팀 멤버) 정보 담은 Response 객체 반환
         return TeamResponse.of(team, userTeamResponses);
@@ -199,7 +199,7 @@ public class TeamServiceImpl implements TeamService {
                         return MyTeamResponse.of(team, userTeam.getRole());
                     })
                     .sorted(Comparator.comparing(MyTeamResponse::getCreatedAt).reversed())
-                    .collect(Collectors.toList());
+                    .toList();
         } else {
             return Collections.emptyList();
         }
