@@ -21,7 +21,6 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -138,7 +137,6 @@ public class TeamServiceImpl implements TeamService {
      * 팀 스페이스 탈퇴
      *
      * @param teamLeaveRequest 팀 탈퇴에 필요한 정보 포함한 요청 객체
-     * @return void
      * @throws CustomException MEMBER_NOT_FOUND 사용자가 존재하지 않을 경우
      *                         TEAM_NOT_FOUND   팀이 존재하지 않을 경우
      *                         USER_TEAM_NOT_FOUND 팀 유저(멤버)가 존재하지 않을 경우
@@ -209,7 +207,6 @@ public class TeamServiceImpl implements TeamService {
      * 팀 스페이스 삭제 private method
      *
      * @param team 삭제하고자 하는 team 객체
-     * @return void
      * */
     void deleteTeam(Team team) {
 
@@ -227,7 +224,6 @@ public class TeamServiceImpl implements TeamService {
      *   팀 스페이스 MEMBER 중 가장 먼저 팀에 참가한 MEMBER 를 OWNER 로 할당
      *
      * @param team,userTeam team 객체 / 탈퇴하는 OWNER userTeam 객체
-     * @return void
      * @throws CustomException NO_MEMBERS_AVAILABLE 권한을 할당할 적절한 멤버가 존재하지 않을 경우
      * */
     void reassignOwnerRole(Team team, UserTeam userTeam) {
