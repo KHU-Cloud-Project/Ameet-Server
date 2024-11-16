@@ -205,6 +205,12 @@ public class TeamServiceImpl implements TeamService {
         }
     }
 
+    /**
+     * 팀 스페이스 삭제 private method
+     *
+     * @param team 삭제하고자 하는 team 객체
+     * @return void
+     * */
     void deleteTeam(Team team) {
 
         // 1. 탈퇴한 팀 유저(멤버) 모두 삭제
@@ -215,6 +221,15 @@ public class TeamServiceImpl implements TeamService {
         teamRepository.delete(team);
     }
 
+    /**
+     * 팀 관리자(OWNER) 권한 재할당 private method
+     * : 팀 스페이스 OWNER 가 팀 스페이스를 탈퇴할 경우,
+     *   팀 스페이스 MEMBER 중 가장 먼저 팀에 참가한 MEMBER 를 OWNER 로 할당
+     *
+     * @param team,userTeam team 객체 / 탈퇴하는 OWNER userTeam 객체
+     * @return void
+     * @throws CustomException NO_MEMBERS_AVAILABLE 권한을 할당할 적절한 멤버가 존재하지 않을 경우
+     * */
     void reassignOwnerRole(Team team, UserTeam userTeam) {
         // 탈퇴하는 userTeam의 권한을 MEMBER로 변경
         userTeam.updateRole(Role.MEMBER);
