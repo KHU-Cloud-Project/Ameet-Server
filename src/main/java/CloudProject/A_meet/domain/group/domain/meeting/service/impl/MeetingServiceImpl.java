@@ -170,6 +170,13 @@ public class MeetingServiceImpl implements MeetingService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * 회의 참석자 목록 조회해 반환 값에 포함하는 private method
+     *
+     * @param meeting 회의 객체
+     * @return MeetingLogResponse 회의 참석자 목록 회의 로그 반환 객체에 포함
+     * @throws CustomException USER_TEAM_NOT_FOUND 팀 유저(멤버)가 존재하지 않을 경우
+     * */
     private MeetingLogResponse getParticipantList(Meeting meeting) {
         List<UserMeeting> userMeetings = userMeetingRepository.findAllByMeetingId(meeting);
         List<UserTeamBriefResponse> participantList = userMeetings.stream()
