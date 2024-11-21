@@ -21,7 +21,7 @@ public interface MeetingService {
     Page<MeetingLogResponse> getMeetingLog(Long teamId, Pageable pageable);
 
     // 5. 나의 회의 로그 목록 조회
-    List<MeetingLogResponse> getMyMeetingLog(Long userId);
+    Page<MeetingLogResponse> getMyMeetingLog(Long userId, Pageable pageable);
 
     // 6. 키워드를 포함한 회의 검색
     List<MeetingLogResponse> searchMeeting(MeetingSearchRequest meetingSearchRequest);

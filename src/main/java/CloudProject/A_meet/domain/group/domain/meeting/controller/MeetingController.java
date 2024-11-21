@@ -55,10 +55,13 @@ public class MeetingController {
         return ResponseEntity.status(200).body(meetingLogResponses);
     }
 
-    @Operation(summary = "Get My Meeting Log by User ID", description = "Fetch all meeting Logs for a specific user.")
+    @Operation(summary = "Get My Meeting Log by User ID", description = "Fetch paginated meeting Logs for a specific user.")
     @GetMapping("/myLog")
-    public ResponseEntity<List<MeetingLogResponse>> getMyMeetingLog(@RequestParam Long userId) {
-        List<MeetingLogResponse> meetingLogResponses = meetingService.getMyMeetingLog(userId);
+    public ResponseEntity<Page<MeetingLogResponse>> getMyMeetingLog(
+            @RequestParam Long userId,
+            @RequestParam int page,
+            @RequestParam int size) {
+        Page<MeetingLogResponse> meetingLogResponses = meetingService.getMyMeetingLog(userId, PageRequest.of(page, size));
         return ResponseEntity.status(200).body(meetingLogResponses);
     }
 

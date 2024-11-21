@@ -22,8 +22,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -108,38 +106,30 @@ public class MeetingServiceImpl implements MeetingService {
      * 특정 사용자의 모든 회의 로그 목록 조회
      *
      * @param userId 사용자 ID
-     * @return List<MeetingLogResponse> 회의 로그 목록 반환
+     * @return Page<MeetingLogResponse> 회의 로그 목록 페이징 처리 후, 반환
      * @throws CustomException MEMBER_NOT_FOUND 사용자가 존재하지 않을 경우
      *                         MEETING_NOT_FOUND 회의가 존재하지 않을 경우
      * */
     @Override
     @Transactional(readOnly = true)
-    public List<MeetingLogResponse> getMyMeetingLog(Long userId) {
+    public Page<MeetingLogResponse> getMyMeetingLog(Long userId, Pageable pageable) {
 
         // 1. User 객체 조회
         User user = userRepository.findByUserId(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
         // 2. User의 UserMeeting 리스트 조회 (회의 참석 정보)
-        List<UserMeeting> userMeetingList = userMeetingRepository.findAllByUserId(user);
+        Page<UserMeeting> userMeetingPage = userMeetingRepository.findAllByUserId(user, pageable);
 
         // 3. MeetingLogResponse 리스트 생성 및 반환
-        if (!userMeetingList.isEmpty()) {
-            return userMeetingList.stream()
-                    .map(userMeeting -> {
-                        // 1) Meeting ID를 통해 Meeting 객체 조회
-                        Meeting meeting = meetingRepository.findById(userMeeting.getUserMeetingId())
-                                .orElseThrow(() -> new CustomException(ErrorCode.MEETING_NOT_FOUND));
+        return userMeetingPage.map(userMeeting -> {
+            // 1) Meeting ID를 통해 Meeting 객체 조회
+            Meeting meeting = meetingRepository.findById(userMeeting.getUserMeetingId())
+                    .orElseThrow(() -> new CustomException(ErrorCode.MEETING_NOT_FOUND));
 
-                        // 2) 회의 참가자 목록 조회 후, MeetingLogResponse 객체로 반환
-                        return getParticipantList(meeting);
-                    })
-                    // 회의 시작시간인 startedAt을 기준으로 내림차순 정렬해 반환
-                    .sorted(Comparator.comparing(MeetingLogResponse::getStartedAt).reversed())
-                    .collect(Collectors.toList());
-        } else {
-            return Collections.emptyList();
-        }
+            // 2) 회의 참가자 목록 조회 후, MeetingLogResponse 객체로 반환
+            return getParticipantList(meeting);
+        });
     }
 
     /**
