@@ -6,6 +6,8 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -43,10 +45,13 @@ public class MeetingController {
         return ResponseEntity.status(200).body(meetingListResponse);
     }
 
-    @Operation(summary = "Get Meeting Log by Team ID", description = "Fetch all meeting Logs for a specific team.")
+    @Operation(summary = "Get Meeting Log by Team ID", description = "Fetch paginated meeting Logs for a specific team.")
     @GetMapping("/log")
-    public ResponseEntity<List<MeetingLogResponse>> getMeetingLog(@RequestParam Long teamId) {
-        List<MeetingLogResponse> meetingLogResponses = meetingService.getMeetingLog(teamId);
+    public ResponseEntity<Page<MeetingLogResponse>> getMeetingLog(
+            @RequestParam Long teamId,
+            @RequestParam int page,
+            @RequestParam int size) {
+        Page<MeetingLogResponse> meetingLogResponses = meetingService.getMeetingLog(teamId, PageRequest.of(page, size));
         return ResponseEntity.status(200).body(meetingLogResponses);
     }
 

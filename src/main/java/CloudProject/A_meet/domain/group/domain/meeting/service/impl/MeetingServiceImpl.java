@@ -16,6 +16,8 @@ import CloudProject.A_meet.domain.group.domain.userTeam.repository.UserTeamRepos
 import CloudProject.A_meet.global.common.error.exception.CustomException;
 import CloudProject.A_meet.global.common.error.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -86,25 +88,20 @@ public class MeetingServiceImpl implements MeetingService {
      * 특정 팀 스페이스 내, 회의 로그 목록 조회
      *
      * @param teamId 팀 스페이스 ID
-     * @return List<MeetingLogResponse> 회의 로그 목록 반환
+     * @return Page<MeetingLogResponse> 회의 로그 목록 페이징 처리 해, 반환
      * @throws CustomException TEAM_NOT_FOUND   팀이 존재하지 않을 경우
      * */
     @Override
     @Transactional(readOnly = true)
-    public List<MeetingLogResponse> getMeetingLog(Long teamId) {
-        // 1. Meeting 객체 리스트 조회
+    public Page<MeetingLogResponse> getMeetingLog(Long teamId, Pageable pageable) {
+
+        // 1. 페이징 처리 된 Meeting 객체 리스트 조회
         Team team = teamRepository.findByTeamId(teamId)
                 .orElseThrow(() -> new CustomException(ErrorCode.TEAM_NOT_FOUND));
-        List<Meeting> meetingList = meetingRepository.findByTeamIdOrderByStartedAtDesc(team);
+        Page<Meeting> meetingPage = meetingRepository.findByTeamIdOrderByStartedAtDesc(team, pageable);
 
         // 2. 회의 참가자 목록 조회 후, MeetingLogResponse 객체로 반환
-        if (!meetingList.isEmpty()) {
-            return meetingList.stream()
-                    .map(meeting -> getParticipantList(meeting))
-                    .collect(Collectors.toList());
-        } else {
-            return Collections.emptyList();
-        }
+        return meetingPage.map(this::getParticipantList);
     }
 
     /**
