@@ -1,4 +1,4 @@
-package CloudProject.A_meet.global.S3;
+package CloudProject.A_meet.global.AWS;
 
 import CloudProject.A_meet.global.common.error.exception.CustomException;
 import CloudProject.A_meet.global.common.error.exception.ErrorCode;
