@@ -50,6 +50,7 @@ cloud:
   aws:
     s3:
       bucket: ${S3_NAME}
+      output-bucket : ${S3_OUTPUT_NAME}
     stack.auto: false
     region.static: ${S3_REGION}
     credentials:
