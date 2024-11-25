@@ -13,7 +13,7 @@ import CloudProject.A_meet.domain.group.domain.user.repository.UserRepository;
 import CloudProject.A_meet.domain.group.domain.userTeam.domain.UserTeam;
 import CloudProject.A_meet.domain.group.domain.userTeam.dto.UserTeamBriefResponse;
 import CloudProject.A_meet.domain.group.domain.userTeam.repository.UserTeamRepository;
-import CloudProject.A_meet.global.aws.S3Service;
+import CloudProject.A_meet.infra.service.S3Service;
 import CloudProject.A_meet.global.common.error.exception.CustomException;
 import CloudProject.A_meet.global.common.error.exception.ErrorCode;
 import java.net.URL;

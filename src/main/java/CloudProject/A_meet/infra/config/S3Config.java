@@ -1,4 +1,4 @@
-package CloudProject.A_meet.global.config;
+package CloudProject.A_meet.infra.config;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;

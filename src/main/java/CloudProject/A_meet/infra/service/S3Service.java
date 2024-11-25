@@ -1,4 +1,4 @@
-package CloudProject.A_meet.global.aws;
+package CloudProject.A_meet.infra.service;
 
 import CloudProject.A_meet.global.common.error.exception.CustomException;
 import CloudProject.A_meet.global.common.error.exception.ErrorCode;
