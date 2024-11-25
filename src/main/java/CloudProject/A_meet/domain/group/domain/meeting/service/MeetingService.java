@@ -1,6 +1,8 @@
 package CloudProject.A_meet.domain.group.domain.meeting.service;
 
 import CloudProject.A_meet.domain.group.domain.meeting.dto.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -16,10 +18,10 @@ public interface MeetingService {
     List<MeetingResponse> getMeetingsByTeamId(Long teamId);
 
     // 4. 팀 스페이스의 회의 로그 목록 조회
-    List<MeetingLogResponse> getMeetingLog(Long teamId);
+    Page<MeetingLogResponse> getMeetingLog(Long teamId, Pageable pageable);
 
     // 5. 나의 회의 로그 목록 조회
-    List<MeetingLogResponse> getMyMeetingLog(Long userId);
+    Page<MeetingLogResponse> getMyMeetingLog(Long userId, Pageable pageable);
 
     // 6. 키워드를 포함한 회의 검색
     List<MeetingLogResponse> searchMeeting(MeetingSearchRequest meetingSearchRequest);
