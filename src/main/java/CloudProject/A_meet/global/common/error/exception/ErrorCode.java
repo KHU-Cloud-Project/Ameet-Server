@@ -17,6 +17,7 @@ public enum ErrorCode {
 
     //AWS
     S3_PreSignedURL_GENERATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "S3 PreSignedURL 생성에 실패했습니다."),
+    S3_FILE_READ_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "S3 파일 읽기에 실패했습니다."),
 
     // Member
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 회원을 찾을 수 없습니다."),

@@ -1,4 +1,4 @@
-package CloudProject.A_meet.global.AWS;
+package CloudProject.A_meet.global.aws;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
