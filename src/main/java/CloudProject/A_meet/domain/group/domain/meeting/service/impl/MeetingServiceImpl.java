@@ -63,7 +63,7 @@ public class MeetingServiceImpl implements MeetingService {
 
     public URL createPresignedUrl(Long meetingId) {
         String objectKey = "meetings/" + meetingId + "/.mp3";
-        return s3Service.generatePresignedUrl(objectKey, Duration.ofHours(1));
+        return s3Service.generatePresignedUrl(objectKey, Duration.ofHours(24));
     }
 
 
