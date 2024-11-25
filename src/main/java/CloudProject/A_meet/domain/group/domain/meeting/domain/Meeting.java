@@ -35,4 +35,11 @@ public class Meeting {
     private String title;
 
     private Duration duration;
+
+    @Column(length = 2048)
+    private String presignedUrl;
+
+    public void setPresignedUrl(String presignedUrl) {
+        this.presignedUrl = presignedUrl;
+    }
 }

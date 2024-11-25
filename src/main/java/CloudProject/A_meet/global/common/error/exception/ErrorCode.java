@@ -15,6 +15,9 @@ public enum ErrorCode {
     METHOD_NOT_ALLOWED(HttpStatus.METHOD_NOT_ALLOWED, "지원하지 않는 HTTP method 입니다."),
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버 오류, 관리자에게 문의하세요"),
 
+    //AWS
+    S3_PreSignedURL_GENERATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "S3 PreSignedURL 생성에 실패했습니다."),
+
     // Member
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 회원을 찾을 수 없습니다."),
     MEMBER_DUPLICATE(HttpStatus.BAD_REQUEST, "이미 사용 중입니다."),

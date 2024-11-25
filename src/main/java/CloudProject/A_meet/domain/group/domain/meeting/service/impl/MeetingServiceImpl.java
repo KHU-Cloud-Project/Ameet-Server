@@ -13,8 +13,11 @@ import CloudProject.A_meet.domain.group.domain.user.repository.UserRepository;
 import CloudProject.A_meet.domain.group.domain.userTeam.domain.UserTeam;
 import CloudProject.A_meet.domain.group.domain.userTeam.dto.UserTeamBriefResponse;
 import CloudProject.A_meet.domain.group.domain.userTeam.repository.UserTeamRepository;
+import CloudProject.A_meet.global.S3.S3Service;
 import CloudProject.A_meet.global.common.error.exception.CustomException;
 import CloudProject.A_meet.global.common.error.exception.ErrorCode;
+import java.net.URL;
+import java.time.Duration;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -33,6 +36,7 @@ public class MeetingServiceImpl implements MeetingService {
     private final UserTeamRepository userTeamRepository;
     private final UserMeetingRepository userMeetingRepository;
     private final UserRepository userRepository;
+    private final S3Service s3Service;
 
     // 1. 회의 생성
     @Transactional
@@ -49,17 +53,26 @@ public class MeetingServiceImpl implements MeetingService {
 
         meetingRepository.save(newMeeting);
 
+        URL presignedUrl = createPresignedUrl(newMeeting.getMeetingId());
+        newMeeting.setPresignedUrl(presignedUrl.toString());
+
         // TODO: meeting join 구현
 
-        return new MeetingResponse(newMeeting.getMeetingId(), newMeeting.getTitle(), newMeeting.getStartedAt(), newMeeting.getEndedAt(), newMeeting.getDuration());
+        return new MeetingResponse(newMeeting.getMeetingId(), newMeeting.getTitle(), newMeeting.getStartedAt(), newMeeting.getEndedAt(), newMeeting.getDuration(),presignedUrl.toString());
     }
+
+    public URL createPresignedUrl(Long meetingId) {
+        String objectKey = "meetings/" + meetingId + "/.mp3";
+        return s3Service.generatePresignedUrl(objectKey, Duration.ofHours(1));
+    }
+
 
     // 2. 회의 상세 정보 조회
     public MeetingResponse getMeetingDetail(Long meetingId) {
         Meeting meeting = meetingRepository.findById(meetingId)
                 .orElseThrow(() -> new CustomException(ErrorCode.MEETING_NOT_FOUND));
 
-        return new MeetingResponse(meeting.getMeetingId(), meeting.getTitle(), meeting.getStartedAt(), meeting.getEndedAt(), meeting.getDuration());
+        return new MeetingResponse(meeting.getMeetingId(), meeting.getTitle(), meeting.getStartedAt(), meeting.getEndedAt(), meeting.getDuration(), meeting.getPresignedUrl());
     }
 
 
@@ -77,7 +90,8 @@ public class MeetingServiceImpl implements MeetingService {
                         meeting.getTitle(),
                         meeting.getStartedAt(),
                         meeting.getEndedAt(),
-                        meeting.getDuration()
+                        meeting.getDuration(),
+                        meeting.getPresignedUrl()
                 ))
                 .collect(Collectors.toList());
     }
