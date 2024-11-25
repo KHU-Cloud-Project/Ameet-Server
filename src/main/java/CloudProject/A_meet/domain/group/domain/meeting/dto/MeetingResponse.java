@@ -18,6 +18,7 @@ public class MeetingResponse {
     private LocalDateTime startedAt;
     private LocalDateTime endedAt;
     private Duration duration;
+    private String presignedUrl;
 
     public void setDuration() {
         if (startedAt != null && endedAt != null) {
