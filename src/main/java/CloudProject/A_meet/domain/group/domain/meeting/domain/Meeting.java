@@ -36,7 +36,7 @@ public class Meeting {
 
     private Duration duration;
 
-    @Column(length = 2048)
+    @Column(nullable = false, length = 2048)
     private String presignedUrl;
 
     public void setPresignedUrl(String presignedUrl) {
