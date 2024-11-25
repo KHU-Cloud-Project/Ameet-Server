@@ -19,6 +19,14 @@ public class NoteServiceImpl implements NoteService {
     private final MeetingRepository meetingRepository;
     private final NoteRepository noteRepository;
 
+    /**
+     * 회의록 상세 정보 조회
+     *
+     * @param meetingId 찾고자 하는 회의록의 회의 객체 ID 요청
+     * @return NoteResponse 회의록 상세 정보 반환 응답 객체
+     * @throws CustomException MEMBER_NOT_FOUND 사용자가 존재하지 않을 경우
+     *                         NOTE_NOT_FOUND   회의록이 존재하지 않을 경우
+     * */
     @Override
     @Transactional(readOnly = true)
     public NoteResponse getNoteDetail(Long meetingId) {

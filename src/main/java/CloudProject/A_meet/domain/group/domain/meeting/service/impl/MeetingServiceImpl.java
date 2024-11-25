@@ -82,6 +82,13 @@ public class MeetingServiceImpl implements MeetingService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * 특정 팀 스페이스 내, 회의 로그 목록 조회
+     *
+     * @param teamId 팀 스페이스 ID
+     * @return List<MeetingLogResponse> 회의 로그 목록 반환
+     * @throws CustomException TEAM_NOT_FOUND   팀이 존재하지 않을 경우
+     * */
     @Override
     @Transactional(readOnly = true)
     public List<MeetingLogResponse> getMeetingLog(Long teamId) {
@@ -90,32 +97,24 @@ public class MeetingServiceImpl implements MeetingService {
                 .orElseThrow(() -> new CustomException(ErrorCode.TEAM_NOT_FOUND));
         List<Meeting> meetingList = meetingRepository.findByTeamIdOrderByStartedAtDesc(team);
 
-        // 2. MeetingLogResponse 반환
+        // 2. 회의 참가자 목록 조회 후, MeetingLogResponse 객체로 반환
         if (!meetingList.isEmpty()) {
             return meetingList.stream()
-                    .map(meeting -> {
-                        // 1) 회의 참석자 모두 호출
-                        List<UserMeeting> userMeetings = userMeetingRepository.findAllByMeetingId(meeting);
-
-                        // 2) UserTeam 객체 조회해, UserTeamBriefResponse 리스트 생성
-                        // todo: 추후 UserTeamService로 메서드 분리 (재사용성 및 가독성 향상 위함)
-                        List<UserTeamBriefResponse> participantList = userMeetings.stream()
-                                .map(userMeeting -> {
-                                    UserTeam userTeam = userTeamRepository.findByUserTeamId(userMeeting.getUserTeamId().getUserTeamId())
-                                            .orElseThrow(() -> new CustomException(ErrorCode.USER_TEAM_NOT_FOUND));
-                                    return UserTeamBriefResponse.of(userTeam);
-                                })
-                                .collect(Collectors.toList());
-
-                        // 3) MeetingLogResponse 객체 생성 및 반환
-                        return MeetingLogResponse.of(meeting, participantList);
-                    })
+                    .map(meeting -> getParticipantList(meeting))
                     .collect(Collectors.toList());
         } else {
             return Collections.emptyList();
         }
     }
 
+    /**
+     * 특정 사용자의 모든 회의 로그 목록 조회
+     *
+     * @param userId 사용자 ID
+     * @return List<MeetingLogResponse> 회의 로그 목록 반환
+     * @throws CustomException MEMBER_NOT_FOUND 사용자가 존재하지 않을 경우
+     *                         MEETING_NOT_FOUND 회의가 존재하지 않을 경우
+     * */
     @Override
     @Transactional(readOnly = true)
     public List<MeetingLogResponse> getMyMeetingLog(Long userId) {
@@ -135,19 +134,8 @@ public class MeetingServiceImpl implements MeetingService {
                         Meeting meeting = meetingRepository.findById(userMeeting.getUserMeetingId())
                                 .orElseThrow(() -> new CustomException(ErrorCode.MEETING_NOT_FOUND));
 
-                        // 2) UserMeeting 목록을 통해 참석자 리스트 생성
-                        // todo: 중복 메서드 뽑아내기
-                        List<UserMeeting> userMeetings = userMeetingRepository.findAllByMeetingId(meeting);
-                        List<UserTeamBriefResponse> participantList = userMeetings.stream()
-                                .map(um -> {
-                                    UserTeam userTeam = userTeamRepository.findByUserTeamId(um.getUserTeamId().getUserTeamId())
-                                            .orElseThrow(() -> new CustomException(ErrorCode.USER_TEAM_NOT_FOUND));
-                                    return UserTeamBriefResponse.of(userTeam);
-                                })
-                                .collect(Collectors.toList());
-
-                        // 3) MeetingLogResponse 객체 생성
-                        return MeetingLogResponse.of(meeting, participantList);
+                        // 2) 회의 참가자 목록 조회 후, MeetingLogResponse 객체로 반환
+                        return getParticipantList(meeting);
                     })
                     // 회의 시작시간인 startedAt을 기준으로 내림차순 정렬해 반환
                     .sorted(Comparator.comparing(MeetingLogResponse::getStartedAt).reversed())
@@ -157,6 +145,14 @@ public class MeetingServiceImpl implements MeetingService {
         }
     }
 
+    /**
+     * 키워드를 통한 특정 회의 로그 목록 검색
+     *
+     * @param meetingSearchRequest 회의 Log 검색 시 필요한 정보를 담은 요청 객체
+     * @return List<MeetingLogResponse> 회의 제목에 해당 키워드를 포함하고 있는 회의 로그 목록 반환
+     * @throws CustomException TEAM_NOT_FOUND 팀이 존재하지 않을 경우
+     *                         USER_TEAM_NOT_FOUND 팀 유저(멤버)가 존재하지 않을 경우
+     * */
     @Override
     @Transactional(readOnly = true)
     public List<MeetingLogResponse> searchMeeting(MeetingSearchRequest meetingSearchRequest) {
@@ -168,20 +164,30 @@ public class MeetingServiceImpl implements MeetingService {
         // 2. 제목에 해당 keyword 포함한 Meeting 객체 리스트 조회
         List<Meeting> meetings = meetingRepository.findByTeamIdAndTitleContaining(team, meetingSearchRequest.getKeyword());
 
+        // 3. 회의 참가자 목록 조회 후, MeetingLogResponse 객체로 반환
         return meetings.stream()
-                .map(meeting -> {
-                    List<UserMeeting> userMeetings = userMeetingRepository.findAllByMeetingId(meeting);
-                    List<UserTeamBriefResponse> participantList = userMeetings.stream()
-                            .map(um -> {
-                                UserTeam userTeam = userTeamRepository.findByUserTeamId(um.getUserTeamId().getUserTeamId())
-                                        .orElseThrow(() -> new CustomException(ErrorCode.USER_TEAM_NOT_FOUND));
-                                return UserTeamBriefResponse.of(userTeam);
-                            })
-                            .collect(Collectors.toList());
+                .map(meeting -> getParticipantList(meeting))
+                .collect(Collectors.toList());
+    }
 
-                    // 3) MeetingLogResponse 객체 생성
-                    return MeetingLogResponse.of(meeting, participantList);
+    /**
+     * 회의 참석자 목록 조회해 반환 값에 포함하는 private method
+     *
+     * @param meeting 회의 객체
+     * @return MeetingLogResponse 회의 참석자 목록 회의 로그 반환 객체에 포함
+     * @throws CustomException USER_TEAM_NOT_FOUND 팀 유저(멤버)가 존재하지 않을 경우
+     * */
+    private MeetingLogResponse getParticipantList(Meeting meeting) {
+        List<UserMeeting> userMeetings = userMeetingRepository.findAllByMeetingId(meeting);
+        List<UserTeamBriefResponse> participantList = userMeetings.stream()
+                .map(um -> {
+                    UserTeam userTeam = userTeamRepository.findByUserTeamId(um.getUserTeamId().getUserTeamId())
+                            .orElseThrow(() -> new CustomException(ErrorCode.USER_TEAM_NOT_FOUND));
+                    return UserTeamBriefResponse.of(userTeam);
                 })
                 .collect(Collectors.toList());
+
+        // 3) MeetingLogResponse 객체 생성
+        return MeetingLogResponse.of(meeting, participantList);
     }
 }
