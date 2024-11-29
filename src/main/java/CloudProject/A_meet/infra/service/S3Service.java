@@ -42,9 +42,9 @@ public class S3Service {
         }
     }
 
-    public String getTranscriptionResult(String key) {
+    public String getTranscriptionResult(Long botId) {
         try {
-            S3Object s3Object = amazonS3.getObject(outputBucket, key);
+            S3Object s3Object = amazonS3.getObject(outputBucket, botId.toString());
             InputStream inputStream = s3Object.getObjectContent();
             return new String(inputStream.readAllBytes(), StandardCharsets.UTF_8);
         } catch (Exception e) {

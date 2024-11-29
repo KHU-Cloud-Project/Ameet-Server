@@ -8,6 +8,8 @@ import CloudProject.A_meet.domain.group.domain.meeting.domain.Meeting;
 import CloudProject.A_meet.domain.group.domain.meeting.repository.MeetingRepository;
 import CloudProject.A_meet.global.common.error.exception.CustomException;
 import CloudProject.A_meet.global.common.error.exception.ErrorCode;
+import CloudProject.A_meet.infra.service.S3Service;
+import CloudProject.A_meet.infra.service.TranscribeService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,6 +20,8 @@ import org.springframework.stereotype.Service;
 public class BotService {
     private final BotRepository botRepository;
     private final MeetingRepository meetingRepository;
+    private final TranscribeService transcribeservice;
+    private final S3Service s3service;
 
     public BotResponse summaryBot(Long meetingId) {
         Meeting meeting = meetingRepository.findById(meetingId)
@@ -30,6 +34,16 @@ public class BotService {
                 .build();
 
         Bot savedBot = botRepository.save(bot);
+
+        String presignedUrl = meeting.getPresignedUrl();
+        transcribeservice.startTranscriptionJob(presignedUrl, savedBot.getBotId());
+        String transcriptionText = s3service.getTranscriptionResult(savedBot.getBotId());
+
+        String prompt = "Summarize the following text:\n\n" + transcriptionText;
+        String summary = summarizeTextWithClaude(prompt);
+
+
+
         return new BotResponse(meetingId, savedBot.getBotId(), savedBot.getContent());
     }
 

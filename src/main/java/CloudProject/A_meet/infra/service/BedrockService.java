@@ -15,7 +15,7 @@ import java.util.concurrent.Executors;
 
 @Service
 @RequiredArgsConstructor
-public class ClaudeService {
+public class BedrockService {
 
     private final BedrockRuntimeAsyncClient bedrockRuntimeAsyncClient;
     private final ExecutorService executorService = Executors.newCachedThreadPool();

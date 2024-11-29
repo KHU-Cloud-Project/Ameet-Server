@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class BotController {
     private final BotService botService;
 
-    @Operation(summary = "요약봇 호출", description = "회원 정보를 조회하는 API")
+    @Operation(summary = "정리봇 호출", description = "회원 정보를 조회하는 API")
     @GetMapping("/summary")
     public BotResponse summarize(@RequestParam Long meetingId) {
         return botService.summaryBot(meetingId);

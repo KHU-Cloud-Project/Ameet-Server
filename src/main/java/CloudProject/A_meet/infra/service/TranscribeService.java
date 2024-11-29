@@ -27,9 +27,8 @@ public class TranscribeService {
      * @return Transcription Job ID
      */
     public String startTranscriptionJob(String s3Url, Long botId) {
-        String jobName = "Transcription" + botId;
         StartTranscriptionJobRequest transcriptionJobRequest = StartTranscriptionJobRequest.builder()
-            .transcriptionJobName(jobName)
+            .transcriptionJobName(botId.toString())
             .media(Media.builder().mediaFileUri(s3Url).build())
             .identifyLanguage(true)
             .outputBucketName(bucketName)
