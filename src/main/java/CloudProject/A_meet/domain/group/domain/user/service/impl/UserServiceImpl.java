@@ -38,12 +38,16 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public UserResponse registerUser(UserSignupRequest userSignupRequest) throws IOException {
         // 이메일 중복 체크
-        User existingUserByEmail = userRepository.findByEmail(userSignupRequest.getEmail())
-                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_DUPLICATE));
+        userRepository.findByEmail(userSignupRequest.getEmail())
+                .ifPresent(user -> {
+                    throw new CustomException(ErrorCode.MEMBER_DUPLICATE);
+                });
 
         // 닉네임 중복 체크
-        User existingUserByNickname = userRepository.findByNickname(userSignupRequest.getNickname())
-                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_DUPLICATE));
+        userRepository.findByNickname(userSignupRequest.getNickname())
+                .ifPresent(user -> {
+                    throw new CustomException(ErrorCode.MEMBER_DUPLICATE);
+                });
 
         String originalFileName = userSignupRequest.getProfile().getOriginalFilename();
         String fileExtension = "";
