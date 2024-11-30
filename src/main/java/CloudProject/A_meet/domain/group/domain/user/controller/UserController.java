@@ -37,7 +37,7 @@ public class UserController {
     }
 
     @Operation(summary = "Get User Info", description = "Fetch the current logged-in user's information.")
-    @GetMapping("/user/")
+    @GetMapping("/user")
     public ResponseEntity<UserResponse> getUserById(@RequestParam Long userId) {
         UserResponse userData = userService.getUserById(userId);
         return ResponseEntity.ok(userData);
