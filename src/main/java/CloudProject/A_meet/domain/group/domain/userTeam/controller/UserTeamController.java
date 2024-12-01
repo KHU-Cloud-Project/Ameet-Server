@@ -24,7 +24,7 @@ public class UserTeamController {
     private final UserTeamService userTeamService;
 
     @Operation(summary = "write own introduction", description = "Use this when users create a team or enter the team")
-    @PutMapping("/introduction")
+    @PatchMapping("/introduction")
     public ResponseEntity<?> writeIntroduction(@RequestBody UserTeamIntroRequest userTeamIntroRequest) {
         userTeamService.writeIntroduction(userTeamIntroRequest);
         return ResponseEntity.status(200).body(null);
