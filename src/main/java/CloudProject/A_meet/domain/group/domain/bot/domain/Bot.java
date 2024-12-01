@@ -36,4 +36,8 @@ public class Bot {
     @CreatedDate
     @Column(nullable = false)
     private LocalDateTime createdAt;
+
+    public void updateContent(String content) {
+        this.content = content;
+    }
 }

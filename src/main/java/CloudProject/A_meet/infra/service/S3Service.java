@@ -22,8 +22,8 @@ public class S3Service {
 
     private final AmazonS3 amazonS3;
 
-    @Value("${cloud.aws.s3.bucket}")
-    private String bucketName;
+    @Value("${cloud.aws.s3.input-bucket}")
+    private String inputBucket;
 
     @Value("${cloud.aws.s3.output-bucket")
     private String outputBucket;
@@ -32,7 +32,7 @@ public class S3Service {
         try {
             Date expiration = new Date(System.currentTimeMillis() + duration.toMillis());
 
-            GeneratePresignedUrlRequest presignedUrlRequest = new GeneratePresignedUrlRequest(bucketName, key)
+            GeneratePresignedUrlRequest presignedUrlRequest = new GeneratePresignedUrlRequest(inputBucket, key)
                 .withMethod(HttpMethod.GET)
                 .withExpiration(expiration);
 

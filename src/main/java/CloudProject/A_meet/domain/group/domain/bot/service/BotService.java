@@ -8,6 +8,7 @@ import CloudProject.A_meet.domain.group.domain.meeting.domain.Meeting;
 import CloudProject.A_meet.domain.group.domain.meeting.repository.MeetingRepository;
 import CloudProject.A_meet.global.common.error.exception.CustomException;
 import CloudProject.A_meet.global.common.error.exception.ErrorCode;
+import CloudProject.A_meet.infra.service.BedrockService;
 import CloudProject.A_meet.infra.service.S3Service;
 import CloudProject.A_meet.infra.service.TranscribeService;
 import jakarta.transaction.Transactional;
@@ -22,6 +23,7 @@ public class BotService {
     private final MeetingRepository meetingRepository;
     private final TranscribeService transcribeservice;
     private final S3Service s3service;
+    private final BedrockService bedrockService;
 
     public BotResponse summaryBot(Long meetingId) {
         Meeting meeting = meetingRepository.findById(meetingId)
@@ -40,11 +42,10 @@ public class BotService {
         String transcriptionText = s3service.getTranscriptionResult(savedBot.getBotId());
 
         String prompt = "Summarize the following text:\n\n" + transcriptionText;
-        String summary = summarizeTextWithClaude(prompt);
+        String summary = bedrockService.invokeClaudeModel(prompt);
+        bot.updateContent(summary);
 
-
-
-        return new BotResponse(meetingId, savedBot.getBotId(), savedBot.getContent());
+        return new BotResponse(meetingId, savedBot.getBotId(), summary);
     }
 
     public BotResponse positiveBot(Long meetingId) {
