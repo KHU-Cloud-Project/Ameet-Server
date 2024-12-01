@@ -31,9 +31,14 @@ public class Bot {
     @Column(nullable = false)
     private BotType type;
 
+    @Column(length = 1000)
     private String content;
 
     @CreatedDate
     @Column(nullable = false)
     private LocalDateTime createdAt;
+
+    public void updateContent(String content) {
+        this.content = content;
+    }
 }
