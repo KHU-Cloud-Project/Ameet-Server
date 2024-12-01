@@ -2,7 +2,10 @@ package CloudProject.A_meet.domain.group.domain.meeting.service.impl;
 
 import CloudProject.A_meet.domain.group.domain.meeting.domain.Meeting;
 import CloudProject.A_meet.domain.group.domain.meeting.domain.UserMeeting;
-import CloudProject.A_meet.domain.group.domain.meeting.dto.*;
+import CloudProject.A_meet.domain.group.domain.meeting.dto.MeetingLogResponse;
+import CloudProject.A_meet.domain.group.domain.meeting.dto.MeetingRequest;
+import CloudProject.A_meet.domain.group.domain.meeting.dto.MeetingResponse;
+import CloudProject.A_meet.domain.group.domain.meeting.dto.MeetingSearchRequest;
 import CloudProject.A_meet.domain.group.domain.meeting.repository.MeetingRepository;
 import CloudProject.A_meet.domain.group.domain.meeting.repository.UserMeetingRepository;
 import CloudProject.A_meet.domain.group.domain.meeting.service.MeetingService;
@@ -13,17 +16,17 @@ import CloudProject.A_meet.domain.group.domain.user.repository.UserRepository;
 import CloudProject.A_meet.domain.group.domain.userTeam.domain.UserTeam;
 import CloudProject.A_meet.domain.group.domain.userTeam.dto.UserTeamBriefResponse;
 import CloudProject.A_meet.domain.group.domain.userTeam.repository.UserTeamRepository;
-import CloudProject.A_meet.infra.service.S3Service;
 import CloudProject.A_meet.global.common.error.exception.CustomException;
 import CloudProject.A_meet.global.common.error.exception.ErrorCode;
-import java.net.URL;
-import java.time.Duration;
+import CloudProject.A_meet.infra.service.S3Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.net.URL;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -55,8 +58,6 @@ public class MeetingServiceImpl implements MeetingService {
 
         URL presignedUrl = createPresignedUrl(newMeeting.getMeetingId());
         newMeeting.setPresignedUrl(presignedUrl.toString());
-
-        // TODO: meeting join 구현
 
         return new MeetingResponse(newMeeting.getMeetingId(), newMeeting.getTitle(), newMeeting.getStartedAt(), newMeeting.getEndedAt(), newMeeting.getDuration(),presignedUrl.toString());
     }
