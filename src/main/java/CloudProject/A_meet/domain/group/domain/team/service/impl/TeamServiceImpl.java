@@ -125,6 +125,7 @@ public class TeamServiceImpl implements TeamService {
                     .userId(user)
                     .role(Role.MEMBER)
                     .isMember(true)
+                    .introduction(teamEnterRequest.getDescription())
                     .build();
         }
         userTeamRepository.save(userTeam);
