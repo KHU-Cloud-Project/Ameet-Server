@@ -6,7 +6,6 @@ import CloudProject.A_meet.domain.group.domain.userTeam.domain.UserTeam;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import software.amazon.awssdk.services.bedrock.endpoints.internal.Value.Str;
 
 /**
  * UserTeam (member) 상세 정보 반환 객체
@@ -26,7 +25,7 @@ public class UserTeamResponse {
     private Role role;
     private String nickname;
     private String introduction;
-    private String profileImage;
+    private String profile;
 
     public static UserTeamResponse of(UserTeam userTeam, User user) {
         return UserTeamResponse.builder()
@@ -35,7 +34,7 @@ public class UserTeamResponse {
                 .role(userTeam.getRole())
                 .nickname(userTeam.getUserId().getNickname())
                 .introduction(userTeam.getIntroduction())
-                .profileImage(user.getProfile())
+                .profile(user.getProfile())
                 .build();
     }
 }
