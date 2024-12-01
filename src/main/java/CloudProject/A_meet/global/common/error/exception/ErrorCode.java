@@ -18,6 +18,11 @@ public enum ErrorCode {
     //AWS
     S3_PreSignedURL_GENERATION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "S3 PreSignedURL 생성에 실패했습니다."),
     S3_FILE_READ_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "S3 파일 읽기에 실패했습니다."),
+    INVALID_PRESIGNED_URL(HttpStatus.BAD_REQUEST, "잘못된 Presigned URL 입니다."),
+    S3_OBJECT_NOT_FOUND(HttpStatus.NOT_FOUND, "S3 객체를 찾을 수 없습니다."),
+    TRANSCRIBE_JOB_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "Transcribe Job 생성에 실패했습니다."),
+    TRANSCRIBE_JOB_INTERRUPTED(HttpStatus.INTERNAL_SERVER_ERROR, "Transcribe Job이 중단되었습니다."),
+    TRANSCRIBE_JOB_TIMEOUT(HttpStatus.INTERNAL_SERVER_ERROR, "Transcribe Job이 시간 초과되었습니다."),
 
     // Member
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 회원을 찾을 수 없습니다."),
