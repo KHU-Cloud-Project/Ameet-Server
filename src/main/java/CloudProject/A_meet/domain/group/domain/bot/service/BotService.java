@@ -11,6 +11,8 @@ import CloudProject.A_meet.global.common.error.exception.ErrorCode;
 import CloudProject.A_meet.infra.service.BedrockService;
 import CloudProject.A_meet.infra.service.S3Service;
 import CloudProject.A_meet.infra.service.TranscribeService;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -47,14 +49,38 @@ public class BotService {
 
         transcribeservice.startTranscriptionJob(s3Uri, savedBot.getBotId());
         waitForTranscriptionJobCompletion(savedBot.getBotId());
-        String transcriptionText = s3service.getTranscriptionResult(savedBot.getBotId());
 
-        //String prompt = "Summarize the following text:\n\n" + transcriptionText;
-        //String summary = bedrockService.invokeClaudeModel(prompt);
-        //bot.updateContent(summary);
+        String transcriptionJson = s3service.getTranscriptionResult(savedBot.getBotId());
+        String transcriptionText = extractTranscriptionText(transcriptionJson);
 
-        return new BotResponse(meetingId, savedBot.getBotId(), transcriptionText);
+        int maxLength = 1000;
+        if (transcriptionText.length() > maxLength) {
+            transcriptionText = "..." + transcriptionText.substring(transcriptionText.length() - maxLength);
+        }
+
+        String prompt = "Summarize the following text:\n\n" + transcriptionText;
+        String summary = bedrockService.invokeClaudeModel(prompt);
+        bot.updateContent(summary);
+
+        return new BotResponse(meetingId, savedBot.getBotId(), summary);
     }
+
+    private String extractTranscriptionText(String jsonResponse) {
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode rootNode = objectMapper.readTree(jsonResponse);
+            JsonNode transcriptsNode = rootNode.path("results").path("transcripts");
+
+            if (transcriptsNode.isArray() && transcriptsNode.size() > 0) {
+                return transcriptsNode.get(0).path("transcript").asText();
+            } else {
+                throw new CustomException(ErrorCode.TRANSCRIPTION_TEXT_NOT_FOUND);
+            }
+        } catch (Exception e) {
+            throw new CustomException(ErrorCode.JSON_PARSE_ERROR);
+        }
+    }
+
     private void waitForTranscriptionJobCompletion(Long botId) {
         String jobName = botId.toString(); // Transcription Job 이름
         int maxRetries = 20; // 최대 재시도 횟수
@@ -107,6 +133,27 @@ public class BotService {
                 .build();
 
         Bot savedBot = botRepository.save(bot);
+
+        String presignedUrl = meeting.getPresignedUrl();
+        String bucketName = "transcribe-input-cp";
+        String objectKey = extractS3KeyFromPresignedUrl(presignedUrl);
+        String s3Uri = "s3://" + bucketName + "/" + objectKey;
+
+        transcribeservice.startTranscriptionJob(s3Uri, savedBot.getBotId());
+        waitForTranscriptionJobCompletion(savedBot.getBotId());
+
+        String transcriptionJson = s3service.getTranscriptionResult(savedBot.getBotId());
+        String transcriptionText = extractTranscriptionText(transcriptionJson);
+
+        int maxLength = 1000;
+        if (transcriptionText.length() > maxLength) {
+            transcriptionText = "..." + transcriptionText.substring(transcriptionText.length() - maxLength);
+        }
+
+        String prompt = "긍정적인 리액션을 해줘:\n\n" + transcriptionText;
+        String summary = bedrockService.invokeClaudeModel(prompt);
+        bot.updateContent(summary);
+
         return new BotResponse(meetingId, savedBot.getBotId(), savedBot.getContent());
     }
 
@@ -121,6 +168,26 @@ public class BotService {
                 .build();
 
         Bot savedBot = botRepository.save(bot);
+        String presignedUrl = meeting.getPresignedUrl();
+        String bucketName = "transcribe-input-cp";
+        String objectKey = extractS3KeyFromPresignedUrl(presignedUrl);
+        String s3Uri = "s3://" + bucketName + "/" + objectKey;
+
+        transcribeservice.startTranscriptionJob(s3Uri, savedBot.getBotId());
+        waitForTranscriptionJobCompletion(savedBot.getBotId());
+
+        String transcriptionJson = s3service.getTranscriptionResult(savedBot.getBotId());
+        String transcriptionText = extractTranscriptionText(transcriptionJson);
+
+        int maxLength = 1000;
+        if (transcriptionText.length() > maxLength) {
+            transcriptionText = "..." + transcriptionText.substring(transcriptionText.length() - maxLength);
+        }
+
+        String prompt = "현실감있는 리액션을 해줘:\n\n" + transcriptionText;
+        String summary = bedrockService.invokeClaudeModel(prompt);
+        bot.updateContent(summary);
+
         return new BotResponse(meetingId, savedBot.getBotId(), savedBot.getContent());
     }
 }

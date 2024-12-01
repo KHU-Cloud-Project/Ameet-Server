@@ -36,5 +36,4 @@ public class BotController {
     public BotResponse negative(@RequestParam Long meetingId) {
         return botService.negativeBot(meetingId);
     }
-
 }

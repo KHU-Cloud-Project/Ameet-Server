@@ -23,6 +23,8 @@ public enum ErrorCode {
     TRANSCRIBE_JOB_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "Transcribe Job 생성에 실패했습니다."),
     TRANSCRIBE_JOB_INTERRUPTED(HttpStatus.INTERNAL_SERVER_ERROR, "Transcribe Job이 중단되었습니다."),
     TRANSCRIBE_JOB_TIMEOUT(HttpStatus.INTERNAL_SERVER_ERROR, "Transcribe Job이 시간 초과되었습니다."),
+    TRANSCRIPTION_TEXT_NOT_FOUND(HttpStatus.NOT_FOUND, "Transcription Text를 찾을 수 없습니다."),
+    JSON_PARSE_ERROR(HttpStatus.BAD_REQUEST, "JSON 파싱에 실패했습니다."),
 
     // Member
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 회원을 찾을 수 없습니다."),

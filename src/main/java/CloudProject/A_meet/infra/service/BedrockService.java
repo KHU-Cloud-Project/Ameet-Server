@@ -1,6 +1,7 @@
 package CloudProject.A_meet.infra.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.core.SdkBytes;
@@ -12,18 +13,15 @@ import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class BedrockService {
 
     private final BedrockRuntimeAsyncClient bedrockRuntimeAsyncClient;
 
-    /**
-     * Claude 모델 호출 후 응답 반환
-     *
-     * @param prompt 사용자 입력 프롬프트
-     * @return 모델 응답 텍스트
-     */
     public String invokeClaudeModel(String prompt) {
         try {
+            log.info("Preparing payload for Claude model invocation.");
+
             var payload = new JSONObject()
                 .put("anthropic_version", "bedrock-2023-05-31")
                 .put("max_tokens", 1000)
@@ -31,48 +29,75 @@ public class BedrockService {
                     .put("role", "user")
                     .put("content", prompt));
 
-            // 요청 객체 생성
+            log.info("Payload prepared: {}", payload.toString());
+
             var request = InvokeModelWithResponseStreamRequest.builder()
                 .contentType("application/json")
                 .body(SdkBytes.fromUtf8String(payload.toString()))
-                .modelId("anthropic.claude-3-5-sonnet-20240620-v1:0")
+                .modelId("anthropic.claude-3-haiku-20240307-v1:0")
                 .build();
 
-            // 응답 스트림 핸들러
+            log.info("Request object created: {}", request);
+
             var responseFuture = new CompletableFuture<StringBuilder>();
             var handler = createResponseStreamHandler(responseFuture);
 
-            // Claude 모델 호출
+            log.info("Invoking Claude model...");
             bedrockRuntimeAsyncClient.invokeModelWithResponseStream(request, handler).join();
 
-            // CompletableFuture 결과 반환
+            log.info("Claude model invocation completed.");
+
             return responseFuture.join().toString();
         } catch (Exception e) {
+            log.error("Error during Claude model invocation: {}", e.getMessage(), e);
             throw new RuntimeException("Failed to invoke Claude model: " + e.getMessage(), e);
         }
     }
 
-    /**
-     * 응답 스트림 핸들러 생성
-     *
-     * @param responseFuture 모델 응답을 저장할 CompletableFuture
-     * @return InvokeModelWithResponseStreamResponseHandler
-     */
     private InvokeModelWithResponseStreamResponseHandler createResponseStreamHandler(CompletableFuture<StringBuilder> responseFuture) {
         StringBuilder responseBuilder = new StringBuilder();
 
         return InvokeModelWithResponseStreamResponseHandler.builder()
-            .onEventStream(stream -> stream.subscribe(event -> event.accept(
-                InvokeModelWithResponseStreamResponseHandler.Visitor.builder()
-                    .onChunk(c -> {
-                        // JSON으로 변환
-                        var chunk = new JSONObject(c.bytes().asUtf8String());
-                        var text = chunk.optJSONObject("delta").optString("text", "");
-                        responseBuilder.append(text);
-                    })
-                    .build())))
-            .onComplete(() -> responseFuture.complete(responseBuilder))
-            .onError(responseFuture::completeExceptionally)
+            .onEventStream(stream -> {
+                log.info("Processing response stream...");
+                stream.subscribe(event -> {
+                    try {
+                        event.accept(
+                            InvokeModelWithResponseStreamResponseHandler.Visitor.builder()
+                                .onChunk(c -> {
+                                    try {
+                                        var chunkData = c.bytes().asUtf8String();
+                                        log.debug("Received chunk data: {}", chunkData);
+
+                                        var chunk = new JSONObject(chunkData);
+                                        var delta = chunk.optJSONObject("delta");
+
+                                        if (delta != null) {
+                                            var text = delta.optString("text", "");
+                                            log.debug("Extracted text: {}", text);
+                                            responseBuilder.append(text);
+                                        } else {
+                                            log.warn("Delta object is null. Chunk: {}", chunkData);
+                                        }
+                                    } catch (Exception ex) {
+                                        log.error("Error processing chunk: {}", ex.getMessage(), ex);
+                                    }
+                                })
+                                .build()
+                        );
+                    } catch (Exception ex) {
+                        log.error("Error processing stream event: {}", ex.getMessage(), ex);
+                    }
+                });
+            })
+            .onComplete(() -> {
+                log.info("Response stream processing complete.");
+                responseFuture.complete(responseBuilder);
+            })
+            .onError(error -> {
+                log.error("Error during response stream processing: {}", error.getMessage(), error);
+                responseFuture.completeExceptionally(error);
+            })
             .build();
     }
 }
