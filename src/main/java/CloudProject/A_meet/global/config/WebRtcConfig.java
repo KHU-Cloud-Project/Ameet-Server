@@ -16,7 +16,7 @@ public class WebRtcConfig implements WebSocketConfigurer {
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(signalingHandler, "/webrtc")
+        registry.addHandler(signalingHandler, "/api/v1/meeting/join")
                 .setAllowedOriginPatterns("*")
                 .withSockJS();
     }
