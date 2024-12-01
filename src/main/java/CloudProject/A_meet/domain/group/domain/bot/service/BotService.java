@@ -6,6 +6,8 @@ import CloudProject.A_meet.domain.group.domain.bot.dto.BotResponse;
 import CloudProject.A_meet.domain.group.domain.bot.repository.BotRepository;
 import CloudProject.A_meet.domain.group.domain.meeting.domain.Meeting;
 import CloudProject.A_meet.domain.group.domain.meeting.repository.MeetingRepository;
+import CloudProject.A_meet.domain.group.domain.meeting.service.impl.MeetingServiceImpl;
+import CloudProject.A_meet.domain.group.domain.note.domain.Note;
 import CloudProject.A_meet.global.common.error.exception.CustomException;
 import CloudProject.A_meet.global.common.error.exception.ErrorCode;
 import CloudProject.A_meet.infra.service.BedrockService;
@@ -16,6 +18,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.Duration;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.services.transcribe.model.TranscriptionJobStatus;
@@ -47,10 +50,10 @@ public class BotService {
         String objectKey = extractS3KeyFromPresignedUrl(presignedUrl);
         String s3Uri = "s3://" + bucketName + "/" + objectKey;
 
-        transcribeservice.startTranscriptionJob(s3Uri, savedBot.getBotId());
-        waitForTranscriptionJobCompletion(savedBot.getBotId());
+        transcribeservice.startTranscriptionJob(s3Uri, savedBot.getBotId().toString());
+        waitForTranscriptionJobCompletion(savedBot.getBotId().toString());
 
-        String transcriptionJson = s3service.getTranscriptionResult(savedBot.getBotId());
+        String transcriptionJson = s3service.getTranscriptionResult(savedBot.getBotId().toString());
         String transcriptionText = extractTranscriptionText(transcriptionJson);
 
         int maxLength = 1000;
@@ -81,8 +84,8 @@ public class BotService {
         }
     }
 
-    private void waitForTranscriptionJobCompletion(Long botId) {
-        String jobName = botId.toString(); // Transcription Job 이름
+    private void waitForTranscriptionJobCompletion(String botId) {
+        String jobName = botId; // Transcription Job 이름
         int maxRetries = 20; // 최대 재시도 횟수
         int retryInterval = 10000; // 재시도 간격 (10초)
 
@@ -139,10 +142,10 @@ public class BotService {
         String objectKey = extractS3KeyFromPresignedUrl(presignedUrl);
         String s3Uri = "s3://" + bucketName + "/" + objectKey;
 
-        transcribeservice.startTranscriptionJob(s3Uri, savedBot.getBotId());
-        waitForTranscriptionJobCompletion(savedBot.getBotId());
+        transcribeservice.startTranscriptionJob(s3Uri, savedBot.getBotId().toString());
+        waitForTranscriptionJobCompletion(savedBot.getBotId().toString());
 
-        String transcriptionJson = s3service.getTranscriptionResult(savedBot.getBotId());
+        String transcriptionJson = s3service.getTranscriptionResult(savedBot.getBotId().toString());
         String transcriptionText = extractTranscriptionText(transcriptionJson);
 
         int maxLength = 1000;
@@ -173,10 +176,10 @@ public class BotService {
         String objectKey = extractS3KeyFromPresignedUrl(presignedUrl);
         String s3Uri = "s3://" + bucketName + "/" + objectKey;
 
-        transcribeservice.startTranscriptionJob(s3Uri, savedBot.getBotId());
-        waitForTranscriptionJobCompletion(savedBot.getBotId());
+        transcribeservice.startTranscriptionJob(s3Uri, savedBot.getBotId().toString());
+        waitForTranscriptionJobCompletion(savedBot.getBotId().toString());
 
-        String transcriptionJson = s3service.getTranscriptionResult(savedBot.getBotId());
+        String transcriptionJson = s3service.getTranscriptionResult(savedBot.getBotId().toString());
         String transcriptionText = extractTranscriptionText(transcriptionJson);
 
         int maxLength = 1000;
@@ -190,4 +193,29 @@ public class BotService {
 
         return new BotResponse(meetingId, savedBot.getBotId(), savedBot.getContent());
     }
+
+    public BotResponse createNote() {
+        Note note = Note.builder()
+                .title("Note title")
+                .content("Note content")
+                .build();
+
+        String s3key = "note/" + note.getNoteId() + ".mp3";
+        URL presignedUrl = s3service.generatePresignedUrl(s3key, Duration.ofHours(24));
+        String bucketName = "transcribe-input-cp";
+        String objectKey = extractS3KeyFromPresignedUrl(presignedUrl.toString());
+        String s3Uri = "s3://" + bucketName + "/" + objectKey;
+
+        String keyName = "note"+ note.getNoteId();
+
+        transcribeservice.startTranscriptionJob(s3Uri, keyName);
+        waitForTranscriptionJobCompletion(keyName);
+
+        String transcriptionJson = s3service.getTranscriptionResult(keyName);
+        String transcriptionText = extractTranscriptionText(transcriptionJson);
+
+        int maxLength = 1000;
+        if (transcriptionText.length() > maxLength) {
+            transcriptionText = "..." + transcription
+
 }

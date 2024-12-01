@@ -1,5 +1,7 @@
 package CloudProject.A_meet.domain.group.domain.note.controller;
 
+import CloudProject.A_meet.domain.group.domain.bot.dto.BotResponse;
+import CloudProject.A_meet.domain.group.domain.bot.service.BotService;
 import CloudProject.A_meet.domain.group.domain.note.dto.NoteResponse;
 import CloudProject.A_meet.domain.group.domain.note.service.NoteService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,8 +25,8 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Note", description = "Note API")
 @RequiredArgsConstructor
 public class NoteController {
-
     private final NoteService noteService;
+    private final BotService botService;
 
     @Operation(summary = "Get Note Detail", description = "Fetch detailed information for a specific note.")
     @GetMapping
@@ -32,4 +34,11 @@ public class NoteController {
         NoteResponse noteResponse = noteService.getNoteDetail(meetingId);
         return ResponseEntity.status(200).body(noteResponse);
     }
+
+    @Operation(summary = "회의록 수동 생성", description = "회의록 수동 생성 API")
+    @GetMapping("/create")
+    public BotResponse createNote() {
+        return botService.createNote();
+    }
+
 }
