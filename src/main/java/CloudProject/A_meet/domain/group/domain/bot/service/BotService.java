@@ -190,4 +190,19 @@ public class BotService {
 
         return new BotResponse(meetingId, savedBot.getBotId(), savedBot.getContent());
     }
+
+    //attendanceBot
+    public void attendanceBot(Long meetingId) {
+        Meeting meeting = meetingRepository.findById(meetingId)
+                .orElseThrow(() -> new CustomException(ErrorCode.MEETING_NOT_FOUND));
+
+        Bot bot = Bot.builder()
+                .meetingId(meeting)
+                .type(BotType.ATTENDANCE)
+                .content(null)
+                .build();
+
+        Bot savedBot = botRepository.save(bot);
+
+
 }

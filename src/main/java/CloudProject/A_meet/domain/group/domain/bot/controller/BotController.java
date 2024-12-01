@@ -36,4 +36,10 @@ public class BotController {
     public BotResponse negative(@RequestParam Long meetingId) {
         return botService.negativeBot(meetingId);
     }
+
+    @Operation(summary = "불참자 메일 보내기 봇 호출", description = "불참자 메일 보내기 봇을 조회하는 API")
+    @GetMapping("/attendance")
+    public void attendance(@RequestParam Long meetingId) {
+        return botService.attendanceBot(meetingId);
+    }
 }
