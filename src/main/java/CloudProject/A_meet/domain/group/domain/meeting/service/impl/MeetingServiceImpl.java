@@ -66,7 +66,7 @@ public class MeetingServiceImpl implements MeetingService {
         URL presignedUrl = createPresignedUrl(newMeeting.getMeetingId());
         newMeeting.setPresignedUrl(presignedUrl.toString());
 
-        return new MeetingResponse(newMeeting.getMeetingId(), newMeeting.getTitle(), newMeeting.getStartedAt(), newMeeting.getEndedAt(), newMeeting.getDuration(),presignedUrl.toString());
+        return MeetingResponse.of(newMeeting);
     }
 
     public URL createPresignedUrl(Long meetingId) {
@@ -82,7 +82,7 @@ public class MeetingServiceImpl implements MeetingService {
         meeting.setDuration();
         meetingRepository.save(meeting);
 
-        return new MeetingResponse(meeting.getMeetingId(), meeting.getTitle(), meeting.getStartedAt(), meeting.getEndedAt(), meeting.getDuration(), meeting.getPresignedUrl());
+        return MeetingResponse.of(meeting);
     }
 
 
@@ -205,5 +205,16 @@ public class MeetingServiceImpl implements MeetingService {
 
         // 3) MeetingLogResponse 객체 생성
         return MeetingLogResponse.of(meeting, participantList);
+    }
+
+    @Transactional
+    public MeetingResponse updateMeetingTitle(Long meetingId, String newTitle) {
+        Meeting meeting = meetingRepository.findById(meetingId)
+                .orElseThrow(() -> new CustomException(ErrorCode.MEETING_NOT_FOUND));
+
+        meeting.setTitle(newTitle);
+        meetingRepository.save(meeting);
+
+        return MeetingResponse.of(meeting);
     }
 }

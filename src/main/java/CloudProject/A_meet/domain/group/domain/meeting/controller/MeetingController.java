@@ -72,4 +72,14 @@ public class MeetingController {
         return ResponseEntity.status(200).body(meetingLogResponses);
     }
 
+    @Operation(summary = "Update Meeting Title", description = "Update the title of a meeting")
+    @PutMapping("/title")
+    public ResponseEntity<MeetingResponse> updateMeetingTitle(
+            @RequestParam("meetingId") Long meetingId,
+            @RequestParam String newTitle) {
+
+        MeetingResponse updatedMeeting = meetingService.updateMeetingTitle(meetingId, newTitle);
+
+        return ResponseEntity.ok(updatedMeeting);
+    }
 }

@@ -25,4 +25,7 @@ public interface MeetingService {
 
     // 6. 키워드를 포함한 회의 검색
     List<MeetingLogResponse> searchMeeting(MeetingSearchRequest meetingSearchRequest);
+
+    // 7. 제목 변경
+    MeetingResponse updateMeetingTitle(Long meetingId, String newTitle);
 }

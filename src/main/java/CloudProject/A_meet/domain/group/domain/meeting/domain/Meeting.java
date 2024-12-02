@@ -32,6 +32,7 @@ public class Meeting {
     private LocalDateTime endedAt;
 
     @Column(nullable = false)
+    @Setter
     private String title;
 
     private Duration duration;
