@@ -2,6 +2,7 @@ package CloudProject.A_meet.domain.group.domain.meeting.controller;
 
 import CloudProject.A_meet.domain.group.domain.meeting.dto.*;
 import CloudProject.A_meet.domain.group.domain.meeting.service.MeetingService;
+import CloudProject.A_meet.domain.group.domain.note.dto.NoteResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -82,4 +83,16 @@ public class MeetingController {
 
         return ResponseEntity.ok(updatedMeeting);
     }
+
+    //회의 종료 api
+    @Operation(summary = "End Meeting", description = "End a meeting")
+    @PutMapping("/end")
+    public ResponseEntity<NoteResponse> endMeeting(
+        @RequestParam("meetingId") Long meetingId) {
+
+        NoteResponse noteResponse = meetingService.endMeeting(meetingId);
+
+        return ResponseEntity.ok(noteResponse);
+    }
+
 }

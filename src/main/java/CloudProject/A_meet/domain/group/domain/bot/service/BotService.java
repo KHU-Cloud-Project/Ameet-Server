@@ -236,7 +236,7 @@ public class BotService {
 
   
         updateNoteContent(note, summary);
-        return new NoteResponse(null, note.getNoteId(), note.getTitle(), note.getSummary(), note.getPresignedUrl(), note.getCreatedAt());
+        return NoteResponse.of(note);
     }
 
     @Transactional

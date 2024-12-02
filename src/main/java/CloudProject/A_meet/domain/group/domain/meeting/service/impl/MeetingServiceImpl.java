@@ -9,6 +9,8 @@ import CloudProject.A_meet.domain.group.domain.meeting.dto.MeetingSearchRequest;
 import CloudProject.A_meet.domain.group.domain.meeting.repository.MeetingRepository;
 import CloudProject.A_meet.domain.group.domain.meeting.repository.UserMeetingRepository;
 import CloudProject.A_meet.domain.group.domain.meeting.service.MeetingService;
+import CloudProject.A_meet.domain.group.domain.note.domain.Note;
+import CloudProject.A_meet.domain.group.domain.note.dto.NoteResponse;
 import CloudProject.A_meet.domain.group.domain.team.domain.Team;
 import CloudProject.A_meet.domain.group.domain.team.repository.TeamRepository;
 import CloudProject.A_meet.domain.group.domain.user.domain.User;
@@ -216,5 +218,21 @@ public class MeetingServiceImpl implements MeetingService {
         meetingRepository.save(meeting);
 
         return MeetingResponse.of(meeting);
+    }
+
+    @Transactional
+    public NoteResponse endMeeting(Long meetingId) {
+        Meeting meeting = meetingRepository.findById(meetingId)
+                .orElseThrow(() -> new CustomException(ErrorCode.MEETING_NOT_FOUND));
+
+        meeting.setEndedAt(LocalDateTime.now());
+        Note note = Note.builder()
+                .meetingId(meeting)
+                .title(meeting.getTitle())
+                .summary("content")
+                .build();
+
+        //todo : 회의록 생성
+        return NoteResponse.of(note);
     }
 }
