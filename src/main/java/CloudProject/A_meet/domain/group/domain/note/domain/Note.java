@@ -1,8 +1,13 @@
 package CloudProject.A_meet.domain.group.domain.note.domain;
 
 import CloudProject.A_meet.domain.group.domain.meeting.domain.Meeting;
+import CloudProject.A_meet.global.common.error.exception.CustomException;
+import CloudProject.A_meet.global.common.error.exception.ErrorCode;
 import CloudProject.A_meet.global.common.model.BaseTimeEntity;
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -35,11 +40,29 @@ public class Note extends BaseTimeEntity {
     @Column(nullable = false)
     private String content;
 
+    @Column(length = 1000)
     private String presignedUrl;
 
     private String members;
 
     public void updatePresignedUrl(String presignedUrl) {
         this.presignedUrl = presignedUrl;
+    }
+    public void updateCreatedAt(String createdAt) {
+        if (createdAt == null || createdAt.isBlank()) {
+            throw new IllegalArgumentException("Invalid dateTime: dateTime cannot be null or empty");
+        }
+        try {
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            LocalDateTime parsedDate = LocalDateTime.parse(createdAt, formatter);
+            this.createdAt = parsedDate;
+        } catch (DateTimeParseException e) {
+            throw new CustomException(ErrorCode.INVALID_DATE_FORMAT);
+        }
+    }
+
+    public void updateContent(String content) {
+        this.content = content;
     }
 }

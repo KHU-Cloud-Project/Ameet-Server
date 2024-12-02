@@ -10,4 +10,5 @@ import java.util.Optional;
 @Repository
 public interface NoteRepository extends JpaRepository<Note, Long> {
     Optional<Note> findByMeetingId(Meeting meetingId);
+    Optional<Note> findByNoteId(Long noteId);
 }

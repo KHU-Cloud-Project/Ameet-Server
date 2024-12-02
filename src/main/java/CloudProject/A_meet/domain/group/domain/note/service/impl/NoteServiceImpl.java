@@ -4,6 +4,7 @@ import CloudProject.A_meet.domain.group.domain.meeting.domain.Meeting;
 import CloudProject.A_meet.domain.group.domain.meeting.repository.MeetingRepository;
 import CloudProject.A_meet.domain.group.domain.note.domain.Note;
 import CloudProject.A_meet.domain.group.domain.note.dto.NoteResponse;
+import CloudProject.A_meet.domain.group.domain.note.dto.UploadRequest;
 import CloudProject.A_meet.domain.group.domain.note.dto.UploadResponse;
 import CloudProject.A_meet.domain.group.domain.note.repository.NoteRepository;
 import CloudProject.A_meet.domain.group.domain.note.service.NoteService;
@@ -50,12 +51,14 @@ public class NoteServiceImpl implements NoteService {
 
     @Override
     @Transactional
-    public UploadResponse uploadFile(String title, String members, String dateTime) {
+    public UploadResponse uploadFile(UploadRequest request) {
         Note note = Note.builder()
-            .title(title)
+            .title(request.getTitle())
             .content("content")
-            .members(members)
+            .members(request.getMembers())
             .build();
+        noteRepository.save(note);
+        note.updateCreatedAt(request.getCreatedDate());
         String s3key = "note/" + note.getNoteId() + ".mp3";
         URL presignedUrl = s3service.generatePresignedUrl(s3key, Duration.ofHours(24));
         note.updatePresignedUrl(presignedUrl.toString());

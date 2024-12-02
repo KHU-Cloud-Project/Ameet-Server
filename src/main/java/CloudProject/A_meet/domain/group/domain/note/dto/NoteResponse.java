@@ -25,7 +25,7 @@ public class NoteResponse {
                 .noteId(note.getNoteId())
                 .title(note.getTitle())
                 .content(note.getContent())
-                .fileUrl(note.getFileUrl())
+                .fileUrl(note.getPresignedUrl())
                 .createdAt(note.getCreatedAt())
                 .build();
     }

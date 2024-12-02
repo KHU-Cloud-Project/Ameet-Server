@@ -8,7 +8,9 @@ import CloudProject.A_meet.domain.group.domain.meeting.domain.Meeting;
 import CloudProject.A_meet.domain.group.domain.meeting.repository.MeetingRepository;
 import CloudProject.A_meet.domain.group.domain.meeting.service.impl.MeetingServiceImpl;
 import CloudProject.A_meet.domain.group.domain.note.domain.Note;
+import CloudProject.A_meet.domain.group.domain.note.dto.NoteResponse;
 import CloudProject.A_meet.domain.group.domain.note.dto.UploadResponse;
+import CloudProject.A_meet.domain.group.domain.note.repository.NoteRepository;
 import CloudProject.A_meet.global.common.error.exception.CustomException;
 import CloudProject.A_meet.global.common.error.exception.ErrorCode;
 import CloudProject.A_meet.infra.service.BedrockService;
@@ -33,6 +35,7 @@ public class BotService {
     private final TranscribeService transcribeservice;
     private final S3Service s3service;
     private final BedrockService bedrockService;
+    private final NoteRepository noteRepository;
 
     public BotResponse summaryBot(Long meetingId) {
         Meeting meeting = meetingRepository.findById(meetingId)
@@ -195,28 +198,13 @@ public class BotService {
         return new BotResponse(meetingId, savedBot.getBotId(), savedBot.getContent());
     }
 
-    public UploadResponse uploadFile(){
-        Note note = Note.builder()
-            .title("Note title")
-            .content("Note content")
-            .build();
+    public NoteResponse createNote(Long noteId) {
+        Note note = noteRepository.findByNoteId(noteId)
+            .orElseThrow(() -> new CustomException(ErrorCode.NOTE_NOT_FOUND));
 
-        String s3key = "note/" + note.getNoteId() + ".mp3";
-        URL presignedUrl = s3service.generatePresignedUrl(s3key, Duration.ofHours(24));
-        return new UploadResponse(note.getNoteId(), presignedUrl.toString());
-    }
-
-
-    public BotResponse createNote() {
-        Note note = Note.builder()
-            .title("Note title")
-            .content("Note content")
-            .build();
-
-        String s3key = "note/" + note.getNoteId() + ".mp3";
-        URL presignedUrl = s3service.generatePresignedUrl(s3key, Duration.ofHours(24));
+        String presignedUrl = note.getPresignedUrl();
         String bucketName = "transcribe-input-cp";
-        String objectKey = extractS3KeyFromPresignedUrl(presignedUrl.toString());
+        String objectKey = extractS3KeyFromPresignedUrl(presignedUrl);
         String s3Uri = "s3://" + bucketName + "/" + objectKey;
 
         String keyName = "note" + note.getNoteId();
@@ -232,9 +220,9 @@ public class BotService {
             transcriptionText = "..." + transcriptionText.substring(transcriptionText.length() - maxLength);
         }
 
-        String prompt = "현실감있는 리액션을 해줘:\n\n" + transcriptionText;
+        String prompt = "내용을 요약해줘:\n\n" + transcriptionText;
         String summary = bedrockService.invokeClaudeModel(prompt);
-        bot.updateContent(summary);
+        note.updateContent(summary);
+        return new NoteResponse(null, note.getNoteId(), note.getTitle(), note.getContent(), note.getPresignedUrl(), note.getCreatedAt());
     }
-
 }
