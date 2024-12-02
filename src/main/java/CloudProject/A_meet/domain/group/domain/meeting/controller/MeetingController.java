@@ -84,14 +84,11 @@ public class MeetingController {
         return ResponseEntity.ok(updatedMeeting);
     }
 
-    //회의 종료 api
     @Operation(summary = "End Meeting", description = "End a meeting")
-    @PutMapping("/end")
+    @GetMapping("/end")
     public ResponseEntity<NoteResponse> endMeeting(
         @RequestParam("meetingId") Long meetingId) {
-
         NoteResponse noteResponse = meetingService.endMeeting(meetingId);
-
         return ResponseEntity.ok(noteResponse);
     }
 

@@ -239,6 +239,32 @@ public class BotService {
         return NoteResponse.of(note);
     }
 
+    public NoteResponse endMeeting(Long noteId) {
+        Note note = transactionalFindByNoteId(noteId);
+        String presignedUrl = note.getPresignedUrl();
+        String bucketName = "transcribe-input-cp";
+        String objectKey = extractS3KeyFromPresignedUrl(presignedUrl);
+        String s3Uri = "s3://" + bucketName + "/" + objectKey;
+
+        String keyName = "note" + note.getNoteId();
+
+        transcribeservice.startTranscriptionJob(s3Uri, keyName);
+        waitForTranscriptionJobCompletion(keyName);
+
+        String transcriptionJson = s3service.getTranscriptionResult(keyName);
+        String transcriptionText = extractTranscriptionText(transcriptionJson);
+
+        int maxLength = 1000;
+        if (transcriptionText.length() > maxLength) {
+            transcriptionText = "..." + transcriptionText.substring(transcriptionText.length() - maxLength);
+        }
+
+        String prompt = "내용을 요약해줘:\n\n" + transcriptionText;
+        String summary = bedrockService.invokeClaudeModel(prompt);
+        note.updateSummary(summary);
+        return NoteResponse.of(note);
+    }
+
     @Transactional
     public Note transactionalFindByNoteId(Long noteId) {
         return noteRepository.findByNoteId(noteId)

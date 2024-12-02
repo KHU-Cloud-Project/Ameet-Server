@@ -1,5 +1,6 @@
 package CloudProject.A_meet.domain.group.domain.meeting.service.impl;
 
+import CloudProject.A_meet.domain.group.domain.bot.service.BotService;
 import CloudProject.A_meet.domain.group.domain.meeting.domain.Meeting;
 import CloudProject.A_meet.domain.group.domain.meeting.domain.UserMeeting;
 import CloudProject.A_meet.domain.group.domain.meeting.dto.MeetingLogResponse;
@@ -11,6 +12,8 @@ import CloudProject.A_meet.domain.group.domain.meeting.repository.UserMeetingRep
 import CloudProject.A_meet.domain.group.domain.meeting.service.MeetingService;
 import CloudProject.A_meet.domain.group.domain.note.domain.Note;
 import CloudProject.A_meet.domain.group.domain.note.dto.NoteResponse;
+import CloudProject.A_meet.domain.group.domain.note.repository.NoteRepository;
+import CloudProject.A_meet.domain.group.domain.note.service.impl.NoteServiceImpl;
 import CloudProject.A_meet.domain.group.domain.team.domain.Team;
 import CloudProject.A_meet.domain.group.domain.team.repository.TeamRepository;
 import CloudProject.A_meet.domain.group.domain.user.domain.User;
@@ -44,6 +47,8 @@ public class MeetingServiceImpl implements MeetingService {
     private final UserMeetingRepository userMeetingRepository;
     private final UserRepository userRepository;
     private final S3Service s3Service;
+    private final BotService botService;
+    private final NoteRepository noteRepository;
 
     // 1. 회의 생성
     @Transactional
@@ -229,10 +234,10 @@ public class MeetingServiceImpl implements MeetingService {
         Note note = Note.builder()
                 .meetingId(meeting)
                 .title(meeting.getTitle())
+                .presignedUrl(meeting.getPresignedUrl())
                 .summary("content")
                 .build();
-
-        //todo : 회의록 생성
-        return NoteResponse.of(note);
+        noteRepository.save(note);
+        return botService.endMeeting(note.getNoteId());
     }
 }
