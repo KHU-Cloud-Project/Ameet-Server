@@ -4,10 +4,14 @@ import CloudProject.A_meet.domain.group.domain.meeting.domain.Meeting;
 import CloudProject.A_meet.domain.group.domain.meeting.repository.MeetingRepository;
 import CloudProject.A_meet.domain.group.domain.note.domain.Note;
 import CloudProject.A_meet.domain.group.domain.note.dto.NoteResponse;
+import CloudProject.A_meet.domain.group.domain.note.dto.UploadResponse;
 import CloudProject.A_meet.domain.group.domain.note.repository.NoteRepository;
 import CloudProject.A_meet.domain.group.domain.note.service.NoteService;
 import CloudProject.A_meet.global.common.error.exception.CustomException;
 import CloudProject.A_meet.global.common.error.exception.ErrorCode;
+import CloudProject.A_meet.infra.service.S3Service;
+import java.net.URL;
+import java.time.Duration;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +22,7 @@ public class NoteServiceImpl implements NoteService {
 
     private final MeetingRepository meetingRepository;
     private final NoteRepository noteRepository;
+    private final S3Service s3service;
 
     /**
      * 회의록 상세 정보 조회
@@ -41,5 +46,19 @@ public class NoteServiceImpl implements NoteService {
 
         // 3. 회의 반환 객체로 반환
         return NoteResponse.of(note);
+    }
+
+    @Override
+    @Transactional
+    public UploadResponse uploadFile(String title, String members, String dateTime) {
+        Note note = Note.builder()
+            .title(title)
+            .content("content")
+            .members(members)
+            .build();
+        String s3key = "note/" + note.getNoteId() + ".mp3";
+        URL presignedUrl = s3service.generatePresignedUrl(s3key, Duration.ofHours(24));
+        note.updatePresignedUrl(presignedUrl.toString());
+        return new UploadResponse(note.getNoteId(), presignedUrl.toString());
     }
 }

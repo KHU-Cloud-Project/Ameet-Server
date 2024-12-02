@@ -35,5 +35,11 @@ public class Note extends BaseTimeEntity {
     @Column(nullable = false)
     private String content;
 
-    private String fileUrl;
+    private String presignedUrl;
+
+    private String members;
+
+    public void updatePresignedUrl(String presignedUrl) {
+        this.presignedUrl = presignedUrl;
+    }
 }

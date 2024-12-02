@@ -203,7 +203,7 @@ public class BotService {
 
         String s3key = "note/" + note.getNoteId() + ".mp3";
         URL presignedUrl = s3service.generatePresignedUrl(s3key, Duration.ofHours(24));
-        return new UploadResponse(presignedUrl.toString());
+        return new UploadResponse(note.getNoteId(), presignedUrl.toString());
     }
 
 
