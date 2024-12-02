@@ -23,6 +23,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.Duration;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.services.transcribe.model.TranscriptionJobStatus;
 
@@ -198,8 +199,18 @@ public class BotService {
         return new BotResponse(meetingId, savedBot.getBotId(), savedBot.getContent());
     }
 
+    public void attendanceBot(Long meetingId) {
+        Meeting meeting = meetingRepository.findById(meetingId)
+            .orElseThrow(() -> new CustomException(ErrorCode.MEETING_NOT_FOUND));
+        Bot bot = Bot.builder()
+            .meetingId(meeting)
+            .type(BotType.ATTENDANCE)
+            .content(null)
+            .build();
+        botRepository.save(bot);
+    }
+
     public NoteResponse createNote(Long noteId) {
-        // 트랜잭션으로 제한할 부분만 래핑
         Note note = transactionalFindByNoteId(noteId);
 
         String presignedUrl = note.getPresignedUrl();
@@ -223,7 +234,7 @@ public class BotService {
         String prompt = "내용을 요약해줘:\n\n" + transcriptionText;
         String summary = bedrockService.invokeClaudeModel(prompt);
 
-        // 트랜잭션으로 감쌀 부분
+  
         updateNoteContent(note, summary);
         return new NoteResponse(null, note.getNoteId(), note.getTitle(), note.getContent(), note.getPresignedUrl(), note.getCreatedAt());
     }
