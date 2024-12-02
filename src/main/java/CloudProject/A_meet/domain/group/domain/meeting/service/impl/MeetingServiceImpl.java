@@ -27,7 +27,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.net.URL;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -47,11 +49,16 @@ public class MeetingServiceImpl implements MeetingService {
         Team team = teamRepository.findByTeamId(meetingRequest.getTeamId())
                 .orElseThrow(() -> new CustomException(ErrorCode.TEAM_NOT_FOUND));
 
+        String title = meetingRequest.getTitle();
+        if (title == null) {
+            title = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        }
+
         // 새로운 회의 생성 및 저장
         Meeting newMeeting = Meeting.builder()
                 .teamId(team)
                 .startedAt(LocalDateTime.now())
-                .title(meetingRequest.getTitle())
+                .title(title)
                 .build();
 
         meetingRepository.save(newMeeting);
