@@ -79,7 +79,7 @@ public class TeamServiceImpl implements TeamService {
         // 2. UserTeam 객체 리스트 UserTeamResponse 로 변환
         List<UserTeam> userTeams = userTeamRepository.findAllByTeamId(team);
         List<UserTeamResponse> userTeamResponses = userTeams.stream()
-                .map(UserTeamResponse::of)
+                .map(ut -> UserTeamResponse.of(ut, ut.getUserId()))
                 .toList();
 
         // 3. Team 정보와 UserTeam(팀 멤버) 정보 담은 Response 객체 반환
@@ -125,6 +125,7 @@ public class TeamServiceImpl implements TeamService {
                     .userId(user)
                     .role(Role.MEMBER)
                     .isMember(true)
+                    .introduction(teamEnterRequest.getDescription())
                     .build();
         }
         userTeamRepository.save(userTeam);

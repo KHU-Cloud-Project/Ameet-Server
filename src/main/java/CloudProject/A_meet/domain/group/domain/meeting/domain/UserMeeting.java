@@ -35,9 +35,10 @@ public class UserMeeting {
     @JoinColumn(name="user_team_id")
     private UserTeam userTeamId;
 
+    @Setter
     @CreatedDate
     private LocalDateTime entryTime;
 
+    @Setter
     private LocalDateTime exitTime;
-
 }

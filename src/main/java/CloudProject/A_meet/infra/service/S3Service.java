@@ -45,7 +45,7 @@ public class S3Service {
         }
     }
 
-    public String getTranscriptionResult(Long botId) {
+    public String getTranscriptionResult(String botId) {
         String objectKey = botId + ".json";
         System.out.println(outputBucket + objectKey);
         try {
