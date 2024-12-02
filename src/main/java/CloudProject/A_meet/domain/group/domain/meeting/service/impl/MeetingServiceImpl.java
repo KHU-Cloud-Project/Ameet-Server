@@ -27,7 +27,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.net.URL;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -47,11 +49,16 @@ public class MeetingServiceImpl implements MeetingService {
         Team team = teamRepository.findByTeamId(meetingRequest.getTeamId())
                 .orElseThrow(() -> new CustomException(ErrorCode.TEAM_NOT_FOUND));
 
+        String title = meetingRequest.getTitle();
+        if (title == null) {
+            title = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+        }
+
         // 새로운 회의 생성 및 저장
         Meeting newMeeting = Meeting.builder()
                 .teamId(team)
                 .startedAt(LocalDateTime.now())
-                .title(meetingRequest.getTitle())
+                .title(title)
                 .build();
 
         meetingRepository.save(newMeeting);
@@ -59,7 +66,7 @@ public class MeetingServiceImpl implements MeetingService {
         URL presignedUrl = createPresignedUrl(newMeeting.getMeetingId());
         newMeeting.setPresignedUrl(presignedUrl.toString());
 
-        return new MeetingResponse(newMeeting.getMeetingId(), newMeeting.getTitle(), newMeeting.getStartedAt(), newMeeting.getEndedAt(), newMeeting.getDuration(),presignedUrl.toString());
+        return MeetingResponse.of(newMeeting);
     }
 
     public URL createPresignedUrl(Long meetingId) {
@@ -72,8 +79,10 @@ public class MeetingServiceImpl implements MeetingService {
     public MeetingResponse getMeetingDetail(Long meetingId) {
         Meeting meeting = meetingRepository.findById(meetingId)
                 .orElseThrow(() -> new CustomException(ErrorCode.MEETING_NOT_FOUND));
+        meeting.setDuration();
+        meetingRepository.save(meeting);
 
-        return new MeetingResponse(meeting.getMeetingId(), meeting.getTitle(), meeting.getStartedAt(), meeting.getEndedAt(), meeting.getDuration(), meeting.getPresignedUrl());
+        return MeetingResponse.of(meeting);
     }
 
 
@@ -86,16 +95,21 @@ public class MeetingServiceImpl implements MeetingService {
         List<Meeting> meetings = meetingRepository.findByTeamId(team);
 
         return meetings.stream()
-                .map(meeting -> new MeetingResponse(
-                        meeting.getMeetingId(),
-                        meeting.getTitle(),
-                        meeting.getStartedAt(),
-                        meeting.getEndedAt(),
-                        meeting.getDuration(),
-                        meeting.getPresignedUrl()
-                ))
+                .map(meeting -> {
+                    meeting.setDuration();
+                    meetingRepository.save(meeting);
+                    return new MeetingResponse(
+                            meeting.getMeetingId(),
+                            meeting.getTitle(),
+                            meeting.getStartedAt(),
+                            meeting.getEndedAt(),
+                            meeting.getDuration(),
+                            meeting.getPresignedUrl()
+                    );
+                })
                 .collect(Collectors.toList());
     }
+
 
     /**
      * 특정 팀 스페이스 내, 회의 로그 목록 조회
@@ -191,5 +205,16 @@ public class MeetingServiceImpl implements MeetingService {
 
         // 3) MeetingLogResponse 객체 생성
         return MeetingLogResponse.of(meeting, participantList);
+    }
+
+    @Transactional
+    public MeetingResponse updateMeetingTitle(Long meetingId, String newTitle) {
+        Meeting meeting = meetingRepository.findById(meetingId)
+                .orElseThrow(() -> new CustomException(ErrorCode.MEETING_NOT_FOUND));
+
+        meeting.setTitle(newTitle);
+        meetingRepository.save(meeting);
+
+        return MeetingResponse.of(meeting);
     }
 }
