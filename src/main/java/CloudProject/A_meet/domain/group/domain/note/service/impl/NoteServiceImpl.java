@@ -54,7 +54,7 @@ public class NoteServiceImpl implements NoteService {
     public UploadResponse uploadFile(UploadRequest request) {
         Note note = Note.builder()
             .title(request.getTitle())
-            .content("content")
+            .summary("content")
             .members(request.getMembers())
             .build();
         noteRepository.save(note);

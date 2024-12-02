@@ -38,8 +38,11 @@ public class Note extends BaseTimeEntity {
     @Column(nullable = false)
     private String title;
 
-    @Column(nullable = false, length = 10000)
-    private String content;
+    @Column(nullable = false, columnDefinition = "TEXT")
+    private String summary;
+
+    @Column(columnDefinition = "TEXT")
+    private String script;
 
     @Column(length = 1000)
     private String presignedUrl;
@@ -63,7 +66,7 @@ public class Note extends BaseTimeEntity {
         }
     }
 
-    public void updateContent(String content) {
-        this.content = content;
+    public void updateSummary(String summary) {
+        this.summary = summary;
     }
 }

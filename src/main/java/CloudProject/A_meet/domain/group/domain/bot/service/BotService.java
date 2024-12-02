@@ -236,7 +236,7 @@ public class BotService {
 
   
         updateNoteContent(note, summary);
-        return new NoteResponse(null, note.getNoteId(), note.getTitle(), note.getContent(), note.getPresignedUrl(), note.getCreatedAt());
+        return new NoteResponse(null, note.getNoteId(), note.getTitle(), note.getSummary(), note.getPresignedUrl(), note.getCreatedAt());
     }
 
     @Transactional
@@ -247,7 +247,7 @@ public class BotService {
 
     @Transactional
     public void updateNoteContent(Note note, String summary) {
-        note.updateContent(summary);
+        note.updateSummary(summary);
     }
 
 }

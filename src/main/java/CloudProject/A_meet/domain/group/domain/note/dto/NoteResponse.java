@@ -23,7 +23,7 @@ public class NoteResponse {
                 .meetingId(note.getMeetingId().getMeetingId())
                 .noteId(note.getNoteId())
                 .title(note.getTitle())
-                .content(note.getContent())
+                .content(note.getSummary())
                 .presignedUrl(note.getPresignedUrl())
                 .createdAt(note.getCreatedAt())
                 .build();
