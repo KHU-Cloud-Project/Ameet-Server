@@ -3,6 +3,7 @@ package CloudProject.A_meet.domain.group.domain.note.controller;
 import CloudProject.A_meet.domain.group.domain.bot.dto.BotResponse;
 import CloudProject.A_meet.domain.group.domain.bot.service.BotService;
 import CloudProject.A_meet.domain.group.domain.note.dto.NoteResponse;
+import CloudProject.A_meet.domain.group.domain.note.dto.UploadResponse;
 import CloudProject.A_meet.domain.group.domain.note.service.NoteService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -35,7 +36,13 @@ public class NoteController {
         return ResponseEntity.status(200).body(noteResponse);
     }
 
-    @Operation(summary = "회의록 수동 생성", description = "회의록 수동 생성 API")
+    @Operation(summary = "회의록 수동 생성(업로드 API)", description = "회의록 수동 생성 API")
+    @GetMapping("/upload")
+    public UploadResponse uploadFile() {
+        return botService.uploadFile();
+    }
+
+    @Operation(summary = "회의록 수동 생성(회의록 반환 API)", description = "회의록 수동 생성 API")
     @GetMapping("/create")
     public BotResponse createNote() {
         return botService.createNote();

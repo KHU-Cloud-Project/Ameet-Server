@@ -8,6 +8,7 @@ import CloudProject.A_meet.domain.group.domain.meeting.domain.Meeting;
 import CloudProject.A_meet.domain.group.domain.meeting.repository.MeetingRepository;
 import CloudProject.A_meet.domain.group.domain.meeting.service.impl.MeetingServiceImpl;
 import CloudProject.A_meet.domain.group.domain.note.domain.Note;
+import CloudProject.A_meet.domain.group.domain.note.dto.UploadResponse;
 import CloudProject.A_meet.global.common.error.exception.CustomException;
 import CloudProject.A_meet.global.common.error.exception.ErrorCode;
 import CloudProject.A_meet.infra.service.BedrockService;
@@ -194,11 +195,23 @@ public class BotService {
         return new BotResponse(meetingId, savedBot.getBotId(), savedBot.getContent());
     }
 
+    public UploadResponse uploadFile(){
+        Note note = Note.builder()
+            .title("Note title")
+            .content("Note content")
+            .build();
+
+        String s3key = "note/" + note.getNoteId() + ".mp3";
+        URL presignedUrl = s3service.generatePresignedUrl(s3key, Duration.ofHours(24));
+        return new UploadResponse(presignedUrl.toString());
+    }
+
+
     public BotResponse createNote() {
         Note note = Note.builder()
-                .title("Note title")
-                .content("Note content")
-                .build();
+            .title("Note title")
+            .content("Note content")
+            .build();
 
         String s3key = "note/" + note.getNoteId() + ".mp3";
         URL presignedUrl = s3service.generatePresignedUrl(s3key, Duration.ofHours(24));
@@ -206,7 +219,7 @@ public class BotService {
         String objectKey = extractS3KeyFromPresignedUrl(presignedUrl.toString());
         String s3Uri = "s3://" + bucketName + "/" + objectKey;
 
-        String keyName = "note"+ note.getNoteId();
+        String keyName = "note" + note.getNoteId();
 
         transcribeservice.startTranscriptionJob(s3Uri, keyName);
         waitForTranscriptionJobCompletion(keyName);
@@ -216,6 +229,12 @@ public class BotService {
 
         int maxLength = 1000;
         if (transcriptionText.length() > maxLength) {
-            transcriptionText = "..." + transcription
+            transcriptionText = "..." + transcriptionText.substring(transcriptionText.length() - maxLength);
+        }
+
+        String prompt = "현실감있는 리액션을 해줘:\n\n" + transcriptionText;
+        String summary = bedrockService.invokeClaudeModel(prompt);
+        bot.updateContent(summary);
+    }
 
 }
