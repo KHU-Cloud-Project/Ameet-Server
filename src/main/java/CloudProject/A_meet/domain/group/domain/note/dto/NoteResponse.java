@@ -23,15 +23,15 @@ public class NoteResponse {
 
     public static NoteResponse of(Note note) {
         return NoteResponse.builder()
-                .meetingId(note.getMeetingId().getMeetingId())
-                .noteId(note.getNoteId())
-                .title(note.getTitle())
-                .summary(note.getSummary())
-                .script(note.getScript())
-                .members(note.getMembers())
-                .presignedUrl(note.getPresignedUrl())
-                .createdAt(note.getCreatedAt())
-                //.duration(note.getDuration())
-                .build();
+            .meetingId(note.getMeetingId() != null ? note.getMeetingId().getMeetingId() : null)
+            .noteId(note.getNoteId())
+            .title(note.getTitle())
+            .summary(note.getSummary())
+            .script(note.getScript())
+            .members(note.getMembers())
+            .presignedUrl(note.getPresignedUrl())
+            .createdAt(note.getCreatedAt())
+            .build();
     }
+
 }

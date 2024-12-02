@@ -49,6 +49,10 @@ public class Note extends BaseTimeEntity {
 
     private String members;
 
+    public void updatemembers(String members) {
+        this.members = members;
+    }
+
     public void updatePresignedUrl(String presignedUrl) {
         this.presignedUrl = presignedUrl;
     }
@@ -68,5 +72,9 @@ public class Note extends BaseTimeEntity {
 
     public void updateSummary(String summary) {
         this.summary = summary;
+    }
+
+    public void updateScript(String script) {
+        this.script = script;
     }
 }

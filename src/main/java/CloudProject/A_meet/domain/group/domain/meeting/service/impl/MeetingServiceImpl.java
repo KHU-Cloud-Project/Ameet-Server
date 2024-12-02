@@ -229,13 +229,20 @@ public class MeetingServiceImpl implements MeetingService {
     public NoteResponse endMeeting(Long meetingId) {
         Meeting meeting = meetingRepository.findById(meetingId)
                 .orElseThrow(() -> new CustomException(ErrorCode.MEETING_NOT_FOUND));
+        List<UserMeeting> userMeetings = userMeetingRepository.findByMeetingId(meeting);
+
+        String members = userMeetings.stream()
+            .map(userMeeting -> userMeeting.getUserId().getNickname())
+            .collect(Collectors.joining(", "));
 
         meeting.setEndedAt(LocalDateTime.now());
+        meeting.setDuration();
         Note note = Note.builder()
                 .meetingId(meeting)
                 .title(meeting.getTitle())
                 .presignedUrl(meeting.getPresignedUrl())
                 .summary("content")
+                .members(members)
                 .build();
         noteRepository.save(note);
         return botService.endMeeting(note.getNoteId());
