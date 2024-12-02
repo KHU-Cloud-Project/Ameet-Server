@@ -29,6 +29,7 @@ public class Meeting {
     @Column(nullable = false)
     private LocalDateTime startedAt;
 
+    @Setter
     private LocalDateTime endedAt;
 
     @Column(nullable = false)
