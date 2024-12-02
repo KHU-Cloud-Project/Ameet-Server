@@ -6,6 +6,11 @@ import CloudProject.A_meet.domain.group.domain.bot.dto.BotResponse;
 import CloudProject.A_meet.domain.group.domain.bot.repository.BotRepository;
 import CloudProject.A_meet.domain.group.domain.meeting.domain.Meeting;
 import CloudProject.A_meet.domain.group.domain.meeting.repository.MeetingRepository;
+import CloudProject.A_meet.domain.group.domain.meeting.service.impl.MeetingServiceImpl;
+import CloudProject.A_meet.domain.group.domain.note.domain.Note;
+import CloudProject.A_meet.domain.group.domain.note.dto.NoteResponse;
+import CloudProject.A_meet.domain.group.domain.note.dto.UploadResponse;
+import CloudProject.A_meet.domain.group.domain.note.repository.NoteRepository;
 import CloudProject.A_meet.global.common.error.exception.CustomException;
 import CloudProject.A_meet.global.common.error.exception.ErrorCode;
 import CloudProject.A_meet.infra.service.BedrockService;
@@ -16,6 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.Duration;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.services.transcribe.model.TranscriptionJobStatus;
@@ -29,6 +35,7 @@ public class BotService {
     private final TranscribeService transcribeservice;
     private final S3Service s3service;
     private final BedrockService bedrockService;
+    private final NoteRepository noteRepository;
 
     public BotResponse summaryBot(Long meetingId) {
         Meeting meeting = meetingRepository.findById(meetingId)
@@ -47,10 +54,10 @@ public class BotService {
         String objectKey = extractS3KeyFromPresignedUrl(presignedUrl);
         String s3Uri = "s3://" + bucketName + "/" + objectKey;
 
-        transcribeservice.startTranscriptionJob(s3Uri, savedBot.getBotId());
-        waitForTranscriptionJobCompletion(savedBot.getBotId());
+        transcribeservice.startTranscriptionJob(s3Uri, savedBot.getBotId().toString());
+        waitForTranscriptionJobCompletion(savedBot.getBotId().toString());
 
-        String transcriptionJson = s3service.getTranscriptionResult(savedBot.getBotId());
+        String transcriptionJson = s3service.getTranscriptionResult(savedBot.getBotId().toString());
         String transcriptionText = extractTranscriptionText(transcriptionJson);
 
         int maxLength = 1000;
@@ -81,8 +88,8 @@ public class BotService {
         }
     }
 
-    private void waitForTranscriptionJobCompletion(Long botId) {
-        String jobName = botId.toString(); // Transcription Job 이름
+    private void waitForTranscriptionJobCompletion(String botId) {
+        String jobName = botId; // Transcription Job 이름
         int maxRetries = 20; // 최대 재시도 횟수
         int retryInterval = 10000; // 재시도 간격 (10초)
 
@@ -139,10 +146,10 @@ public class BotService {
         String objectKey = extractS3KeyFromPresignedUrl(presignedUrl);
         String s3Uri = "s3://" + bucketName + "/" + objectKey;
 
-        transcribeservice.startTranscriptionJob(s3Uri, savedBot.getBotId());
-        waitForTranscriptionJobCompletion(savedBot.getBotId());
+        transcribeservice.startTranscriptionJob(s3Uri, savedBot.getBotId().toString());
+        waitForTranscriptionJobCompletion(savedBot.getBotId().toString());
 
-        String transcriptionJson = s3service.getTranscriptionResult(savedBot.getBotId());
+        String transcriptionJson = s3service.getTranscriptionResult(savedBot.getBotId().toString());
         String transcriptionText = extractTranscriptionText(transcriptionJson);
 
         int maxLength = 1000;
@@ -173,10 +180,10 @@ public class BotService {
         String objectKey = extractS3KeyFromPresignedUrl(presignedUrl);
         String s3Uri = "s3://" + bucketName + "/" + objectKey;
 
-        transcribeservice.startTranscriptionJob(s3Uri, savedBot.getBotId());
-        waitForTranscriptionJobCompletion(savedBot.getBotId());
+        transcribeservice.startTranscriptionJob(s3Uri, savedBot.getBotId().toString());
+        waitForTranscriptionJobCompletion(savedBot.getBotId().toString());
 
-        String transcriptionJson = s3service.getTranscriptionResult(savedBot.getBotId());
+        String transcriptionJson = s3service.getTranscriptionResult(savedBot.getBotId().toString());
         String transcriptionText = extractTranscriptionText(transcriptionJson);
 
         int maxLength = 1000;
@@ -190,4 +197,46 @@ public class BotService {
 
         return new BotResponse(meetingId, savedBot.getBotId(), savedBot.getContent());
     }
+
+    public NoteResponse createNote(Long noteId) {
+        // 트랜잭션으로 제한할 부분만 래핑
+        Note note = transactionalFindByNoteId(noteId);
+
+        String presignedUrl = note.getPresignedUrl();
+        String bucketName = "transcribe-input-cp";
+        String objectKey = extractS3KeyFromPresignedUrl(presignedUrl);
+        String s3Uri = "s3://" + bucketName + "/" + objectKey;
+
+        String keyName = "note" + note.getNoteId();
+
+        transcribeservice.startTranscriptionJob(s3Uri, keyName);
+        waitForTranscriptionJobCompletion(keyName);
+
+        String transcriptionJson = s3service.getTranscriptionResult(keyName);
+        String transcriptionText = extractTranscriptionText(transcriptionJson);
+
+        int maxLength = 1000;
+        if (transcriptionText.length() > maxLength) {
+            transcriptionText = "..." + transcriptionText.substring(transcriptionText.length() - maxLength);
+        }
+
+        String prompt = "내용을 요약해줘:\n\n" + transcriptionText;
+        String summary = bedrockService.invokeClaudeModel(prompt);
+
+        // 트랜잭션으로 감쌀 부분
+        updateNoteContent(note, summary);
+        return new NoteResponse(null, note.getNoteId(), note.getTitle(), note.getContent(), note.getPresignedUrl(), note.getCreatedAt());
+    }
+
+    @Transactional
+    public Note transactionalFindByNoteId(Long noteId) {
+        return noteRepository.findByNoteId(noteId)
+            .orElseThrow(() -> new CustomException(ErrorCode.NOTE_NOT_FOUND));
+    }
+
+    @Transactional
+    public void updateNoteContent(Note note, String summary) {
+        note.updateContent(summary);
+    }
+
 }

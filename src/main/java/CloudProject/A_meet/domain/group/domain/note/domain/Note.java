@@ -1,18 +1,28 @@
 package CloudProject.A_meet.domain.group.domain.note.domain;
 
 import CloudProject.A_meet.domain.group.domain.meeting.domain.Meeting;
+import CloudProject.A_meet.global.common.error.exception.CustomException;
+import CloudProject.A_meet.global.common.error.exception.ErrorCode;
 import CloudProject.A_meet.global.common.model.BaseTimeEntity;
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.attoparser.dom.Text;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Table(name="note")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @Getter
 @ToString
+@Builder
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 public class Note extends BaseTimeEntity {
@@ -28,8 +38,32 @@ public class Note extends BaseTimeEntity {
     @Column(nullable = false)
     private String title;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 10000)
     private String content;
 
-    private String fileUrl;
+    @Column(length = 1000)
+    private String presignedUrl;
+
+    private String members;
+
+    public void updatePresignedUrl(String presignedUrl) {
+        this.presignedUrl = presignedUrl;
+    }
+    public void updateCreatedAt(String createdAt) {
+        if (createdAt == null || createdAt.isBlank()) {
+            throw new IllegalArgumentException("Invalid dateTime: dateTime cannot be null or empty");
+        }
+        try {
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            LocalDateTime parsedDate = LocalDateTime.parse(createdAt, formatter);
+            this.createdAt = parsedDate;
+        } catch (DateTimeParseException e) {
+            throw new CustomException(ErrorCode.INVALID_DATE_FORMAT);
+        }
+    }
+
+    public void updateContent(String content) {
+        this.content = content;
+    }
 }
