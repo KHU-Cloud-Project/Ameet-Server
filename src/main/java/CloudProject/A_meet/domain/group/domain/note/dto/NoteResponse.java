@@ -11,12 +11,11 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Getter
 public class NoteResponse {
-
     private Long meetingId;
     private Long noteId;
     private String title;
     private String content;
-    private String fileUrl;
+    private String presignedUrl;
     private LocalDateTime createdAt;
 
     public static NoteResponse of(Note note) {
@@ -25,7 +24,7 @@ public class NoteResponse {
                 .noteId(note.getNoteId())
                 .title(note.getTitle())
                 .content(note.getContent())
-                .fileUrl(note.getPresignedUrl())
+                .presignedUrl(note.getPresignedUrl())
                 .createdAt(note.getCreatedAt())
                 .build();
     }

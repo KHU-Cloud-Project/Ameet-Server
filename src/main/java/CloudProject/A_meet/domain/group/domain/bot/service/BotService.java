@@ -199,8 +199,8 @@ public class BotService {
     }
 
     public NoteResponse createNote(Long noteId) {
-        Note note = noteRepository.findByNoteId(noteId)
-            .orElseThrow(() -> new CustomException(ErrorCode.NOTE_NOT_FOUND));
+        // 트랜잭션으로 제한할 부분만 래핑
+        Note note = transactionalFindByNoteId(noteId);
 
         String presignedUrl = note.getPresignedUrl();
         String bucketName = "transcribe-input-cp";
@@ -222,7 +222,21 @@ public class BotService {
 
         String prompt = "내용을 요약해줘:\n\n" + transcriptionText;
         String summary = bedrockService.invokeClaudeModel(prompt);
-        note.updateContent(summary);
+
+        // 트랜잭션으로 감쌀 부분
+        updateNoteContent(note, summary);
         return new NoteResponse(null, note.getNoteId(), note.getTitle(), note.getContent(), note.getPresignedUrl(), note.getCreatedAt());
     }
+
+    @Transactional
+    public Note transactionalFindByNoteId(Long noteId) {
+        return noteRepository.findByNoteId(noteId)
+            .orElseThrow(() -> new CustomException(ErrorCode.NOTE_NOT_FOUND));
+    }
+
+    @Transactional
+    public void updateNoteContent(Note note, String summary) {
+        note.updateContent(summary);
+    }
+
 }

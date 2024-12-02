@@ -14,6 +14,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.attoparser.dom.Text;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Table(name="note")
@@ -37,7 +38,7 @@ public class Note extends BaseTimeEntity {
     @Column(nullable = false)
     private String title;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 10000)
     private String content;
 
     @Column(length = 1000)
