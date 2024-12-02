@@ -73,6 +73,7 @@ public class MeetingServiceImpl implements MeetingService {
         Meeting meeting = meetingRepository.findById(meetingId)
                 .orElseThrow(() -> new CustomException(ErrorCode.MEETING_NOT_FOUND));
         meeting.setDuration();
+        meetingRepository.save(meeting);
 
         return new MeetingResponse(meeting.getMeetingId(), meeting.getTitle(), meeting.getStartedAt(), meeting.getEndedAt(), meeting.getDuration(), meeting.getPresignedUrl());
     }
@@ -88,7 +89,8 @@ public class MeetingServiceImpl implements MeetingService {
 
         return meetings.stream()
                 .map(meeting -> {
-                    meeting.setDuration();  // Meeting 객체에서 duration 계산 호출
+                    meeting.setDuration();
+                    meetingRepository.save(meeting);
                     return new MeetingResponse(
                             meeting.getMeetingId(),
                             meeting.getTitle(),
