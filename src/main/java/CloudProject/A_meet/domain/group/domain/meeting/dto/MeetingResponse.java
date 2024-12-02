@@ -19,14 +19,6 @@ public class MeetingResponse {
     private LocalDateTime endedAt;
     private Duration duration;
     private String presignedUrl;
-
-    public void setDuration() {
-        if (startedAt != null && endedAt != null) {
-            this.duration = Duration.between(startedAt, endedAt);
-        } else {
-            this.duration = Duration.ZERO;
-        }
-    }
 }
 
     

@@ -72,6 +72,7 @@ public class MeetingServiceImpl implements MeetingService {
     public MeetingResponse getMeetingDetail(Long meetingId) {
         Meeting meeting = meetingRepository.findById(meetingId)
                 .orElseThrow(() -> new CustomException(ErrorCode.MEETING_NOT_FOUND));
+        meeting.setDuration();
 
         return new MeetingResponse(meeting.getMeetingId(), meeting.getTitle(), meeting.getStartedAt(), meeting.getEndedAt(), meeting.getDuration(), meeting.getPresignedUrl());
     }
@@ -86,16 +87,20 @@ public class MeetingServiceImpl implements MeetingService {
         List<Meeting> meetings = meetingRepository.findByTeamId(team);
 
         return meetings.stream()
-                .map(meeting -> new MeetingResponse(
-                        meeting.getMeetingId(),
-                        meeting.getTitle(),
-                        meeting.getStartedAt(),
-                        meeting.getEndedAt(),
-                        meeting.getDuration(),
-                        meeting.getPresignedUrl()
-                ))
+                .map(meeting -> {
+                    meeting.setDuration();  // Meeting 객체에서 duration 계산 호출
+                    return new MeetingResponse(
+                            meeting.getMeetingId(),
+                            meeting.getTitle(),
+                            meeting.getStartedAt(),
+                            meeting.getEndedAt(),
+                            meeting.getDuration(),
+                            meeting.getPresignedUrl()
+                    );
+                })
                 .collect(Collectors.toList());
     }
+
 
     /**
      * 특정 팀 스페이스 내, 회의 로그 목록 조회

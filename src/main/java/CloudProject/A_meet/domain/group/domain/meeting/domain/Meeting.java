@@ -42,4 +42,15 @@ public class Meeting {
     public void setPresignedUrl(String presignedUrl) {
         this.presignedUrl = presignedUrl;
     }
+
+    public void setDuration() {
+        if (startedAt != null && endedAt != null) {
+            if (endedAt.isBefore(startedAt)) {
+                System.out.println("Warning: endedAt is before startedAt.");
+            }
+            this.duration = Duration.between(startedAt, endedAt);
+        } else {
+            this.duration = Duration.ZERO;
+        }
+    }
 }
