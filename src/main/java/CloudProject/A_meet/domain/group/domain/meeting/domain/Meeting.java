@@ -7,6 +7,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Table(name="meetings")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -38,12 +40,12 @@ public class Meeting {
 
     private Duration duration;
 
+    @Setter
     @Column(length = 2048)
     private String presignedUrl;
 
-    public void setPresignedUrl(String presignedUrl) {
-        this.presignedUrl = presignedUrl;
-    }
+    @ElementCollection(fetch = FetchType.EAGER)
+    private List<String> participants;
 
     public void setDuration() {
         if (startedAt != null && endedAt != null) {
@@ -65,5 +67,16 @@ public class Meeting {
         } else {
             this.duration = Duration.ZERO;
         }
+    }
+
+    public boolean addParticipant(String nickname) {
+        if (this.participants == null) {
+            this.participants = new ArrayList<>();
+        }
+        if (!this.participants.contains(nickname)) {
+            this.participants.add(nickname);
+            return true;
+        }
+        return false;
     }
 }
