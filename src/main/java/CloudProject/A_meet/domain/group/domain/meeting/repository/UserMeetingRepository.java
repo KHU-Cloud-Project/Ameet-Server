@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface UserMeetingRepository extends JpaRepository<UserMeeting, Long> {
@@ -17,4 +18,6 @@ public interface UserMeetingRepository extends JpaRepository<UserMeeting, Long> 
     Page<UserMeeting> findAllByUserId(User user, Pageable pageable);
 
     List<UserMeeting> findByMeetingId(Meeting meetingId);
+
+    Optional<UserMeeting> findByUserIdAndMeetingId(User userId, Meeting meetingId);
 }
