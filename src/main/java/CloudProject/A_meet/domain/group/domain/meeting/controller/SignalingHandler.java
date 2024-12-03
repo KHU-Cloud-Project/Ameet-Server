@@ -109,6 +109,10 @@ public class SignalingHandler extends TextWebSocketHandler {
                         .build();
                 userMeetingRepository.save(userMeeting);
 
+                if (meeting.addParticipant(user.getNickname())) {
+                    meetingRepository.save(meeting);
+                }
+
                 session.getAttributes().put("userMeetingId", userMeeting.getUserMeetingId());
                 session.sendMessage(new TextMessage("User " + userId + " has joined the meeting " + meetingId));
                 logger.info("Saved userMeetingId={} for session {}", userMeeting.getUserMeetingId(), session.getId());
