@@ -13,7 +13,6 @@ import CloudProject.A_meet.domain.group.domain.meeting.service.MeetingService;
 import CloudProject.A_meet.domain.group.domain.note.domain.Note;
 import CloudProject.A_meet.domain.group.domain.note.dto.NoteResponse;
 import CloudProject.A_meet.domain.group.domain.note.repository.NoteRepository;
-import CloudProject.A_meet.domain.group.domain.note.service.impl.NoteServiceImpl;
 import CloudProject.A_meet.domain.group.domain.team.domain.Team;
 import CloudProject.A_meet.domain.group.domain.team.repository.TeamRepository;
 import CloudProject.A_meet.domain.group.domain.user.domain.User;
@@ -86,7 +85,6 @@ public class MeetingServiceImpl implements MeetingService {
     public MeetingResponse getMeetingDetail(Long meetingId) {
         Meeting meeting = meetingRepository.findById(meetingId)
                 .orElseThrow(() -> new CustomException(ErrorCode.MEETING_NOT_FOUND));
-        meeting.setDuration();
         meetingRepository.save(meeting);
 
         return MeetingResponse.of(meeting);
@@ -103,8 +101,6 @@ public class MeetingServiceImpl implements MeetingService {
 
         return meetings.stream()
                 .map(meeting -> {
-                    meeting.setDuration();
-                    meetingRepository.save(meeting);
                     return new MeetingResponse(
                             meeting.getMeetingId(),
                             meeting.getTitle(),
