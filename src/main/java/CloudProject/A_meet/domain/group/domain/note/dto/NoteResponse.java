@@ -14,18 +14,24 @@ public class NoteResponse {
     private Long meetingId;
     private Long noteId;
     private String title;
-    private String content;
+    private String summary;
+    private String script;
+    private String members;
     private String presignedUrl;
     private LocalDateTime createdAt;
+    private String duration;
 
     public static NoteResponse of(Note note) {
         return NoteResponse.builder()
-                .meetingId(note.getMeetingId().getMeetingId())
-                .noteId(note.getNoteId())
-                .title(note.getTitle())
-                .content(note.getContent())
-                .presignedUrl(note.getPresignedUrl())
-                .createdAt(note.getCreatedAt())
-                .build();
+            .meetingId(note.getMeetingId() != null ? note.getMeetingId().getMeetingId() : null)
+            .noteId(note.getNoteId())
+            .title(note.getTitle())
+            .summary(note.getSummary())
+            .script(note.getScript())
+            .members(note.getMembers())
+            .presignedUrl(note.getPresignedUrl())
+            .createdAt(note.getCreatedAt())
+            .build();
     }
+
 }

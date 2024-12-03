@@ -1,5 +1,6 @@
 package CloudProject.A_meet.domain.group.domain.meeting.service.impl;
 
+import CloudProject.A_meet.domain.group.domain.bot.service.BotService;
 import CloudProject.A_meet.domain.group.domain.meeting.domain.Meeting;
 import CloudProject.A_meet.domain.group.domain.meeting.domain.UserMeeting;
 import CloudProject.A_meet.domain.group.domain.meeting.dto.MeetingLogResponse;
@@ -9,6 +10,10 @@ import CloudProject.A_meet.domain.group.domain.meeting.dto.MeetingSearchRequest;
 import CloudProject.A_meet.domain.group.domain.meeting.repository.MeetingRepository;
 import CloudProject.A_meet.domain.group.domain.meeting.repository.UserMeetingRepository;
 import CloudProject.A_meet.domain.group.domain.meeting.service.MeetingService;
+import CloudProject.A_meet.domain.group.domain.note.domain.Note;
+import CloudProject.A_meet.domain.group.domain.note.dto.NoteResponse;
+import CloudProject.A_meet.domain.group.domain.note.repository.NoteRepository;
+import CloudProject.A_meet.domain.group.domain.note.service.impl.NoteServiceImpl;
 import CloudProject.A_meet.domain.group.domain.team.domain.Team;
 import CloudProject.A_meet.domain.group.domain.team.repository.TeamRepository;
 import CloudProject.A_meet.domain.group.domain.user.domain.User;
@@ -42,6 +47,8 @@ public class MeetingServiceImpl implements MeetingService {
     private final UserMeetingRepository userMeetingRepository;
     private final UserRepository userRepository;
     private final S3Service s3Service;
+    private final BotService botService;
+    private final NoteRepository noteRepository;
 
     // 1. 회의 생성
     @Transactional
@@ -216,5 +223,28 @@ public class MeetingServiceImpl implements MeetingService {
         meetingRepository.save(meeting);
 
         return MeetingResponse.of(meeting);
+    }
+
+    @Transactional
+    public NoteResponse endMeeting(Long meetingId) {
+        Meeting meeting = meetingRepository.findById(meetingId)
+                .orElseThrow(() -> new CustomException(ErrorCode.MEETING_NOT_FOUND));
+        List<UserMeeting> userMeetings = userMeetingRepository.findByMeetingId(meeting);
+
+        String members = userMeetings.stream()
+            .map(userMeeting -> userMeeting.getUserId().getNickname())
+            .collect(Collectors.joining(", "));
+
+        meeting.setEndedAt(LocalDateTime.now());
+        meeting.setDuration();
+        Note note = Note.builder()
+                .meetingId(meeting)
+                .title(meeting.getTitle())
+                .presignedUrl(meeting.getPresignedUrl())
+                .summary("content")
+                .members(members)
+                .build();
+        noteRepository.save(note);
+        return botService.endMeeting(note.getNoteId());
     }
 }

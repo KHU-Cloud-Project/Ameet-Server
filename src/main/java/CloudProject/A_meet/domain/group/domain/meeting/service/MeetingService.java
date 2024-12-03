@@ -1,6 +1,7 @@
 package CloudProject.A_meet.domain.group.domain.meeting.service;
 
 import CloudProject.A_meet.domain.group.domain.meeting.dto.*;
+import CloudProject.A_meet.domain.group.domain.note.dto.NoteResponse;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -28,4 +29,7 @@ public interface MeetingService {
 
     // 7. 제목 변경
     MeetingResponse updateMeetingTitle(Long meetingId, String newTitle);
+
+    //8. 회의 종료
+    NoteResponse endMeeting(Long meetingId);
 }
