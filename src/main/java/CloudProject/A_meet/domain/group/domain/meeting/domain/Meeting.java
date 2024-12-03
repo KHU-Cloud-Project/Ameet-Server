@@ -8,7 +8,9 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 @Table(name="meetings")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -78,5 +80,9 @@ public class Meeting {
             return true;
         }
         return false;
+    }
+
+    public List<String> getParticipant() {
+        return Objects.requireNonNullElse(this.participants, Collections.emptyList());
     }
 }

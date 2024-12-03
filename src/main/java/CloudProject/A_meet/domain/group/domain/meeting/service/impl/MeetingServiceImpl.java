@@ -17,8 +17,6 @@ import CloudProject.A_meet.domain.group.domain.team.domain.Team;
 import CloudProject.A_meet.domain.group.domain.team.repository.TeamRepository;
 import CloudProject.A_meet.domain.group.domain.user.domain.User;
 import CloudProject.A_meet.domain.group.domain.user.repository.UserRepository;
-import CloudProject.A_meet.domain.group.domain.userTeam.domain.UserTeam;
-import CloudProject.A_meet.domain.group.domain.userTeam.dto.UserTeamBriefResponse;
 import CloudProject.A_meet.domain.group.domain.userTeam.repository.UserTeamRepository;
 import CloudProject.A_meet.global.common.error.exception.CustomException;
 import CloudProject.A_meet.global.common.error.exception.ErrorCode;
@@ -99,17 +97,8 @@ public class MeetingServiceImpl implements MeetingService {
         // 해당 팀의 모든 회의 조회
         List<Meeting> meetings = meetingRepository.findByTeamId(team);
 
-        return meetings.stream()
-                .map(meeting -> {
-                    return new MeetingResponse(
-                            meeting.getMeetingId(),
-                            meeting.getTitle(),
-                            meeting.getStartedAt(),
-                            meeting.getEndedAt(),
-                            meeting.getDuration(),
-                            meeting.getPresignedUrl()
-                    );
-                })
+        return meetingRepository.findByTeamId(team).stream()
+                .map(MeetingResponse::of)
                 .collect(Collectors.toList());
     }
 
@@ -185,7 +174,7 @@ public class MeetingServiceImpl implements MeetingService {
 
         // 3. 회의 참가자 목록 조회 후, MeetingLogResponse 객체로 반환
         return meetings.stream()
-                .map(meeting -> getParticipantList(meeting))
+                .map(this::getParticipantList)
                 .collect(Collectors.toList());
     }
 
@@ -198,16 +187,9 @@ public class MeetingServiceImpl implements MeetingService {
      * */
     private MeetingLogResponse getParticipantList(Meeting meeting) {
         List<UserMeeting> userMeetings = userMeetingRepository.findAllByMeetingId(meeting);
-        List<UserTeamBriefResponse> participantList = userMeetings.stream()
-                .map(um -> {
-                    UserTeam userTeam = userTeamRepository.findByUserTeamId(um.getUserTeamId().getUserTeamId())
-                            .orElseThrow(() -> new CustomException(ErrorCode.USER_TEAM_NOT_FOUND));
-                    return UserTeamBriefResponse.of(userTeam);
-                })
-                .collect(Collectors.toList());
 
         // 3) MeetingLogResponse 객체 생성
-        return MeetingLogResponse.of(meeting, participantList);
+        return MeetingLogResponse.of(meeting);
     }
 
     @Transactional
