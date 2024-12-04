@@ -15,9 +15,6 @@ import CloudProject.A_meet.domain.group.domain.note.dto.NoteResponse;
 import CloudProject.A_meet.domain.group.domain.note.repository.NoteRepository;
 import CloudProject.A_meet.domain.group.domain.team.domain.Team;
 import CloudProject.A_meet.domain.group.domain.team.repository.TeamRepository;
-import CloudProject.A_meet.domain.group.domain.user.domain.User;
-import CloudProject.A_meet.domain.group.domain.user.repository.UserRepository;
-import CloudProject.A_meet.domain.group.domain.userTeam.repository.UserTeamRepository;
 import CloudProject.A_meet.global.common.error.exception.CustomException;
 import CloudProject.A_meet.global.common.error.exception.ErrorCode;
 import CloudProject.A_meet.infra.service.S3Service;
@@ -40,9 +37,7 @@ import java.util.stream.Collectors;
 public class MeetingServiceImpl implements MeetingService {
     private final MeetingRepository meetingRepository;
     private final TeamRepository teamRepository;
-    private final UserTeamRepository userTeamRepository;
     private final UserMeetingRepository userMeetingRepository;
-    private final UserRepository userRepository;
     private final S3Service s3Service;
     private final BotService botService;
     private final NoteRepository noteRepository;
@@ -117,7 +112,7 @@ public class MeetingServiceImpl implements MeetingService {
         // 1. 페이징 처리 된 Meeting 객체 리스트 조회
         Team team = teamRepository.findByTeamId(teamId)
                 .orElseThrow(() -> new CustomException(ErrorCode.TEAM_NOT_FOUND));
-        Page<Meeting> meetingPage = meetingRepository.findByTeamIdOrderByStartedAtDesc(team, pageable);
+        Page<Meeting> meetingPage = meetingRepository.findByTeamIdOrderByStartedAtDescWithParticipants(team, pageable);
 
         // 2. 회의 참가자 목록 조회 후, MeetingLogResponse 객체로 반환
         return meetingPage.map(meeting -> MeetingLogResponse.of(meeting));

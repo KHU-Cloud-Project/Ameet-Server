@@ -18,7 +18,6 @@ public interface MeetingRepository extends JpaRepository<Meeting, Long> {
 
     List<Meeting> findByTeamId(Team teamId);
 
-    Page<Meeting> findByTeamIdOrderByStartedAtDesc(Team teamId, Pageable pageable);
     @Query("SELECT m FROM Meeting m " +
             "JOIN FETCH m.participants " +
             "WHERE m.teamId = :team " +
