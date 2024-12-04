@@ -52,7 +52,10 @@ public class MeetingController {
             @RequestParam Long teamId,
             @RequestParam int page,
             @RequestParam int size) {
+        long startTimeNew = System.currentTimeMillis();
         Page<MeetingLogResponse> meetingLogResponses = meetingService.getMeetingLog(teamId, PageRequest.of(page, size));
+        long endTimeNew = System.currentTimeMillis();
+        System.out.println("Execution time for modified code: " + (endTimeNew - startTimeNew) + " ms");
         return ResponseEntity.status(200).body(meetingLogResponses);
     }
 
@@ -62,7 +65,10 @@ public class MeetingController {
             @RequestParam Long userId,
             @RequestParam int page,
             @RequestParam int size) {
+        long startTimeNew = System.currentTimeMillis();
         Page<MeetingLogResponse> meetingLogResponses = meetingService.getMyMeetingLog(userId, PageRequest.of(page, size));
+        long endTimeNew = System.currentTimeMillis();
+        System.out.println("Execution time for modified code: " + (endTimeNew - startTimeNew) + " ms");
         return ResponseEntity.status(200).body(meetingLogResponses);
     }
 
