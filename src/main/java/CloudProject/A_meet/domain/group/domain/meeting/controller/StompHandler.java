@@ -6,7 +6,9 @@ import CloudProject.A_meet.domain.group.domain.user.domain.User;
 import CloudProject.A_meet.domain.group.domain.user.repository.UserRepository;
 import CloudProject.A_meet.global.common.error.exception.CustomException;
 import CloudProject.A_meet.global.common.error.exception.ErrorCode;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
@@ -14,6 +16,8 @@ import org.springframework.stereotype.Controller;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @RequiredArgsConstructor
@@ -44,11 +48,25 @@ public class StompHandler {
         return participants;
     }
 
-
-    // BOT 1
-    @MessageMapping("/bot1")
+    @MessageMapping("/summary")
     @SendTo("/topic/meeting/participants")
-    public BotResponse handleBot1(Long meetingId) {
-        return botService.summaryBot(meetingId);
+    public ResponseEntity<BotResponse> summarize(Long meetingId) {
+        BotResponse botResponse = botService.summaryBot(meetingId);
+        return ResponseEntity.status(200).body(botResponse);
+    }
+
+
+    @MessageMapping("/positive")
+    @SendTo("/topic/meeting/participants")
+    public ResponseEntity<BotResponse> positive(Long meetingId) {
+        BotResponse botResponse = botService.positiveBot(meetingId);
+        return ResponseEntity.status(200).body(botResponse);
+    }
+
+    @MessageMapping("/negative")
+    @SendTo("/topic/meeting/participants")
+    public ResponseEntity<BotResponse> negative(Long meetingId) {
+        BotResponse botResponse = botService.negativeBot(meetingId);
+        return ResponseEntity.status(200).body(botResponse);
     }
 }
