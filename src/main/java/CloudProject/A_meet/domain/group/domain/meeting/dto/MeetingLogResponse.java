@@ -1,7 +1,6 @@
 package CloudProject.A_meet.domain.group.domain.meeting.dto;
 
 import CloudProject.A_meet.domain.group.domain.meeting.domain.Meeting;
-import CloudProject.A_meet.domain.group.domain.userTeam.dto.UserTeamBriefResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -27,16 +26,16 @@ public class MeetingLogResponse {
     private String title;
     private LocalDateTime startedAt;
     private Duration duration;
-    private List<UserTeamBriefResponse> participantList;
+    private List<String> participant;
 
-    public static MeetingLogResponse of(Meeting meeting, List<UserTeamBriefResponse> participantList) {
+    // Meeting 객체에서 참가자 목록을 그대로 반환하는 메서드
+    public static MeetingLogResponse of(Meeting meeting) {
         return MeetingLogResponse.builder()
                 .meetingId(meeting.getMeetingId())
                 .title(meeting.getTitle())
                 .startedAt(meeting.getStartedAt())
                 .duration(meeting.getDuration())
-                .participantList(participantList)
+                .participant(meeting.getParticipant())
                 .build();
     }
-
 }

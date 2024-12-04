@@ -8,6 +8,7 @@ import lombok.Setter;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -20,6 +21,7 @@ public class MeetingResponse {
     private LocalDateTime endedAt;
     private Duration duration;
     private String presignedUrl;
+    private List<String> participants;
 
     public static MeetingResponse of(Meeting meeting) {
         return new MeetingResponse(
@@ -28,7 +30,8 @@ public class MeetingResponse {
                 meeting.getStartedAt(),
                 meeting.getEndedAt(),
                 meeting.getDuration(),
-                meeting.getPresignedUrl()
+                meeting.getPresignedUrl(),
+                meeting.getParticipants()
         );
     }
 }
