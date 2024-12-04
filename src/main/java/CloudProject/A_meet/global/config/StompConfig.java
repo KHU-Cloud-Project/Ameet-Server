@@ -15,7 +15,7 @@ public class StompConfig implements WebSocketMessageBrokerConfigurer {
         // 메시지 브로커 설정: 구독/발행 경로
         registry.enableSimpleBroker("/topic", "/queue");
         // 클라이언트가 메시지를 보낼 때 사용하는 prefix
-        registry.setApplicationDestinationPrefixes("/app");
+        registry.setApplicationDestinationPrefixes("/api/v1/meeting");
     }
 
     @Override

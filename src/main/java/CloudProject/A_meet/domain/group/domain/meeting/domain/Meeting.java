@@ -4,8 +4,6 @@ import CloudProject.A_meet.domain.group.domain.team.domain.Team;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -86,18 +84,5 @@ public class Meeting {
 
     public List<String> getParticipant() {
         return Objects.requireNonNullElse(this.participants, Collections.emptyList());
-    }
-
-    @MessageMapping("/meeting/join") // 클라이언트가 "/app/meeting/join"으로 메시지를 보냄
-    @SendTo("/topic/meeting/participants") // "/topic/meeting/participants"로 구독자에게 메시지를 브로드캐스트
-    public List<String> handleJoin(String userId) {
-        participants.add(userId);
-        return participants; // 업데이트된 참가자 목록 반환
-    }
-    @MessageMapping("/meeting/leave")
-    @SendTo("/topic/meeting/participants")
-    public List<String> handleLeave(String userId) {
-        participants.remove(userId);
-        return participants; // 업데이트된 참가자 목록 반환
     }
 }
