@@ -76,7 +76,7 @@ public class UserServiceImpl implements UserService {
         userRepository.save(newUser);
 
         // UserResponse.UserData 반환
-        return new UserResponse(newUser.getUserId(), newUser.getEmail(), newUser.getNickname(), newUser.getProfile());
+        return UserResponse.of(newUser);
 
     }
 
@@ -92,7 +92,7 @@ public class UserServiceImpl implements UserService {
             throw new CustomException(ErrorCode.MEMBER_NOT_FOUND);
         }
 
-        return new UserResponse(user.getUserId(), user.getEmail(), user.getNickname(), user.getProfile());
+        return UserResponse.of(user);
     }
 
     // 3. 회원 정보 조회
@@ -100,6 +100,6 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.findByUserId(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
 
-        return new UserResponse(user.getUserId(), user.getNickname(), user.getEmail(), user.getProfile());
+        return UserResponse.of(user);
     }
 }

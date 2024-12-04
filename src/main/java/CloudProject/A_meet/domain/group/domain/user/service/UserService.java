@@ -15,5 +15,5 @@ public interface UserService {
     UserResponse authenticateUser(UserLoginRequest userLoginRequest);
 
     // 3. 회원 정보 조회
-    public UserResponse getUserById(Long userId);
+    UserResponse getUserById(Long userId);
 }
