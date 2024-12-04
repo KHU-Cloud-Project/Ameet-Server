@@ -19,15 +19,14 @@ public class NoteResponse {
     private String title;
     private String summary;
     private String script;
-    private List<Participant> participants;
+    private List<String> participants;
     private String presignedUrl;
     private LocalDateTime startedAt;
     private String duration;
 
     public static NoteResponse of(Note note) {
-        List<Participant> participants = Arrays.stream(note.getMembers().split(","))
+        List<String> participants = Arrays.stream(note.getMembers().split(","))
             .map(String::trim)
-            .map(name -> new Participant(0L, 0L, name))
             .collect(Collectors.toList());
 
         return NoteResponse.builder()
@@ -40,15 +39,6 @@ public class NoteResponse {
             .presignedUrl(note.getPresignedUrl())
             .startedAt(note.getCreatedAt())
             .build();
-    }
-
-    @Builder
-    @AllArgsConstructor
-    @Getter
-    public static class Participant {
-        private Long userTeamId;
-        private Long userId;
-        private String nickname;
     }
 
 }
