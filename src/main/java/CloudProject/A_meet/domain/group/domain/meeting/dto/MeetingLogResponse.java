@@ -26,7 +26,7 @@ public class MeetingLogResponse {
     private String title;
     private LocalDateTime startedAt;
     private Duration duration;
-    private List<String> participant;
+    private List<String> participants;
 
     // Meeting 객체에서 참가자 목록을 그대로 반환하는 메서드
     public static MeetingLogResponse of(Meeting meeting) {
@@ -35,7 +35,7 @@ public class MeetingLogResponse {
                 .title(meeting.getTitle())
                 .startedAt(meeting.getStartedAt())
                 .duration(meeting.getDuration())
-                .participant(meeting.getParticipant())
+                .participants(meeting.getParticipants())
                 .build();
     }
 }
