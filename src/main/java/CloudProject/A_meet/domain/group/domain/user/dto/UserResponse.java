@@ -1,11 +1,10 @@
 package CloudProject.A_meet.domain.group.domain.user.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import CloudProject.A_meet.domain.group.domain.user.domain.User;
+import lombok.*;
+
 @Getter
-@Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserResponse {
@@ -13,4 +12,13 @@ public class UserResponse {
     private String nickname;
     private String email;
     private String profile;
+
+    public static UserResponse of(User user) {
+        return UserResponse.builder()
+                .id(user.getUserId())
+                .nickname(user.getNickname())
+                .email(user.getEmail())
+                .profile(user.getProfile())
+                .build();
+    }
 }
