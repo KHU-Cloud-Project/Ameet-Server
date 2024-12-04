@@ -10,213 +10,138 @@ import CloudProject.A_meet.domain.group.domain.userTeam.domain.UserTeam;
 import CloudProject.A_meet.domain.group.domain.userTeam.repository.UserTeamRepository;
 import CloudProject.A_meet.global.common.error.exception.CustomException;
 import CloudProject.A_meet.global.common.error.exception.ErrorCode;
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.stream.JsonReader;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
+import java.io.StringReader;
 import java.time.LocalDateTime;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
 public class SignalingHandler extends TextWebSocketHandler {
 
-    private static final Logger logger = LoggerFactory.getLogger(SignalingHandler.class);
-
-    private final Map<Long, CopyOnWriteArrayList<WebSocketSession>> meetingSessions = new ConcurrentHashMap<>();
-    private final Map<Long, Set<Long>> meetingParticipants = new ConcurrentHashMap<>();
-
-    private final UserRepository userRepository;
-    private final UserTeamRepository userTeamRepository;
+    private static final Logger logger = LoggerFactory.getLogger(WebSocketHandler.class);
+    private final CopyOnWriteArrayList<WebSocketSession> sessions = new CopyOnWriteArrayList<>();
     private final UserMeetingRepository userMeetingRepository;
+    private final UserRepository userRepository;
     private final MeetingRepository meetingRepository;
+    private final UserTeamRepository userTeamRepository;
+    private final SimpMessagingTemplate messagingTemplate;  // STOMP 메시지 전송
+    private final Map<Long, List<String>> meetingParticipants = new HashMap<>();
 
-    // 처음 Connection을 맺을 때
+
     @Override
-    public void afterConnectionEstablished(WebSocketSession session) {
-        logger.info("New WebSocket connection established: {}", session.getId());
+    public void afterConnectionEstablished(WebSocketSession session) throws Exception {
+        session.sendMessage(new TextMessage("Connected successfully"));
+
+        sessions.add(session);
+        logger.info("WebSocket connection established: {}", session.getId());
     }
 
-    // 실시간 통신 중
     @Override
-    public void handleTextMessage(WebSocketSession session, TextMessage message) {
-        try {
-            String payload = message.getPayload();
-            JsonObject jsonMessage = JsonParser.parseString(payload).getAsJsonObject();
+    public void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
 
-            logger.info("Received message payload: {}", payload);
+        //JsonObject jsonMessage = JsonParser.parseString(message.getPayload()).getAsJsonObject();
 
-            if (!jsonMessage.has("userId") || !jsonMessage.has("meetingId")) {
-                throw new IllegalArgumentException("Missing required fields in JSON message");
-            }
+        // 최초 연결 시에만 DB에 저장
+        if (!session.getAttributes().containsKey("userMeetingId")) {
 
-            Long userId = jsonMessage.get("userId").getAsLong();
-            Long meetingId = jsonMessage.get("meetingId").getAsLong();
+            JsonReader reader = new JsonReader(new StringReader(message.getPayload()));
+            reader.setLenient(true); // 잘못된 JSON도 허용
+            JsonObject jsonMessage = JsonParser.parseReader(reader).getAsJsonObject();
 
-            session.getAttributes().put("meetingId", meetingId);
-            session.getAttributes().put("userId", userId);
 
-            meetingSessions.computeIfAbsent(meetingId, k -> new CopyOnWriteArrayList<>()).add(session);
-            meetingParticipants.computeIfAbsent(meetingId, k -> ConcurrentHashMap.newKeySet()).add(userId);
-
-            saveUserMeeting(session, jsonMessage);
-            relayWebRTCMessage(session, message, meetingId);
-            broadcastParticipantUpdate(meetingId);
-            logger.info("User {} joined meeting {}", userId, meetingId);
-        } catch (IllegalArgumentException e) {
-            logger.error("Invalid JSON message: {}", message.getPayload(), e);
-        } catch (Exception e) {
-            logger.error("Error handling message: {}", e.getMessage(), e);
-        }
-    }
-
-    // userMeeting 저장
-    private void saveUserMeeting(WebSocketSession session, JsonObject jsonMessage) {
-        try {
             Long userId = jsonMessage.get("userId").getAsLong();
             Long meetingId = jsonMessage.get("meetingId").getAsLong();
             Long userTeamId = jsonMessage.get("userTeamId").getAsLong();
 
             User user = userRepository.findByUserId(userId)
                     .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+
             Meeting meeting = meetingRepository.findByMeetingId(meetingId)
                     .orElseThrow(() -> new CustomException(ErrorCode.MEETING_NOT_FOUND));
 
+            UserTeam userTeam = userTeamRepository.findByUserTeamId(userTeamId)
+                    .orElseThrow(() -> new CustomException(ErrorCode.USER_TEAM_NOT_FOUND));
 
-            if (userMeetingRepository.findByUserIdAndMeetingId(user, meeting).isEmpty()) {
-                UserTeam userTeam = userTeamRepository.findByUserTeamId(userTeamId)
-                        .orElseThrow(() -> new CustomException(ErrorCode.USER_TEAM_NOT_FOUND));
+            meeting.addParticipant(user.getNickname());
+            meetingRepository.save(meeting);
 
-                UserMeeting userMeeting = UserMeeting.builder()
-                        .userId(user)
-                        .meetingId(meeting)
-                        .userTeamId(userTeam)
-                        .entryTime(LocalDateTime.now())
-                        .build();
-                userMeetingRepository.save(userMeeting);
+            UserMeeting userMeeting = UserMeeting.builder()
+                    .userId(user)
+                    .meetingId(meeting)
+                    .userTeamId(userTeam)
+                    .entryTime(LocalDateTime.now())
+                    .build();
 
-                if (meeting.addParticipant(user.getNickname())) {
-                    meetingRepository.save(meeting);
-                }
+            userMeetingRepository.save(userMeeting);
 
-                session.getAttributes().put("userMeetingId", userMeeting.getUserMeetingId());
-                session.sendMessage(new TextMessage("User " + userId + " has joined the meeting " + meetingId));
-                logger.info("Saved userMeetingId={} for session {}", userMeeting.getUserMeetingId(), session.getId());
-            }
-        } catch (Exception e) {
-            logger.error("Error in saveUserMeeting: {}", e.getMessage(), e);
-        }
-    }
+            // 세션에 userMeetingId를 저장
+            session.getAttributes().put("userMeetingId", userMeeting.getUserMeetingId());
+            meetingParticipants.computeIfAbsent(meetingId, k -> new ArrayList<>()).add(user.getNickname());
+            sendParticipantsList(meetingId);
 
-
-    // 참가자가 들어오거나 가라 때 브로드캐스트
-    private void broadcastParticipantUpdate(Long meetingId) {
-        Set<Long> participants = meetingParticipants.get(meetingId);
-        if (participants != null) {
-            List<String> participantNicknames = participants.stream()
-                    .map(userId -> userRepository.findById(userId)
-                            .map(User::getNickname)
-                            .orElse("Unknown User"))
-                    .collect(Collectors.toList());
-
-            JsonObject updateMessage = new JsonObject();
-            updateMessage.addProperty("type", "PARTICIPANTS_UPDATE");
-            updateMessage.add("participants", new Gson().toJsonTree(participantNicknames));
-
-            String messagePayload = updateMessage.toString();
-
-            meetingSessions.getOrDefault(meetingId, new CopyOnWriteArrayList<>())
-                    .forEach(session -> {
-                        try {
-                            session.sendMessage(new TextMessage(messagePayload));
-                        } catch (Exception e) {
-                            logger.error("Error sending participant update: {}", e.getMessage(), e);
-                        }
-                    });
-
-            logger.info("Updated participant list sent for meeting {}: {}", meetingId, participantNicknames);
-        }
-    }
-
-    // 모든 메시지는 브로드캐스트
-    private void relayWebRTCMessage(WebSocketSession senderSession, TextMessage message, Long meetingId) {
-        try {
-            for (WebSocketSession s : meetingSessions.getOrDefault(meetingId, new CopyOnWriteArrayList<>())) {
-                if (s.isOpen() && !s.getId().equals(senderSession.getId())) {
-                    s.sendMessage(message);
+            session.sendMessage(new TextMessage("User " + userId + " has joined the meeting " + meetingId));
+            logger.info("User {} has joined the meeting {}", userId, meetingId);
+        } else {
+            // 최초 연결 이후에는 메시지 전달만
+            for (WebSocketSession s : sessions) {
+                if (s.isOpen() && !s.getId().equals(session.getId())) {
+                    s.sendMessage(new TextMessage(message.getPayload()));
                 }
             }
-            logger.info("Relayed WebRTC message from session {} to meeting {}", senderSession.getId(), meetingId);
-        } catch (Exception e) {
-            logger.error("Error relaying WebRTC message: {}", e.getMessage(), e);
         }
     }
 
-    // Connection이 끊겼을 때
+
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
-        Long meetingId = (Long) session.getAttributes().get("meetingId");
-        Long userId = (Long) session.getAttributes().get("userId");
+        sessions.remove(session);
 
-        if (meetingId != null && userId != null) {
-//            meetingSessions.get(meetingId).remove(session);
-//            meetingSessions.get(userId).remove(session);
-            meetingSessions.getOrDefault(meetingId, new CopyOnWriteArrayList<>()).remove(session);
-            meetingSessions.getOrDefault(userId, new CopyOnWriteArrayList<>()).remove(session);
+        Long userMeetingId = (Long) session.getAttributes().get("userMeetingId");
 
-            meetingParticipants.getOrDefault(meetingId, new HashSet<>()).remove(userId);
-            updateUserMeetingEndTime(userId, meetingId);
+        if (userMeetingId != null) {
+            UserMeeting userMeeting = userMeetingRepository.findById(userMeetingId)
+                    .orElseThrow(() -> new CustomException(ErrorCode.MEETING_NOT_FOUND));
 
-            if (meetingSessions.get(meetingId).isEmpty()) {
-                meetingSessions.remove(meetingId);
-                updateMeetingEndTime(meetingId);
+            userMeeting.setExitTime(LocalDateTime.now());
+            userMeetingRepository.save(userMeeting);
 
-                meetingParticipants.remove(meetingId);
-            }
+            Long meetingId = userMeeting.getMeetingId().getMeetingId();
 
-            broadcastParticipantUpdate(meetingId);
-
-            logger.info("User {} left meeting {}", userId, meetingId);
+            // 미팅 참가자 목록에서 사용자 제거
+            meetingParticipants.computeIfPresent(meetingId, (k, v) -> {
+                v.remove(userMeeting.getUserId().getNickname());
+                return v.isEmpty() ? null : v;  // 목록이 비면 null로 설정
+            });
+            sendParticipantsList(meetingId);
+            logger.info("User {} has left the meeting {}", userMeeting.getUserId().getUserId(), userMeeting.getMeetingId().getMeetingId());
         }
+
+        logger.info("WebSocket connection closed: {}", session.getId());
     }
 
-    public void updateUserMeetingEndTime(Long userId, Long meetingId) {
-        User user = userRepository.findByUserId(userId)
-                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
-        Meeting meeting = meetingRepository.findByMeetingId(meetingId)
-                .orElseThrow(() -> new CustomException(ErrorCode.MEETING_NOT_FOUND));
-
-        UserMeeting userMeeting = userMeetingRepository.findByUserIdAndMeetingId(user, meeting)
-                .orElseThrow(() -> new CustomException(ErrorCode.MEETING_NOT_FOUND));
-
-        userMeeting.setExitTime(LocalDateTime.now());
-        userMeetingRepository.save(userMeeting);
-
-        logger.info("Exit time updated for UserId: {}", userId);
-    }
-
-    private void updateMeetingEndTime(Long meetingId) {
-        Meeting meeting = meetingRepository.findById(meetingId)
-                .orElseThrow(() -> new CustomException(ErrorCode.MEETING_NOT_FOUND));
-
-        meeting.setEndedAt(LocalDateTime.now());
-        meeting.setDuration(LocalDateTime.now());
-        meetingRepository.save(meeting);
-
-        logger.info("Meeting {} has ended.", meetingId);
+    private void sendParticipantsList(Long meetingId) {
+        List<String> participants = meetingParticipants.get(meetingId);
+        if (participants != null) {
+            // STOMP 메시지로 참가자 목록을 전송
+            messagingTemplate.convertAndSend("/topic/meeting/" + meetingId + "/participants", participants);
+        }
     }
 }
