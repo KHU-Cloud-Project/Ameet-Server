@@ -135,23 +135,8 @@ public class MeetingServiceImpl implements MeetingService {
     @Transactional(readOnly = true)
     public Page<MeetingLogResponse> getMyMeetingLog(Long userId, Pageable pageable) {
 
-        // 1. User 객체 조회
-        User user = userRepository.findByUserId(userId)
-                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
-
-        // 2. User의 UserMeeting 리스트 조회 (회의 참석 정보)
-        // Page<UserMeeting> userMeetingPage = userMeetingRepository.findAllByUserId(user, pageable);
         Page<UserMeeting> userMeetingPage = userMeetingRepository.findAllByUserIdWithMeetings(userId, pageable);
 
-//        // 3. MeetingLogResponse 리스트 생성 및 반환
-//        return userMeetingPage.map(userMeeting -> {
-//            // 1) Meeting ID를 통해 Meeting 객체 조회
-//            Meeting meeting = meetingRepository.findById(userMeeting.getUserMeetingId())
-//                    .orElseThrow(() -> new CustomException(ErrorCode.MEETING_NOT_FOUND));
-//
-//            // 2) 회의 참가자 목록 조회 후, MeetingLogResponse 객체로 반환
-//            return MeetingLogResponse.of(meeting);
-//        });
         return userMeetingPage.map(userMeeting -> {
             Meeting meeting = userMeeting.getMeetingId(); // 이미 FETCH된 Meeting 객체 사용
             return MeetingLogResponse.of(meeting);
