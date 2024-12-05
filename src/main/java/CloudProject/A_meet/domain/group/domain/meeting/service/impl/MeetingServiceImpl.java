@@ -15,9 +15,6 @@ import CloudProject.A_meet.domain.group.domain.note.dto.NoteResponse;
 import CloudProject.A_meet.domain.group.domain.note.repository.NoteRepository;
 import CloudProject.A_meet.domain.group.domain.team.domain.Team;
 import CloudProject.A_meet.domain.group.domain.team.repository.TeamRepository;
-import CloudProject.A_meet.domain.group.domain.user.domain.User;
-import CloudProject.A_meet.domain.group.domain.user.repository.UserRepository;
-import CloudProject.A_meet.domain.group.domain.userTeam.repository.UserTeamRepository;
 import CloudProject.A_meet.global.common.error.exception.CustomException;
 import CloudProject.A_meet.global.common.error.exception.ErrorCode;
 import CloudProject.A_meet.infra.service.S3Service;
@@ -40,9 +37,7 @@ import java.util.stream.Collectors;
 public class MeetingServiceImpl implements MeetingService {
     private final MeetingRepository meetingRepository;
     private final TeamRepository teamRepository;
-    private final UserTeamRepository userTeamRepository;
     private final UserMeetingRepository userMeetingRepository;
-    private final UserRepository userRepository;
     private final S3Service s3Service;
     private final BotService botService;
     private final NoteRepository noteRepository;
@@ -117,10 +112,10 @@ public class MeetingServiceImpl implements MeetingService {
         // 1. 페이징 처리 된 Meeting 객체 리스트 조회
         Team team = teamRepository.findByTeamId(teamId)
                 .orElseThrow(() -> new CustomException(ErrorCode.TEAM_NOT_FOUND));
-        Page<Meeting> meetingPage = meetingRepository.findByTeamIdOrderByStartedAtDesc(team, pageable);
+        Page<Meeting> meetingPage = meetingRepository.findByTeamIdOrderByStartedAtDescWithParticipants(team, pageable);
 
         // 2. 회의 참가자 목록 조회 후, MeetingLogResponse 객체로 반환
-        return meetingPage.map(this::getParticipantList);
+        return meetingPage.map(meeting -> MeetingLogResponse.of(meeting));
     }
 
     /**
@@ -135,21 +130,11 @@ public class MeetingServiceImpl implements MeetingService {
     @Transactional(readOnly = true)
     public Page<MeetingLogResponse> getMyMeetingLog(Long userId, Pageable pageable) {
 
-        // 1. User 객체 조회
-        User user = userRepository.findByUserId(userId)
-                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+        Page<UserMeeting> userMeetingPage = userMeetingRepository.findAllByUserIdWithMeetings(userId, pageable);
 
-        // 2. User의 UserMeeting 리스트 조회 (회의 참석 정보)
-        Page<UserMeeting> userMeetingPage = userMeetingRepository.findAllByUserId(user, pageable);
-
-        // 3. MeetingLogResponse 리스트 생성 및 반환
         return userMeetingPage.map(userMeeting -> {
-            // 1) Meeting ID를 통해 Meeting 객체 조회
-            Meeting meeting = meetingRepository.findById(userMeeting.getUserMeetingId())
-                    .orElseThrow(() -> new CustomException(ErrorCode.MEETING_NOT_FOUND));
-
-            // 2) 회의 참가자 목록 조회 후, MeetingLogResponse 객체로 반환
-            return getParticipantList(meeting);
+            Meeting meeting = userMeeting.getMeetingId(); // 이미 FETCH된 Meeting 객체 사용
+            return MeetingLogResponse.of(meeting);
         });
     }
 

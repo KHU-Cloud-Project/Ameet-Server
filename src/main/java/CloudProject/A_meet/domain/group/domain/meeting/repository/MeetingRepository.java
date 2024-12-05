@@ -5,6 +5,7 @@ import CloudProject.A_meet.domain.group.domain.team.domain.Team;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -17,7 +18,12 @@ public interface MeetingRepository extends JpaRepository<Meeting, Long> {
 
     List<Meeting> findByTeamId(Team teamId);
 
-    Page<Meeting> findByTeamIdOrderByStartedAtDesc(Team teamId, Pageable pageable);
+    @Query("SELECT m FROM Meeting m " +
+            "JOIN FETCH m.participants " +
+            "WHERE m.teamId = :team " +
+            "ORDER BY m.startedAt DESC")
+    Page<Meeting> findByTeamIdOrderByStartedAtDescWithParticipants(Team team, Pageable pageable);
+
 
     List<Meeting> findByTeamIdAndTitleContaining(Team team, String keyword);
 }
