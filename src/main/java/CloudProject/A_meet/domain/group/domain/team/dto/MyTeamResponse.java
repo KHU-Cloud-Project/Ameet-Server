@@ -24,13 +24,15 @@ public class MyTeamResponse {
     private String name;
     private LocalDateTime createdAt;
     private Role role;
+    private Long meetingId;
 
-    public static MyTeamResponse of(Team team, Role role) {
+    public static MyTeamResponse of(Team team, Role role, Long meetingId) {
         return MyTeamResponse.builder()
                 .teamId(team.getTeamId())
                 .name(team.getName())
                 .createdAt(team.getCreatedAt())
                 .role(role)
+                .meetingId(meetingId)
                 .build();
     }
 

@@ -26,4 +26,6 @@ public interface MeetingRepository extends JpaRepository<Meeting, Long> {
 
 
     List<Meeting> findByTeamIdAndTitleContaining(Team team, String keyword);
+
+    Optional<Meeting> findFirstByTeamIdAndEndedAtIsNull(Team teamId);
 }

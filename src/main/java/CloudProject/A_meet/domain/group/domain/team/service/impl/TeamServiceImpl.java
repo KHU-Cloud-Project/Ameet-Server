@@ -1,16 +1,18 @@
 package CloudProject.A_meet.domain.group.domain.team.service.impl;
 
-import CloudProject.A_meet.domain.group.domain.team.dto.*;
-import CloudProject.A_meet.domain.group.domain.userTeam.domain.Role;
+import CloudProject.A_meet.domain.group.domain.meeting.domain.Meeting;
+import CloudProject.A_meet.domain.group.domain.meeting.repository.MeetingRepository;
 import CloudProject.A_meet.domain.group.domain.team.domain.Team;
-import CloudProject.A_meet.domain.group.domain.userTeam.domain.UserTeam;
+import CloudProject.A_meet.domain.group.domain.team.dto.*;
 import CloudProject.A_meet.domain.group.domain.team.repository.TeamRepository;
-import CloudProject.A_meet.domain.group.domain.userTeam.dto.JoinResult;
-import CloudProject.A_meet.domain.group.domain.userTeam.dto.UserTeamResponse;
-import CloudProject.A_meet.domain.group.domain.userTeam.repository.UserTeamRepository;
 import CloudProject.A_meet.domain.group.domain.team.service.TeamService;
 import CloudProject.A_meet.domain.group.domain.user.domain.User;
 import CloudProject.A_meet.domain.group.domain.user.repository.UserRepository;
+import CloudProject.A_meet.domain.group.domain.userTeam.domain.Role;
+import CloudProject.A_meet.domain.group.domain.userTeam.domain.UserTeam;
+import CloudProject.A_meet.domain.group.domain.userTeam.dto.JoinResult;
+import CloudProject.A_meet.domain.group.domain.userTeam.dto.UserTeamResponse;
+import CloudProject.A_meet.domain.group.domain.userTeam.repository.UserTeamRepository;
 import CloudProject.A_meet.global.common.error.exception.CustomException;
 import CloudProject.A_meet.global.common.error.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +23,7 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +32,7 @@ public class TeamServiceImpl implements TeamService {
     private final UserRepository userRepository;
     private final UserTeamRepository userTeamRepository;
     private final TeamRepository teamRepository;
+    private final MeetingRepository meetingRepository;
 
     /**
      * 팀 스페이스 생성
@@ -76,14 +80,18 @@ public class TeamServiceImpl implements TeamService {
         Team team = teamRepository.findByTeamId(teamId)
                 .orElseThrow(() -> new CustomException(ErrorCode.TEAM_NOT_FOUND));
 
-        // 2. UserTeam 객체 리스트 UserTeamResponse 로 변환
+        // 2. UserTeam 객체 리스트 UserTeamResponse로 변환
         List<UserTeam> userTeams = userTeamRepository.findAllByTeamId(team);
         List<UserTeamResponse> userTeamResponses = userTeams.stream()
                 .map(ut -> UserTeamResponse.of(ut, ut.getUserId()))
                 .toList();
 
-        // 3. Team 정보와 UserTeam(팀 멤버) 정보 담은 Response 객체 반환
-        return TeamResponse.of(team, userTeamResponses);
+        // 3. Team에 관련된 endedAt이 null인 Meeting 객체 조회
+        Optional<Meeting> activeMeeting = meetingRepository.findFirstByTeamIdAndEndedAtIsNull(team);
+        Long meetingId = activeMeeting.map(Meeting::getMeetingId).orElse(null);
+
+        // 4. Team 정보와 UserTeam(팀 멤버), meetingId 정보 담은 Response 객체 반환
+        return TeamResponse.of(team, userTeamResponses, meetingId);
     }
 
     /**
@@ -179,6 +187,31 @@ public class TeamServiceImpl implements TeamService {
      * @throws CustomException MEMBER_NOT_FOUND 사용자가 존재하지 않을 경우
      *                         TEAM_NOT_FOUND   팀이 존재하지 않을 경우
      * */
+//    @Override
+//    @Transactional(readOnly = true)
+//    public List<MyTeamResponse> getMyTeamList(Long userId) {
+//
+//        // 1. User 객체 조회
+//        User user = userRepository.findByUserId(userId)
+//                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
+//
+//        // 2. 특정 사용자가 속한 Team 객체 조회 > MyTeamResponse 변환 > 리스트로 반환
+//        List<UserTeam> userTeamList = userTeamRepository.findByUserIdAndIsMember(user, true);
+//        if (!userTeamList.isEmpty()) {
+//            return userTeamList.stream()
+//                    .map(userTeam -> {
+//                        Team team = teamRepository.findByTeamId(userTeam.getTeamId().getTeamId())
+//                                .orElseThrow(() -> new CustomException(ErrorCode.TEAM_NOT_FOUND));
+//
+//                        return MyTeamResponse.of(team, userTeam.getRole());
+//                    })
+//                    .sorted(Comparator.comparing(MyTeamResponse::getCreatedAt).reversed())
+//                    .toList();
+//        } else {
+//            return Collections.emptyList();
+//        }
+//    }
+
     @Override
     @Transactional(readOnly = true)
     public List<MyTeamResponse> getMyTeamList(Long userId) {
@@ -192,10 +225,17 @@ public class TeamServiceImpl implements TeamService {
         if (!userTeamList.isEmpty()) {
             return userTeamList.stream()
                     .map(userTeam -> {
+                        // Team 객체 조회
                         Team team = teamRepository.findByTeamId(userTeam.getTeamId().getTeamId())
                                 .orElseThrow(() -> new CustomException(ErrorCode.TEAM_NOT_FOUND));
 
-                        return MyTeamResponse.of(team, userTeam.getRole());
+                        // 해당 팀의 meetingId 중 endedAt이 null인 회의 조회
+                        Optional<Meeting> activeMeeting = meetingRepository.findFirstByTeamIdAndEndedAtIsNull(team);
+
+                        Long meetingId = activeMeeting.map(Meeting::getMeetingId).orElse(null);
+
+                        // MyTeamResponse 생성 및 반환
+                        return MyTeamResponse.of(team, userTeam.getRole(), meetingId);
                     })
                     .sorted(Comparator.comparing(MyTeamResponse::getCreatedAt).reversed())
                     .toList();
@@ -203,6 +243,7 @@ public class TeamServiceImpl implements TeamService {
             return Collections.emptyList();
         }
     }
+
 
     /**
      * 팀 스페이스 삭제 private method

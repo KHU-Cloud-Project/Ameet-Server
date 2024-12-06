@@ -22,8 +22,9 @@ public class TeamResponse {
     private int memberNum;
     private LocalDateTime createdAt;
     private List<UserTeamResponse> memberList;
+    private Long meetingId; // meetingId 필드 추가
 
-    public static TeamResponse of(Team team, List<UserTeamResponse> memberList) {
+    public static TeamResponse of(Team team, List<UserTeamResponse> memberList, Long meetingId) {
         return TeamResponse.builder()
                 .teamId(team.getTeamId())
                 .name(team.getName())
@@ -33,6 +34,7 @@ public class TeamResponse {
                 .memberNum(memberList.size())
                 .createdAt(team.getCreatedAt())
                 .memberList(memberList)
+                .meetingId(meetingId) // meetingId 추가
                 .build();
     }
 }
