@@ -136,6 +136,16 @@ public class WebRtcHandler extends TextWebSocketHandler {
                 v.remove(userMeeting.getUserId().getNickname());
                 return v.isEmpty() ? null : v;  // 목록이 비면 null로 설정
             });
+
+            if (!meetingParticipants.containsKey(meetingId)) {
+                Meeting meeting = meetingRepository.findByMeetingId(meetingId)
+                        .orElseThrow(() -> new CustomException(ErrorCode.MEETING_NOT_FOUND));
+                meeting.setEndedAt(LocalDateTime.now());
+                meetingRepository.save(meeting);  // 변경 사항 저장
+                logger.info("Meeting {} has been ended as all participants left.", meetingId);
+            }
+
+
             sendParticipantsList(meetingId);
             logger.info("User {} has left the meeting {}", userMeeting.getUserId().getUserId(), userMeeting.getMeetingId().getMeetingId());
         }
