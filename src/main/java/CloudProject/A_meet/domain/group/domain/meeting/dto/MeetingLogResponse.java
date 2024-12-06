@@ -25,6 +25,7 @@ public class MeetingLogResponse {
     private Long meetingId;
     private String title;
     private LocalDateTime startedAt;
+    private LocalDateTime endedAt;
     private Duration duration;
     private List<String> participants;
 
@@ -34,6 +35,7 @@ public class MeetingLogResponse {
                 .meetingId(meeting.getMeetingId())
                 .title(meeting.getTitle())
                 .startedAt(meeting.getStartedAt())
+                .endedAt(meeting.getEndedAt())
                 .duration(meeting.getDuration())
                 .participants(meeting.getParticipants())
                 .build();
