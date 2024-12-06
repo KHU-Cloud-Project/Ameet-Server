@@ -187,31 +187,6 @@ public class TeamServiceImpl implements TeamService {
      * @throws CustomException MEMBER_NOT_FOUND 사용자가 존재하지 않을 경우
      *                         TEAM_NOT_FOUND   팀이 존재하지 않을 경우
      * */
-//    @Override
-//    @Transactional(readOnly = true)
-//    public List<MyTeamResponse> getMyTeamList(Long userId) {
-//
-//        // 1. User 객체 조회
-//        User user = userRepository.findByUserId(userId)
-//                .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
-//
-//        // 2. 특정 사용자가 속한 Team 객체 조회 > MyTeamResponse 변환 > 리스트로 반환
-//        List<UserTeam> userTeamList = userTeamRepository.findByUserIdAndIsMember(user, true);
-//        if (!userTeamList.isEmpty()) {
-//            return userTeamList.stream()
-//                    .map(userTeam -> {
-//                        Team team = teamRepository.findByTeamId(userTeam.getTeamId().getTeamId())
-//                                .orElseThrow(() -> new CustomException(ErrorCode.TEAM_NOT_FOUND));
-//
-//                        return MyTeamResponse.of(team, userTeam.getRole());
-//                    })
-//                    .sorted(Comparator.comparing(MyTeamResponse::getCreatedAt).reversed())
-//                    .toList();
-//        } else {
-//            return Collections.emptyList();
-//        }
-//    }
-
     @Override
     @Transactional(readOnly = true)
     public List<MyTeamResponse> getMyTeamList(Long userId) {

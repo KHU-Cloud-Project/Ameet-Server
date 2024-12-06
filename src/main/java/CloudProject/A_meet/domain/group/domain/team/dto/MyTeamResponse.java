@@ -24,7 +24,7 @@ public class MyTeamResponse {
     private String name;
     private LocalDateTime createdAt;
     private Role role;
-    private Long meetingId;
+    private Long meetingId; // 실행 중인 미팅 ID
 
     public static MyTeamResponse of(Team team, Role role, Long meetingId) {
         return MyTeamResponse.builder()
