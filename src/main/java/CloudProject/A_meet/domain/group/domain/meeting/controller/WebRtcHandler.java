@@ -4,6 +4,8 @@ import CloudProject.A_meet.domain.group.domain.meeting.domain.Meeting;
 import CloudProject.A_meet.domain.group.domain.meeting.domain.UserMeeting;
 import CloudProject.A_meet.domain.group.domain.meeting.repository.MeetingRepository;
 import CloudProject.A_meet.domain.group.domain.meeting.repository.UserMeetingRepository;
+import CloudProject.A_meet.domain.group.domain.team.domain.Team;
+import CloudProject.A_meet.domain.group.domain.team.repository.TeamRepository;
 import CloudProject.A_meet.domain.group.domain.user.domain.User;
 import CloudProject.A_meet.domain.group.domain.user.repository.UserRepository;
 import CloudProject.A_meet.domain.group.domain.userTeam.domain.UserTeam;
@@ -41,6 +43,7 @@ public class WebRtcHandler extends TextWebSocketHandler {
     private final UserMeetingRepository userMeetingRepository;
     private final UserRepository userRepository;
     private final MeetingRepository meetingRepository;
+    private final TeamRepository teamRepository;
     private final UserTeamRepository userTeamRepository;
     private final SimpMessagingTemplate messagingTemplate;  // STOMP 메시지 전송
     private final Map<Long, List<String>> meetingParticipants = new HashMap<>();
@@ -69,7 +72,7 @@ public class WebRtcHandler extends TextWebSocketHandler {
 
             Long userId = jsonMessage.get("userId").getAsLong();
             Long meetingId = jsonMessage.get("meetingId").getAsLong();
-            Long userTeamId = jsonMessage.get("userTeamId").getAsLong();
+            Long teamId = jsonMessage.get("teamId").getAsLong();
 
             User user = userRepository.findByUserId(userId)
                     .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
@@ -77,7 +80,10 @@ public class WebRtcHandler extends TextWebSocketHandler {
             Meeting meeting = meetingRepository.findByMeetingId(meetingId)
                     .orElseThrow(() -> new CustomException(ErrorCode.MEETING_NOT_FOUND));
 
-            UserTeam userTeam = userTeamRepository.findByUserTeamId(userTeamId)
+            Team team = teamRepository.findByTeamId(teamId)
+                    .orElseThrow(() -> new CustomException(ErrorCode.TEAM_NOT_FOUND));
+
+            UserTeam userTeam = userTeamRepository.findByTeamIdAndUserId(team, user)
                     .orElseThrow(() -> new CustomException(ErrorCode.USER_TEAM_NOT_FOUND));
 
             meeting.addParticipant(user.getNickname());
