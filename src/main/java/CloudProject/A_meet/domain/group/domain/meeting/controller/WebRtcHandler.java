@@ -28,10 +28,7 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.io.StringReader;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 @Component
@@ -86,21 +83,30 @@ public class WebRtcHandler extends TextWebSocketHandler {
             UserTeam userTeam = userTeamRepository.findByTeamIdAndUserId(team, user)
                     .orElseThrow(() -> new CustomException(ErrorCode.USER_TEAM_NOT_FOUND));
 
-            meeting.addParticipant(user.getNickname());
-            meetingRepository.save(meeting);
+            Optional<UserMeeting> existingUserMeeting = userMeetingRepository.findByUserIdAndMeetingId(user, meeting);
 
-            UserMeeting userMeeting = UserMeeting.builder()
-                    .userId(user)
-                    .meetingId(meeting)
-                    .userTeamId(userTeam)
-                    .entryTime(LocalDateTime.now())
-                    .build();
+            if (existingUserMeeting.isPresent()) {
+                // 이미 존재하는 경우, userMeetingId를 session에 저장
+                session.getAttributes().put("userMeetingId", existingUserMeeting.get().getUserMeetingId());
+            } else {
+                // 존재하지 않는 경우, 새로운 UserMeeting 생성
+                meeting.addParticipant(user.getNickname());
+                meetingRepository.save(meeting);
 
-            userMeetingRepository.save(userMeeting);
+                UserMeeting userMeeting = UserMeeting.builder()
+                        .userId(user)
+                        .meetingId(meeting)
+                        .userTeamId(userTeam)
+                        .entryTime(LocalDateTime.now())
+                        .build();
 
-            // 세션에 userMeetingId를 저장
-            session.getAttributes().put("userMeetingId", userMeeting.getUserMeetingId());
-            meetingParticipants.computeIfAbsent(meetingId, k -> new ArrayList<>()).add(user.getNickname());
+                userMeetingRepository.save(userMeeting);
+
+                // 세션에 새로운 userMeetingId 저장
+                session.getAttributes().put("userMeetingId", userMeeting.getUserMeetingId());
+                meetingParticipants.computeIfAbsent(meetingId, k -> new ArrayList<>()).add(user.getNickname());
+            }
+
             sendParticipantsList(meetingId);
 
             session.sendMessage(new TextMessage("User " + userId + " has joined the meeting " + meetingId));
