@@ -25,8 +25,10 @@ public class NoteResponse {
     private String duration;
 
     public static NoteResponse of(Note note) {
-        List<String> participants = Arrays.stream(note.getMembers().split(","))
+        String members = note.getMembers() != null ? note.getMembers() : "";
+        List<String> participants = Arrays.stream(members.split(","))
             .map(String::trim)
+            .filter(participant -> !participant.isEmpty())
             .collect(Collectors.toList());
 
         return NoteResponse.builder()
@@ -40,5 +42,6 @@ public class NoteResponse {
             .startedAt(note.getCreatedAt())
             .build();
     }
+
 
 }
