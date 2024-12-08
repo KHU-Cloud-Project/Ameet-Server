@@ -2,10 +2,10 @@ package CloudProject.A_meet.domain.group.domain.meeting.controller;
 
 import CloudProject.A_meet.domain.group.domain.bot.dto.BotResponse;
 import CloudProject.A_meet.domain.group.domain.bot.service.BotService;
+import CloudProject.A_meet.domain.group.domain.meeting.dto.ParticipantResponse;
 import CloudProject.A_meet.domain.group.domain.user.domain.User;
 import CloudProject.A_meet.domain.group.domain.user.repository.UserRepository;
 import CloudProject.A_meet.domain.group.domain.userTeam.domain.Role;
-import CloudProject.A_meet.domain.group.domain.userTeam.dto.UserTeamResponse;
 import CloudProject.A_meet.global.common.error.exception.CustomException;
 import CloudProject.A_meet.global.common.error.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +24,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class StompHandler {
 
-    private final List<UserTeamResponse> participants = Collections.synchronizedList(new ArrayList<>());
+    private final List<ParticipantResponse> participants = Collections.synchronizedList(new ArrayList<>());
     private final UserRepository userRepository;
     private final BotService botService;
     private static final Logger logger = LoggerFactory.getLogger(StompHandler.class);
@@ -32,7 +32,7 @@ public class StompHandler {
     // 참가자 입장
     @MessageMapping("/enter")
     @SendTo("/topic/meeting/participants")
-    public List<UserTeamResponse> handleJoin(Long userId) {
+    public List<ParticipantResponse> handleJoin(Long userId) {
         logger.info("Received join request for userId: {}", userId);
 
         // 사용자 조회
@@ -45,7 +45,7 @@ public class StompHandler {
         logger.info("User found: {} (nickname: {})", user.getUserId(), user.getNickname());
 
         // User 객체를 기반으로 DTO 생성
-        UserTeamResponse participant = UserTeamResponse.builder()
+        ParticipantResponse participant = ParticipantResponse.builder()
                 .userId(user.getUserId())
                 .nickname(user.getNickname())
                 .profile(user.getProfile()) // User 객체에 프로필 정보가 있다고 가정
@@ -62,7 +62,7 @@ public class StompHandler {
     // 참가자 퇴장
     @MessageMapping("/leave")
     @SendTo("/topic/meeting/participants")
-    public List<UserTeamResponse> handleLeave(Long userId) {
+    public List<ParticipantResponse> handleLeave(Long userId) {
         // 사용자 조회
         User user = userRepository.findByUserId(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.MEMBER_NOT_FOUND));
