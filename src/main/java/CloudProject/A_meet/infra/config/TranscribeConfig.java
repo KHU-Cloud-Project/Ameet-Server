@@ -23,7 +23,7 @@ public class TranscribeConfig {
     @Bean
     public TranscribeClient transcribeClient() {
         return TranscribeClient.builder()
-            .region(Region.of(region)) // Region 설정
+            .region(Region.of(region))
             .credentialsProvider(
                 StaticCredentialsProvider.create(
                     AwsBasicCredentials.create(accessKey, secretKey)
