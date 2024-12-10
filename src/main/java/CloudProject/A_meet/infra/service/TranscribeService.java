@@ -30,7 +30,7 @@ public class TranscribeService {
         StartTranscriptionJobRequest transcriptionJobRequest = StartTranscriptionJobRequest.builder()
             .transcriptionJobName(botId)
             .media(Media.builder().mediaFileUri(s3Url).build())
-            .identifyLanguage(true)
+            .languageCode("ko-KR")
             .outputBucketName(bucketName)
             .build();
 
