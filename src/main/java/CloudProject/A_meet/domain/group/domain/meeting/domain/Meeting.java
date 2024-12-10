@@ -60,17 +60,6 @@ public class Meeting {
         }
     }
 
-    public void setDuration(LocalDateTime endedAt2) {
-        if (startedAt != null && endedAt2 != null) {
-            if (endedAt2.isBefore(startedAt)) {
-                System.out.println("Warning: endedAt is before startedAt.");
-            }
-            this.duration = Duration.between(startedAt, endedAt2);
-        } else {
-            this.duration = Duration.ZERO;
-        }
-    }
-
     public boolean addParticipant(String nickname) {
         if (this.participants == null) {
             this.participants = new ArrayList<>();

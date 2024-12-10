@@ -49,7 +49,8 @@ public class MeetingServiceImpl implements MeetingService {
                 .orElseThrow(() -> new CustomException(ErrorCode.TEAM_NOT_FOUND));
 
         String title = meetingRequest.getTitle();
-        if (title == null) {
+        if (title == null || title.isEmpty()) {
+            System.out.println("=============================title===================");
             title = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
         }
 
