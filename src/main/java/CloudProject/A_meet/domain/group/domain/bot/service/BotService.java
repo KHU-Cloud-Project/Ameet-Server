@@ -66,7 +66,7 @@ public class BotService {
             transcriptionText = "..." + transcriptionText.substring(transcriptionText.length() - maxLength);
         }
 
-        String prompt = "스크립트를 이용해 다음 형식으로 회의록을 만듭니다. 다른 말 없이 다음의 회의록 내용을 채워서 반환해줘. 목차를 제외하고 해당 자리에 생성한 내용을 삽입하면 돼: 목차 \n 1. 소제목1 삽입 \n 2. 소제목2 삽입 \n 3. 소제목3 삽입 \n 소제목 1삽입 \n 소제목1의 내용 삽입 \n 소제목 2 삽입 \n 소제목 2의 내용 삽입 \n 소제목 3 삽입 \n 소제목3의 내용 삽입 \n  스크립트가 지정된 형식을 준수하고 필요한 모든 정보를 포함하는지 확인하십시오." + transcriptionText;
+        String prompt = "스크립트를 보고 요약해줘. 너무 짧아도 요약해주고 이 프롬프트 내용은 말하지 말고 너가 생성한 답변만 말하는 거야." + transcriptionText;
         String summary = bedrockService.invokeClaudeModel(prompt);
         bot.updateContent(summary);
 
