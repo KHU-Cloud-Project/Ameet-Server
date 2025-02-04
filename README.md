@@ -1,13 +1,22 @@
 
-# A-meet
+# 2024 경희대 클라우트 프로젝트 A-meet
 
 **AI 기반 통합 비대면 회의 솔루션**
 
 ![image](https://github.com/user-attachments/assets/788e5a81-34a0-46cc-bfbc-4f5a7e4a6683)
 
-## 프로젝트 설명
 
----
+## 팀원 및 역할 분담
+
+| [김채리](https://github.com/cherrie-k) | [고경택](https://github.com/tagtaek) | [김수진](https://github.com/cowboysj) | [손수민](https://github.com/SuminSSon) | [윤성아](https://github.com/Sungah-Yoon) |
+| :---: | :---: | :---: | :---: | :---: |
+| <img src="https://avatars.githubusercontent.com/cherrie-k" width="80"> | <img src="https://avatars.githubusercontent.com/tagtaek" width="80"> | <img src="https://avatars.githubusercontent.com/cowboysj" width="80"> | <img src="https://avatars.githubusercontent.com/SuminSSon" width="80"> | <img src="https://avatars.githubusercontent.com/Sungah-Yoon" width="80"> |
+| **Design, FE** | **FE** | **BE** | **BE, Infra** | **BE** |
+| 대시보드, 그룹 스페이스, 회의록 및 유저 관리, 실시간 회의 및 봇 연동 | 로그인, 회원가입, 회의실 UI 구현 로그인 및 팀 참여 API 연결 | 회의록 생성, AWS AI 서비스를 이용한 봇 기능 구현 | 로그인/유저 관리, 회의 관리, 화상회의, 회의록 API | 그룹 스페이스 생성/참여 및 관리, 회의로그 관리, 회의록 반환 |
+
+### [🔗 연계 프론트엔드 리포지토리](https://github.com/KHU-Cloud-Project/Ameet-Client)
+
+## 프로젝트 설명
 
 A-meet는 AWS의 다양한 클라우드 서비스를 활용해 설계된 AI 기반 통합 비대면 회의 솔루션입니다.
 
@@ -100,11 +109,3 @@ A-meet는 AWS의 다양한 클라우드 서비스를 활용해 설계된 AI 기�
 ![image](https://github.com/user-attachments/assets/147c191e-9af9-4e93-acad-86b053a2de62)
 
 ![image](https://github.com/user-attachments/assets/d2a3bbfa-783f-416b-b11e-6b70d212df12)
-
-## 작업 및 역할 분담
-
-| [김채리](https://github.com/cherrie-k) | [고경택](https://github.com/tagtaek) | [김수진](https://github.com/cowboysj) | [손수민](https://github.com/SuminSSon) | [윤성아](https://github.com/Sungah-Yoon) |
-| :---: | :---: | :---: | :---: | :---: |
-| <img src="https://avatars.githubusercontent.com/cherrie-k" width="80"> | <img src="https://avatars.githubusercontent.com/tagtaek" width="80"> | <img src="https://avatars.githubusercontent.com/cowboysj" width="80"> | <img src="https://avatars.githubusercontent.com/SuminSSon" width="80"> | <img src="https://avatars.githubusercontent.com/Sungah-Yoon" width="80"> |
-| **Design, FE** | **FE** | **BE** | **BE, Infra** | **BE** |
-| 대시보드, 그룹 스페이스, 회의록 및 유저 관리, 실시간 회의 및 봇 연동 | 로그인, 회원가입, 회의실 UI 구현 로그인 및 팀 참여 API 연결 | 회의록 생성, AWS AI 서비스를 이용한 봇 기능 구현 | 로그인/유저 관리, 회의 관리, 화상회의, 회의록 API | 그룹 스페이스 생성/참여 및 관리, 회의로그 관리, 회의록 반환 |
