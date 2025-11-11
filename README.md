@@ -48,9 +48,6 @@ A-meet는 AWS의 다양한 클라우드 서비스를 활용해 설계된 AI 기�
 
 <img src="https://img.shields.io/badge/awsrds-527FFF?style=for-the-badge&logo=amazonaws&logoColor=white"> <img src="https://img.shields.io/badge/awss3-569A31?style=for-the-badge&logo=amazonaws&logoColor=white"> <img src="https://img.shields.io/badge/awscloudfront-232F3E?style=for-the-badge&logo=amazonaws&logoColor=white"> <img src="https://img.shields.io/badge/awsroute53-FF9900?style=for-the-badge&logo=amazonaws&logoColor=white"> <img src="https://img.shields.io/badge/awsec2-FF9900?style=for-the-badge&logo=amazonaws&logoColor=white"> <img src="https://img.shields.io/badge/amazoncloudwatch-FF4F8B?style=for-the-badge&logo=amazonaws&logoColor=white"> <img src="https://img.shields.io/badge/amazonsns-FF9900?style=for-the-badge&logo=amazonaws&logoColor=white"> <img src="https://img.shields.io/badge/awschatbot-FF9900?style=for-the-badge&logo=amazonaws&logoColor=white"> <img src="https://img.shields.io/badge/awseks-232F3E?style=for-the-badge&logo=amazonaws&logoColor=white"> <img src="https://img.shields.io/badge/prometheus-E6522C?style=for-the-badge&logo=prometheus&logoColor=white"> <img src="https://img.shields.io/badge/grafana-F46800?style=for-the-badge&logo=grafana&logoColor=white"> 
 
-## 프로젝트 아키텍처
-
-![image](https://github.com/user-attachments/assets/d6085160-9a35-4a9c-96be-f48dd07be226)
 
 ## ERD
 ![image](https://github.com/user-attachments/assets/49eba8d5-3119-42e6-9932-1a0e2d5c05ad)
